@@ -1,15 +1,14 @@
-package org.ms2ms.utils;
+package org.ms2ms.math;
 
-import com.google.common.collect.*;
-import com.google.common.primitives.Chars;
-import org.apache.commons.lang.StringUtils;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Range;
+import com.google.common.collect.TreeMultimap;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.analysis.interpolation.LoessInterpolator;
 import org.apache.commons.math.analysis.polynomials.PolynomialSplineFunction;
-import org.expasy.mzjava.core.ms.peaklist.Peak;
-import org.expasy.mzjava.stats.Histogram;
-import org.expasy.mzjava.stats.HistogramImpl;
+import org.ms2ms.utils.Strs;
+import org.ms2ms.utils.Tools;
 
 import java.util.*;
 
@@ -119,7 +118,7 @@ public class Stats
       // quotes? must remain a string if so
       if (s instanceof String)
       {
-        String val = Strs.trim((String )s);
+        String val = Strs.trim((String) s);
         if ((val.charAt(0)=='"'  && val.charAt(val.length()-1)=='"') ||
             (val.charAt(0)=='\'' && val.charAt(val.length()-1)=='\'')) return val.substring(1, val.length()-1);
 
@@ -180,11 +179,11 @@ public class Stats
       Multimap<Double, Double> xy = TreeMultimap.create();
       for (int i=0; i<xs.length; i++) xy.put(xs[i], ys[i]);
       int i=0; xs=new double[xy.keySet().size()]; ys=new double[xy.keySet().size()];
-      for (Double x : xy.keySet()) { xs[i]=x; ys[i]=Stats.mean(xy.get(x)); i++; }
+      for (Double x : xy.keySet()) { xs[i]=x; ys[i]= mean(xy.get(x)); i++; }
       Tools.dispose(xy);
 
       double[]                   Ys = new double[Xs.length];
-      Range<Double>           bound = Stats.closed(xs);
+      Range<Double>           bound = closed(xs);
       PolynomialSplineFunction poly = new LoessInterpolator(bandwidth, 2).interpolate(xs, ys);
       // compute the interpolated value
       for (i=0; i<Xs.length; i++)
@@ -215,13 +214,6 @@ public class Stats
       }
     }
     return out;
-  }
-  public static Histogram newHistogram(String title, int bins, Range<Double> bound)
-  {
-    HistogramImpl hist=new HistogramImpl(bins, bound!=null?bound.lowerEndpoint():0d, bound!=null?bound.upperEndpoint():1d);
-    hist.setName(title);
-
-    return hist;
   }
   public static Integer[] newIntArray(int start, int end)
   {
@@ -258,19 +250,6 @@ public class Stats
 
     return new double[] {avg, bound};
   }
-  public static Peak accumulate(Peak A, Peak B)
-  {
-    if (A == null || B == null) return A;
-
-    // assuming the check and balance already done entering the call
-    double    sum = A.getIntensity()+B.getIntensity(),
-      sum_product = A.getIntensity()*A.getMz()+B.getIntensity()*B.getMz();
-
-    A.setMzAndCharge(sum_product / sum);
-    A.setIntensity(sum);
-
-    return A;
-  }
   public static double median(double[] ys)
   {
     if (ys == null || ys.length == 0) return Double.NaN;
@@ -287,64 +266,6 @@ public class Stats
     if (ys.size() % 2 == 0) return (ys.get((int )(ys.size() * 0.5)    ) +
         ys.get((int )(ys.size() * 0.5) - 1)) * 0.5;
     return ys.get((int )(ys.size() * 0.5));
-  }
-  public static <T extends Peak> double median(Collection<T> ys)
-  {
-    if (ys.size() == 1) return Tools.front(ys).getIntensity();
-
-    double[] pts = new double[ys.size()];
-    int    order = 0;
-    for (T t : ys) pts[order++] = t.getIntensity();
-
-    return median(pts);
-  }
-  public static <T extends Peak> double stdevY(Collection<T> ys) { return Math.sqrt(varianceY(ys)); }
-  public static <T extends Peak> double varianceY(Collection<T> ys)
-  {
-    if (ys.size() == 1) return -1;
-    if (ys.size() == 1) return 0;
-
-    double s = 0, ss = 0;
-    for (T y : ys) { s += y.getIntensity(); ss += y.getIntensity() * y.getIntensity(); }
-    return (ys.size() * ss - s * s) / (ys.size() * (ys.size() - 1));
-  }
-  public static <T extends Peak> Double meanIntensity(Collection<T> ys)
-  {
-    if (ys        == null) return null;
-    if (ys.size() == 0)    return 0d;
-
-    double s = 0;
-    for (T y : ys) { s += y.getIntensity(); }
-    return s / ys.size();
-  }
-  public static <T extends Peak> Double meanMz(Collection<T> ys)
-  {
-    if (ys        == null) return null;
-    if (ys.size() == 0)    return 0d;
-
-    double s = 0;
-    for (T y : ys) { s += y.getMz(); }
-    return s / ys.size();
-  }
-  public static <T extends Peak> Double centroid(Collection<T> points)
-  {
-    return centroid(points, null, null);
-  }
-  public static <T extends Peak> Double centroid(Collection<T> points, Double x0, Double x1)
-  {
-    if (! Tools.isSet(points)) return null;
-
-    double sumXY = 0, sumY = 0;
-    for (Peak xy : points)
-    {
-      if ((x0 == null || xy.getMz() >= x0) &&
-          (x1 == null || xy.getMz() <= x1))
-      {
-        sumXY += xy.getMz() * xy.getIntensity();
-        sumY  += xy.getMz();
-      }
-    }
-    return sumY != 0 ? sumXY / sumY : null;
   }
   public static double filter(List<Double> A, int index_begin, double[] filters)
   {

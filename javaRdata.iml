@@ -7,8 +7,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="hbase" level="project" />
-    <orderEntry type="library" name="libs" level="project" />
+    <orderEntry type="library" name="hbase-0.9.4.12" level="project" />
     <orderEntry type="library" name="titan" level="project" />
   </component>
 </module>

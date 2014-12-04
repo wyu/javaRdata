@@ -1,7 +1,6 @@
 package org.ms2ms.data;
 
-import org.ms2ms.utils.Stats;
-import org.ms2ms.utils.Strs;
+import org.ms2ms.math.Stats;
 import org.ms2ms.utils.Tools;
 
 /**

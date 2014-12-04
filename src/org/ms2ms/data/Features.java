@@ -1,13 +1,5 @@
 package org.ms2ms.data;
 
-import org.apache.commons.math3.distribution.NormalDistribution;
-import org.expasy.mzjava.core.ms.Tolerance;
-import org.ms2ms.utils.Stats;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 /** A generic class to model rows of data in a data table. Used in an alignment routine
  *
  * User: wyu

@@ -5,6 +5,7 @@ import org.ms2ms.Disposable;
 import org.ms2ms.data.NameValue;
 import org.ms2ms.data.collect.MapOfMultimap;
 import org.ms2ms.data.collect.MultiTreeTable;
+import org.ms2ms.math.Stats;
 import org.ms2ms.utils.*;
 
 import java.io.IOException;

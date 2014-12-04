@@ -2,8 +2,7 @@ package org.ms2ms.utils;
 
 import com.google.common.collect.Range;
 import org.ms2ms.data.NameValue;
-import org.ms2ms.utils.Stats;
-import org.ms2ms.utils.Tools;
+import org.ms2ms.math.Stats;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -174,7 +173,7 @@ public class Parser
     int pos = line.indexOf(fieldSep);
     if (pos < 0) { return null; }
 
-    return Range.closed(Stats.toDouble(line.substring(0,  pos                ).trim()),
+    return Range.closed(Stats.toDouble(line.substring(0, pos).trim()),
                         Stats.toDouble(line.substring(pos + fieldSep.length()).trim()));
   }
 }

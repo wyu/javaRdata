@@ -16,6 +16,11 @@ import java.util.Map;
  */
 public class Strs
 {
+  public static final String NULL              = "nUlL";
+  public static final String INVALID_SELECTION = "iNvAlId sElEcTiOn";
+  public static final String BLANK             = "  1lsd 00s *&**";
+  public static final String ALPHA             = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
   public static String extend(String s0, String s1, String delimiter)
   {
     return s0==null?s1:(s0+delimiter+s1);
@@ -348,5 +353,9 @@ public class Strs
           seq1.equals(seq2.replace("QN", "EL")));
     }
     return matched;
+  }
+  public static boolean equals(String A, String B)
+  {
+    return (A==null && B==null) || (A!=null && B!=null && A.equals(B));
   }
 }

@@ -2,7 +2,7 @@ package org.ms2ms.nosql;
 
 import java.io.Serializable;
 
-/** Parameters about the HBase table including name, row counts, primary key
+/** Parameters about the HBases table including name, row counts, primary key
  * Created with IntelliJ IDEA.
  * User: wyu
  * Date: 5/14/14

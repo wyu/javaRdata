@@ -8,13 +8,12 @@ import org.apache.hadoop.hbase.util.Bytes;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 /** the base class to support I/O routine against the HBASE
  *
  * Created by wyu on 4/16/14.
  */
-abstract public class HBase
+abstract public class HBases
 {
   static public String TBL_MSMSINDEX = "MsMsIndex";
   static public String TBL_TABLE     = "TableInfo";
@@ -194,9 +193,9 @@ abstract public class HBase
 
   public static long incre(byte[] table, byte[] rowkey, byte[] family, byte[] col, long increment) throws IOException
   {
-    HConnection    conn = HBase.getConnection();
+    HConnection    conn = HBases.getConnection();
     HTableInterface tbl = conn.getTable(table);
-    long next = incre(tbl, rowkey, HBase.FAM_ID, HBase.COL_ENTRIES, increment);
+    long next = incre(tbl, rowkey, HBases.FAM_ID, HBases.COL_ENTRIES, increment);
     tbl.close();conn.close();
     return next;
   }

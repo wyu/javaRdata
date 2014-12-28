@@ -1,5 +1,6 @@
 package org.ms2ms.graph;
 
+import com.hfg.xml.XMLNode;
 import org.ms2ms.utils.IOs;
 import org.ms2ms.utils.Strs;
 import org.ms2ms.utils.Tools;
@@ -84,6 +85,14 @@ public class Property  implements Cloneable
     if (!Tools.isSet(name)) return;
     if (mProperties == null) mProperties = new TreeMap<String, String>();
     mProperties.put(name, val);
+  }
+  public Property set(XMLNode tag, String name)
+  {
+    if (tag!=null && Strs.equals(tag.getTagName(), "att") && Strs.equals(tag.getAttributeValue("name"), name))
+    {
+      setProperty(name, tag.getAttributeValue("value"));
+    }
+    return this;
   }
   public void setPropertyNotNull(String name, String val)
   {

@@ -2,6 +2,7 @@ package org.ms2ms.graph;
 
 import com.thinkaurelius.titan.core.PropertyKey;
 import com.thinkaurelius.titan.core.TitanGraph;
+import com.thinkaurelius.titan.core.TitanVertex;
 import com.thinkaurelius.titan.core.schema.TitanManagement;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.TransactionalGraph;
@@ -298,5 +299,30 @@ public class Graphs
     for (Edge e : graph.getEdges())    e.remove();
 
     graph.commit();
+  }
+  public static String addCompositeIndex(TitanManagement m, String tag, String idx)
+  {
+    if (!m.containsGraphIndex(idx))
+    {
+      PropertyKey key = m.containsPropertyKey(tag) ? m.getPropertyKey(tag) : m.makePropertyKey(tag).dataType(String.class).make();
+      m.buildIndex(idx, Vertex.class).addKey(key).buildCompositeIndex();
+      m.commit();
+    }
+
+    return idx;
+  }
+  public static TitanVertex set(TitanVertex v, PropertyNode n, String... tags)
+  {
+    if (v!=null && n!=null)
+      for (String tag : tags)
+        if (n.hasProperty(tag))
+          v.setProperty(tag, n.getProperty(tag));
+
+    return v;
+  }
+  public static TitanVertex addNewProperty(TitanVertex v, String tag, String val)
+  {
+    if (v!=null && tag!=null && v.getProperties(tag)==null) v.setProperty(tag, val);
+    return v;
   }
 }

@@ -15,6 +15,7 @@ public class PropertyNode extends Property
   protected Long mID;
 
   public PropertyNode() { super(); }
+  public PropertyNode(String n) { super(); setName(n); }
 
   public String       getName()         { return mName; }
   public Long getID() { return mID; }

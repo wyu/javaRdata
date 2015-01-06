@@ -1,5 +1,7 @@
 package org.ms2ms.graph;
 
+import org.ms2ms.utils.Tools;
+
 /**
  * ** Copyright 2014-2015 ms2ms.org
  * <p/>
@@ -60,6 +62,6 @@ public class PropertyNode extends Property
   @Override
   public int hashCode()
   {
-    return (mID!=null?mID.hashCode():0) + (mName!=null?mName.hashCode():0);
+    return super.hashCode() + Tools.hashCode(mID,mName);
   }
 }

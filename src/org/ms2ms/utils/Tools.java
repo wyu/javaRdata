@@ -14,7 +14,6 @@ public class Tools
   static String ZEROES = "000000000000";
   static String BLANKS = "            ";
 
-  public static     boolean isSet(String         s) { return s!=null && s.length()>0; }
   public static <T> boolean isSet(Collection<T>  s) { return s!=null && s.size()>0; }
   public static <T> boolean isSet(Map            s) { return s!=null && s.size()>0; }
   public static <T> boolean isSet(MultiTreeTable s) { return s!=null && s.size()>0; }
@@ -343,5 +342,21 @@ public class Tools
       }
     }
     return bits;
+  }
+  public static <T> Collection<T> add(Collection<T> s, T x)
+  {
+    if (s!=null && x!=null) s.add(x);
+    return s;
+  }
+  public static int hashCode(Object... s)
+  {
+    int hcode=0;
+    if (isSet(s))
+      for (Object o : s) hcode+=(o!=null?o.hashCode():0);
+    return hcode;
+  }
+  public static <T> T fromLast(List<T> s, int n)
+  {
+    return s!=null && s.size()>2 ? s.get(s.size()-n) : null;
   }
 }

@@ -48,7 +48,7 @@ public class AttributeFile
    */
   public void setTemplate(String cfg_file)
   {
-    if (!Tools.isSet(cfg_file))
+    if (!Strs.isSet(cfg_file))
     {
       throw new RuntimeException("Couldn't figure out which chaperon config file to use!");
     }
@@ -73,7 +73,7 @@ public class AttributeFile
 
           // parse the fields
           NameValue nval = Parser.newNameValue(line, ':');
-          if (nval != null && Tools.isSet(nval.val))
+          if (nval != null && Strs.isSet(nval.val))
           {
             set(nval.name.toLowerCase(), nval.val);
           }

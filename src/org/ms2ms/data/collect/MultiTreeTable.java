@@ -12,7 +12,7 @@ import java.util.*;
  * Time: 8:42 PM
  * To change this template use File | Settings | File Templates.
  */
-public class MultiTreeTable<K extends Comparable, L extends Comparable, T>
+public class MultiTreeTable<K extends Comparable, L extends Comparable, T extends Comparable>
 {
   private SortedMap<K, TreeMultimap<L, T>> mData;
 
@@ -37,7 +37,7 @@ public class MultiTreeTable<K extends Comparable, L extends Comparable, T>
 */
   public void put(K key, L lable, T data)
   {
-    if (mData == null) mData = new TreeMap<K, TreeMultimap<L, T>>();
+    if (mData == null) mData = new TreeMap<>();
     TreeMultimap<L, T> D = mData.get(key);
     if (D == null)
     {

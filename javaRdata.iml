@@ -29,6 +29,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="libs" level="project" />
+    <orderEntry type="library" name="PSI" level="project" />
   </component>
 </module>
 

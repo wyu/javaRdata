@@ -52,7 +52,7 @@ public class Strs
     List<String> list  = new ArrayList<String>();
     String[]     items = s.split(regx);
     for (String ss : items)
-      if (!trim || Tools.isSet(ss.trim()))
+      if (!trim || isSet(ss.trim()))
         list.add(trim ? ss.trim() : ss);
     // return the list
     return list;
@@ -358,4 +358,18 @@ public class Strs
   {
     return (A==null && B==null) || (A!=null && B!=null && A.equals(B));
   }
+  public static boolean isSet(String         s) { return s!=null && s.length()>0; }
+  public static boolean isSet(StringBuilder  s) { return s!=null && s.length()>0; }
+  public static boolean isA(String s, String... vals)
+  {
+    if (Tools.isSet(vals))
+      for (String val : vals)
+        if (equals(s, val)) return true;
+
+    return false;
+  }
+//  public static String fromLast(List<String> s, int n)
+//  {
+//    return s!=null && s.size()>2 ? s.get(s.size()-n) : null;
+//  }
 }

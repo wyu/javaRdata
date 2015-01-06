@@ -19,7 +19,7 @@ public class IOs
 {
   public static boolean exists(String s)
   {
-    if (!Tools.isSet(s)) return false;
+    if (!Strs.isSet(s)) return false;
     return new File(s).exists();
   }
   public static void write(String f, String data)

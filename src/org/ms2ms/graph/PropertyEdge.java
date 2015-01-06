@@ -15,7 +15,6 @@ public class PropertyEdge extends Property
   protected Double mScore;
   protected Long mID, mSource, mTarget;
   protected String mLabel = null, mDescription, mUrl;
-//  protected Feature mProperties = new Feature();
 
   public PropertyEdge() { super(); }
   public PropertyEdge(double s) { super(); mScore = s; }
@@ -79,5 +78,10 @@ public class PropertyEdge extends Property
     catch (CloneNotSupportedException e) {}
 
     return cloned;
+  }
+  @Override
+  public int hashCode()
+  {
+    return super.hashCode() + Tools.hashCode(mScore,mID,mSource,mTarget,mLabel,mDescription,mUrl);
   }
 }

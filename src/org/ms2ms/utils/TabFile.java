@@ -113,7 +113,7 @@ public class TabFile
     if (mHds == null)
     {
       // skip line starting with 'skip' if asked
-      if (Tools.isSet(mSkip))
+      if (Strs.isSet(mSkip))
       {
         while (mFileReader.ready())
         {
@@ -123,7 +123,7 @@ public class TabFile
       }
       else mHeaderLine = mFileReader.readLine();
 
-      if (Tools.isSet(mHeaderLine))
+      if (Strs.isSet(mHeaderLine))
       {
         mHds = split(mHeaderLine);
         Strs.trim(     mHds);
@@ -157,7 +157,7 @@ public class TabFile
   {
     // read-in the line in a separated step
     // skip line starting with 'skip' if asked
-    if (Tools.isSet(mSkip))
+    if (Strs.isSet(mSkip))
     {
       while (mFileReader.ready())
       {
@@ -172,7 +172,7 @@ public class TabFile
     if (mCurrentLine != null && Tools.isSet(cols))
     {
       // forget the duplicated header
-      while (Tools.isSet(cols[0]) && Tools.isSet(mHds[0]) && cols[0].equals(mHds[0]))
+      while (Strs.isSet(cols[0]) && Strs.isSet(mHds[0]) && cols[0].equals(mHds[0]))
       {
         String hd = mFileReader.readLine();
         if (hd != null) cols = split(hd);

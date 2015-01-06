@@ -446,7 +446,7 @@ public class XMLs
     try
     {
       String str = tag.getAttributeValue(name);
-      if (Tools.isSet(str)) return new Double(str);
+      if (Strs.isSet(str)) return new Double(str);
     }
     catch (Exception e) {}
     // send the null out since we have nothing here
@@ -457,7 +457,7 @@ public class XMLs
     try
     {
       String str = tag.getAttributeValue(name);
-      if (Tools.isSet(str)) return new Double(str).floatValue();
+      if (Strs.isSet(str)) return new Double(str).floatValue();
     }
     catch (Exception e) {}
     // send the null out since we have nothing here
@@ -468,7 +468,7 @@ public class XMLs
     try
     {
       String str = tag.getAttributeValue(name);
-      if (Tools.isSet(str)) return new Integer(str);
+      if (Strs.isSet(str)) return new Integer(str);
     }
     catch (Exception e) {}
     // send the null out since we have nothing here
@@ -479,7 +479,7 @@ public class XMLs
     try
     {
       String str = tag.getAttributeValue(name);
-      if (Tools.isSet(str)) return str.equals("1") ? true : false;
+      if (Strs.isSet(str)) return str.equals("1") ? true : false;
     }
     catch (Exception e) {}
     // always send the variable back out
@@ -491,7 +491,7 @@ public class XMLs
     try
     {
       String str = tag.getAttributeValue(name);
-      if (Tools.isSet(str)) return new Long(str);
+      if (Strs.isSet(str)) return new Long(str);
     }
     catch (Exception e) {}
     // always send the variable back out
@@ -503,7 +503,7 @@ public class XMLs
     try
     {
       String str = tag.getAttributeValue(name);
-      if (Tools.isSet(str)) return new Double(str);
+      if (Strs.isSet(str)) return new Double(str);
     }
     catch (Exception e) {}
 
@@ -579,7 +579,7 @@ public class XMLs
         String valueString = t.getContent();
         String type        = t.getAttributeValue("type");
 
-        if (Tools.isSet(type))
+        if (Strs.isSet(type))
         {
           if      (type.equals("int"))    values.put(key, new Integer(valueString));
           else if (type.equals("float"))  values.put(key, new Float(  valueString));
@@ -620,7 +620,7 @@ public class XMLs
                  String       name,
                  List<String> values)
   {
-    if (!Tools.isSet(name) || tag == null || values == null) return values;
+    if (!Strs.isSet(name) || tag == null || values == null) return values;
 
     try
     {

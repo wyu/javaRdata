@@ -119,7 +119,7 @@ public class Parser
   {
     String left = null, right = null;
 
-    if (Tools.isSet(pattern))
+    if (Strs.isSet(pattern))
     {
       left  = pattern.substring(0, pattern.indexOf("*"));
       right = pattern.substring(pattern.lastIndexOf("*") + 1, pattern.length());
@@ -130,7 +130,7 @@ public class Parser
     {
       //if (!F.getPath().matches(pattern)) continue;
       String L = F.getPath();
-      if (Tools.isSet(pattern))
+      if (Strs.isSet(pattern))
       {
         int i_left = L.indexOf(left), i_right = L.lastIndexOf(right);
         if (i_left == 0 && i_right + right.length() == L.length())

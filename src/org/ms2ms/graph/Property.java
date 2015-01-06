@@ -52,7 +52,7 @@ public class Property  implements Cloneable
   public Double              getProperty(String key, Double _default)
   {
     String str = getProperty(key);
-    if (Tools.isSet(str) && str.indexOf(",") >= 0)
+    if (Strs.isSet(str) && str.indexOf(",") >= 0)
       str = str.replaceAll(",", "");
 
     Double val = Double.valueOf(str);
@@ -67,7 +67,7 @@ public class Property  implements Cloneable
 
     for (int i = 0; i < strs.length; i++)
     {
-      if (Tools.isSet(strs[i]) && strs[i].indexOf(",") >= 0)
+      if (Strs.isSet(strs[i]) && strs[i].indexOf(",") >= 0)
         strs[i] = strs[i].replaceAll(",", "");
 
       Double v = Double.valueOf(strs[i]);
@@ -78,12 +78,12 @@ public class Property  implements Cloneable
 
   public void setProperties(Map<String, String> s)
   {
-    mProperties = new TreeMap<String, String>(s);
+    mProperties = new TreeMap<>(s);
   }
   public void setProperty(String name, String val)
   {
-    if (!Tools.isSet(name)) return;
-    if (mProperties == null) mProperties = new TreeMap<String, String>();
+    if (!Strs.isSet(name)) return;
+    if (mProperties == null) mProperties = new TreeMap<>();
     mProperties.put(name, val);
   }
   public Property set(XMLNode tag, String name)
@@ -100,7 +100,7 @@ public class Property  implements Cloneable
   }
   public void mergeProperty(String name, String val)
   {
-    if (!Tools.isSet(name) || !Tools.isSet(val)) return;
+    if (!Strs.isSet(name) || !Strs.isSet(val)) return;
 
     String old = getProperty(name);
     if ((old == null || !Tools.contains(old.split(";"), val)))
@@ -108,7 +108,7 @@ public class Property  implements Cloneable
   }
   public void setProperty(String name, String new_name, Map<String, String> props)
   {
-    if (!Tools.isSet(props) || !Tools.isSet(name) || props.get(name) == null) return;
+    if (!Tools.isSet(props) || !Strs.isSet(name) || props.get(name) == null) return;
 
     if (mProperties == null) mProperties = new TreeMap<>();
     mProperties.put(new_name != null ? new_name : name, props.get(name));
@@ -167,6 +167,26 @@ public class Property  implements Cloneable
     isValid(IOs.read(ds, isValid()));
     setProperties(IOs.readStringStringMap(ds, getProperties()));
   }
+  @Override
+  public int hashCode()
+  {
+    int hcode = (mIsValid?1:0);
+    if (Tools.isSet(mProperties))
+      for (String key : mProperties.keySet())
+        hcode += key.hashCode() + mProperties.get(key).hashCode();
+
+    return hcode;
+  }
+  public Property rename(String from, String to)
+  {
+    if (hasProperty(from) && to!=null && !Strs.equals(to, from))
+    {
+      setProperty(to, getProperty(from));
+      mProperties.remove(from);
+    }
+    return this;
+  }
+
 //  public Property setNameValue(XMLTag tag, String name)
 //  {
 //    // <att name="class" value="Receptor ligand"/>

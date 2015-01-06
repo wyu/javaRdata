@@ -144,7 +144,7 @@ public class Dataframe implements Disposable
   }
   public boolean hasVar(String s, boolean isCategorical)
   {
-    if (Tools.isSet(s) && asVar(s)!=null && asVar(s).isCategorical()==isCategorical) return true;
+    if (Strs.isSet(s) && asVar(s)!=null && asVar(s).isCategorical()==isCategorical) return true;
     return false;
   }
   public boolean hasVar(Var s)
@@ -723,7 +723,7 @@ public class Dataframe implements Disposable
     for (String rowid : rows())
     {
       Object v = cell(rowid, row);
-      if (v instanceof String && Tools.isSet((String)v)) indice.put((String )v, rowid);
+      if (v instanceof String && Strs.isSet((String)v)) indice.put((String )v, rowid);
     }
 
     return indice;
@@ -753,7 +753,7 @@ public class Dataframe implements Disposable
 
   public static MultiTreeTable<Double, Double, String>[] indice(String row, String col, Dataframe... frames)
   {
-    if (!Tools.isSet(frames) || !Tools.isSet(row) || !Tools.isSet(col)) return null;
+    if (!Tools.isSet(frames) || !Strs.isSet(row) || !Strs.isSet(col)) return null;
 
     MultiTreeTable<Double, Double, String>[] indices = new MultiTreeTable[frames.length];
     for (int i=0; i<frames.length; i++)
@@ -808,7 +808,7 @@ public class Dataframe implements Disposable
     Set<String> cols = new TreeSet<String>(); int order=0;
     for (Dataframe F : frames)
     {
-      if (!Tools.isSet(F.getTitle())) F.setTitle(""+order++);
+      if (!Strs.isSet(F.getTitle())) F.setTitle(""+order++);
       cols.addAll(F.cols());
     }
     // the resulting dataframe
@@ -849,9 +849,9 @@ public class Dataframe implements Disposable
     // create the merged cols
     Table<Integer, String, String> xy_var_col = HashBasedTable.create();
     for (String v : x.cols())
-      xy_var_col.put(1, v, !Tools.contains(shared, v) || Tools.contains(by, v) ? v : v + (Tools.isSet(x.getTitle())?"."+x.getTitle():".x"));
+      xy_var_col.put(1, v, !Tools.contains(shared, v) || Tools.contains(by, v) ? v : v + (Strs.isSet(x.getTitle())?"."+x.getTitle():".x"));
     for (String v : y.cols())
-      xy_var_col.put(2, v, !Tools.contains(shared, v) || Tools.contains(by, v) ? v : v + (Tools.isSet(y.getTitle())?"."+y.getTitle():".y"));
+      xy_var_col.put(2, v, !Tools.contains(shared, v) || Tools.contains(by, v) ? v : v + (Strs.isSet(y.getTitle())?"."+y.getTitle():".y"));
 
     // create the merged results
     Dataframe out = new Dataframe();

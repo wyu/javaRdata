@@ -246,8 +246,11 @@ public class Strs
   public static String toString(List<String> ss, String dl) {
     // no point to go further
     if (ss == null) return null;
-    String made = new String();
-    for (String s : ss) made = extend(made, s, dl);
+    String made = null;
+    for (String s : ss)
+    {
+      made = extend(made, s.replaceAll(dl,"_"), dl);
+    }
     // return the concatenated string
     return made;
   }

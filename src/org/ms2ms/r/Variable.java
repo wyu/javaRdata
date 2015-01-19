@@ -1,10 +1,9 @@
 package org.ms2ms.r;
 
+import org.apache.commons.math3.random.EmpiricalDistribution;
 import org.ms2ms.utils.Tools;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,44 +14,59 @@ import java.util.List;
  */
 public class Variable implements Var
 {
+  private boolean      mIsNumeric;
+  private int          mEntries;
   private String       mName;
-  private List<Object> mFactors;
+  private Map<Object, Integer> mFactors;
   private VarType      eType = VarType.UNKNOWN;
+  private EmpiricalDistribution mDist; // for the continuous type
 
   public Variable(String s)            { setName(s); }
   public Variable(String s, VarType t) { setName(s); eType=t; }
 
   public String getName()  { return mName; }
   public VarType getType() { return eType; }
+  public int getNumFactors() { return mFactors!=null?mFactors.size():0; }
+  public int getNumEntries() { return mEntries; }
+  public EmpiricalDistribution getDistribution() { return mDist; }
+  public Var setNumEntries(int s) { mEntries=s; return this; }
+  public Var setDistribution(EmpiricalDistribution s) { mDist=s; return this; }
 
-  @Override
   public boolean isCategorical() { return isType(VarType.CATEGORICAL); }
-  @Override
-  public boolean isContinuous() { return isType(VarType.CONTINOUOUS); }
+  public boolean isContinuous()  { return isType(VarType.CONTINOUOUS); }
+  public boolean isNumeric()     { return mIsNumeric; }
+  public Var isNumeric(boolean s)     { mIsNumeric=s; return this; }
+
   @Override
   public boolean isType(VarType s) { return eType.equals(s);}
   @Override
-  public String toString() { return mName; }
+  public String toString() { return getNumEntries() + "\t" + getNumFactors() + "\t" + mName; }
 
   public Var setType(VarType s) { eType=s; return this; }
   public Var setFactors(Collection s)
   {
-    if (s==null) { mFactors=null; return this; }
-
-    if (mFactors==null) mFactors = new ArrayList(); else mFactors.clear();
-    mFactors.addAll(s);
+    // reset the factors
+    mFactors=null;
+    return addFactors(s);
+  }
+  public Var addFactor(Object s)
+  {
+    if (mFactors==null) mFactors = new HashMap<>();
+    mFactors.put(s, mFactors.containsKey(s)?mFactors.get(s)+1:1);
     return this;
   }
+
   public Var addFactors(Collection s)
   {
     if (s==null) { mFactors=null; return this; }
 
-    if (mFactors==null) mFactors = new ArrayList();
-    mFactors.addAll(s);
+    for (Object _s : s) addFactor(_s);
+//    if (mFactors==null) mFactors = new ArrayList();
+//    mFactors.addAll(s);
     return this;
   }
-  public void setName(String s) { mName=s; }
-  public List getFactors() { return mFactors; }
+  public Var setName(String s) { mName=s; return this; }
+  public Collection getFactors() { return mFactors.keySet(); }
 
   @Override
   public boolean equals(Object s)
@@ -61,14 +75,6 @@ public class Variable implements Var
   }
 
   //**************  Utils  ***********************//
-
-//  public static Var[] toVars(Dataframe data, String... vs)
-//  {
-//    Var[] vrows = new Var[vs.length];
-//    for (int i=0; i<vs.length; i++) vrows[i]=data.getVar(vs[i]);
-//
-//    return vrows;
-//  }
   public static Var[] toVars(String... vs)
   {
     Var[] vrows = new Var[vs.length];

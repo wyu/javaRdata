@@ -1082,4 +1082,15 @@ public class IOs
   {
     write(writer, obj != null ? 1 : 0);
   }
+  public static void write(String dest, StringBuffer buf)
+  {
+    FileWriter writer = null;
+    try
+    {
+      writer = new FileWriter(dest);
+      writer.write(buf.toString());
+      writer.close();
+    }
+    catch (IOException e) {}
+  }
 }

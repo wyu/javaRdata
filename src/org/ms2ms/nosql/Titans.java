@@ -21,6 +21,24 @@ abstract public class Titans
     Configuration conf = new BaseConfiguration();
     conf.setProperty("storage.backend","hbase");
     conf.setProperty("storage.directory","/media/data/titan");
+    conf.setProperty("cache.db-cache",true);
+    conf.setProperty("cache.db-cache-clean-wait", 20);
+    conf.setProperty("cache.db-cache-time", 180000);
+    conf.setProperty("cache.db-cache-size", 0.5);
+    conf.setProperty("index.search.backend", "elasticsearch");
+    conf.setProperty("index.search.hostname", "127.0.0.1");
+    conf.setProperty("index.search.client-only", true);
+
+//  # Activate the interface track with ES's transport client
+    conf.setProperty("index.search.elasticsearch.interface", "TRANSPORT_CLIENT");
+
+
+//  The Elasticsearch node.client option is set to this boolean value, and the Elasticsearch node.data option is set
+//  to the negation of this value. True creates a thin client which holds no data.  False creates a regular
+//  Elasticsearch cluster node that may store data.
+    conf.setProperty("index.search.elasticsearch.client-only", false);
+    conf.setProperty("storage.index.search.local-mode", true);
+
 //    conf.setProperty("schema.default","none"); // to ensure data integrity during batch loading
     conf.setProperty("ids.block-size",100000);
     conf.setProperty("storage.buffer-size", 10240); // need careful experimentation during batch loading

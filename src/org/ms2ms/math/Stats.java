@@ -7,6 +7,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.analysis.interpolation.LoessInterpolator;
 import org.apache.commons.math.analysis.polynomials.PolynomialSplineFunction;
+import org.apache.commons.math3.random.EmpiricalDistribution;
 import org.ms2ms.utils.Strs;
 import org.ms2ms.utils.Tools;
 
@@ -113,6 +114,7 @@ public class Stats
   // convert the Object to Number if possible
   public static Object toNumber(Object s)
   {
+    if (s==null) return null;
     try
     {
       // quotes? must remain a string if so
@@ -296,5 +298,17 @@ public class Stats
     smoothed.add(filter(A, A.size()-6, new double[] {0.086,-0.143,-0.086,0.257,0.886}));
 
     return smoothed;
+  }
+  public static EmpiricalDistribution newDistribution(Collection<Double> data)
+  {
+    return newDistribution(Tools.toDoubleArray(data));
+  }
+  public static EmpiricalDistribution newDistribution(double[] data)
+  {
+    if (data==null) return null;
+
+    EmpiricalDistribution dist = new EmpiricalDistribution();
+    dist.load(data);
+    return dist;
   }
 }

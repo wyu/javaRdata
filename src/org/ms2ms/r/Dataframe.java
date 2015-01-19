@@ -26,7 +26,7 @@ public class Dataframe implements Disposable
   private List<String>               mRowIDs, mColIDs;
   private Map<String, Var>           mNameVar;
   private Table<String, String, Object> mData;
-  private String[]                   mKeyCols;
+  private String[]                   mNAs;
 
   public Dataframe()                                         { super(); }
   public Dataframe(String s)                                 { super(); setTitle(s); }
@@ -54,10 +54,7 @@ public class Dataframe implements Disposable
   //** Getters the Setters **//
   public int size() { return mData!=null?mData.rowKeySet().size():0; }
   public String       getTitle()      { return mTitle; }
-//  public List<String> getColIds()     { return mColIDs; }
-//  public List<String> getRowIds()     { return mRowIDs; }
   public String       getRowId(int i) { return mRowIDs!=null?mRowIDs.get(i):null; }
-//  public Var          asVar(String s) { return mNameVar!=null?mNameVar.get(s):null; }
   public Var[]        asVars(String... s)
   {
     if (!hasVars(s)) return null;
@@ -66,6 +63,8 @@ public class Dataframe implements Disposable
 
     return out;
   }
+  // set the String that shall be mapped to NA
+  public Dataframe setNAs(String... s) { mNAs=s; return this; }
   public Dataframe setTitle(String s) { mTitle=s; return this; }
 
   public Map<String, Object> row(int    i) { return mData!=null?mData.row(getRowId(i)):null; }
@@ -75,26 +74,12 @@ public class Dataframe implements Disposable
   {
     if (mNameVar==null)
     {
-      mNameVar= new HashMap<String, Var>();
+      mNameVar= new HashMap<>();
       if (Tools.isSet(mColIDs))
         for (String v : mColIDs) mNameVar.put(v, new Variable(v));
     }
     return mNameVar.get(s);
   }
-//  public Dataframe put(String row, Var col, Object val)
-//  {
-//    if (mData==null) mData = HashBasedTable.create();
-//    mData.put(row, col, val);
-//    // update the variable cache. DON'T do it due to cost
-////    addVar(col);
-//
-//    return this;
-//  }
-//  public Dataframe put(Var col, Object val)
-//  {
-//    if (mData  ==null) mData = HashBasedTable.create();
-//    return put(mData.rowKeySet().size() + "", col, val);
-//  }
   public Dataframe put(int row, String col, Object val) { return put(row+"", col, val); }
   public Dataframe put(String row, String col, Object val)
   {
@@ -106,14 +91,9 @@ public class Dataframe implements Disposable
 
     return this;
   }
-//  public Dataframe put(String col, Object val)
-//  {
-//    if (mData  ==null) mData = HashBasedTable.create();
-//    return put(mData.rowKeySet().size()+"", hasVars(col)?getVar(col):new Variable(col), val);
-//  }
   public Dataframe addRowId(String row)
   {
-    if (mRowIDs==null) mRowIDs = new ArrayList<String>();
+    if (mRowIDs==null) mRowIDs = new ArrayList<>();
     mRowIDs.add(row); return this;
   }
   public Dataframe addRow(String id, Map<String, Object> row)
@@ -126,11 +106,11 @@ public class Dataframe implements Disposable
   }
   public Var addVar(Var v)
   {
-    if (mNameVar==null) mNameVar = new HashMap<String, Var>();
-    if (mNameVar.put(v.toString(), v)==null)
+    if (mNameVar==null) mNameVar = new HashMap<>();
+    if (mNameVar.put(v.getName(), v)==null)
     {
       // add to the var list if this is a new one
-      if ( mColIDs==null) mColIDs = new ArrayList<String>();
+      if ( mColIDs==null) mColIDs = new ArrayList<>();
       if (!mColIDs.contains(v.getName())) mColIDs.add(v.getName());
     }
     return v;
@@ -186,24 +166,30 @@ public class Dataframe implements Disposable
     }
     return buf;
   }
+  public StringBuffer csv(int decimal)
+  {
+    StringBuffer buf = new StringBuffer();
+    buf.append(Strs.toString(cols(), ",") + "\n");
+    for (String id : rows())
+    {
+      String line=null;
+      for (String v : cols())
+      {
+        Object val = cell(id, v);
+        if (val==null)
+        {
+          System.out.println();
+        }
+        line = Strs.extend(line, val==null?"":(val instanceof Double?Tools.d2s((Double )val, decimal):val.toString()), ",");
+      }
+      buf.append(line+"\n");
+    }
+    return buf;
+  }
   @Override
   public String toString()
   {
     return getTitle();
-//    StringBuffer buf = new StringBuffer();
-//    buf.append("rowid\t" + Strs.toString(getVars(), "\t") + "\n");
-//    for (String id : getRowIds())
-//    {
-//      buf.append(id);
-//      for (Var v : getVars())
-//      {
-//        Object t = cells(id, v)!=null? cells(id, v)[0]:null;
-//        buf.append("\t" + (t!=null?(t instanceof String?(String)t:t.toString()):"--"));
-//      }
-//
-//      buf.append("\n");
-//    }
-//    return buf.toString();
   }
   public void write(Writer writer, String delim)
   {
@@ -228,15 +214,20 @@ public class Dataframe implements Disposable
     }
     return line;
   }
-  public double[] getDoubleCol(String y)
+  public double[] getDoubleCol(String y, boolean keep_na)
   {
     if (!Tools.isSet(mData) || !hasVars(y)) return null;
 
-    double[] ys = new double[rows().size()];
+    List<Double> data =new ArrayList<>();
     for (int i=0; i<rows().size(); i++)
     {
-      ys[i] = Stats.toDouble(cell(rows().get(i), y));
+      Double val = Stats.toDouble(cell(rows().get(i), y));
+      if (val!=null) data.add(val); else if (keep_na) data.add(Double.NaN);
+//      ys[i] = val!=null?Stats.toDouble(val):Double.NaN;
     }
+    double[] ys = new double[data.size()];
+    for (int i=0; i<data.size(); i++) ys[i]=data.get(i);
+
     return ys;
   }
   public long[] getLongCol(String y)
@@ -341,8 +332,13 @@ public class Dataframe implements Disposable
     if (Tools.isSet(rows) && mData!=null)
       for (String row : rows)
       {
+//        System.out.println("removing " + row);
         mRowIDs.remove(row);
-        if (mData.row(row)!=null) mData.row(row).clear();
+        if (mData.row(row)!=null)
+        {
+          mData.row(row).clear();
+//          mData.rowKeySet().remove(row);
+        }
       }
     // re-init the columns since we removed some of the rows
     for (String col : cols()) init(asVar(col));
@@ -405,57 +401,64 @@ public class Dataframe implements Disposable
     }
     return this;
   }
-  // go thro the table to determine the type of the variables. Convert them to number if necessary
+  // go through the table to determine the type of the variables. Convert them to number if necessary
   public Dataframe init()
   {
     if (!Tools.isSet(mData)) return this;
 
     setupVars();
-//    if (mRowIDs ==null) { mRowIDs  = new ArrayList<>(mData.rowKeySet()); Collections.sort(mRowIDs); }
-//    if (mColIDs ==null)
-//    {
-//      mColIDs  = new ArrayList<>(mData.columnKeySet());
-//      mNameVar = new HashMap<>(mColIDs.size());
-//      for (String v : mColIDs) mNameVar.put(v, new Variable(v));
-//    }
     if (Tools.isSet(mColIDs))
       for (String v : mColIDs)
       {
-        asVar(v).setFactors(null); init(asVar(v));
+        Var V = asVar(v);
+        if (V!=null) { V.setFactors(null); init(V);}
       }
-//    System.out.println();
     return this;
   }
-  public Dataframe initVars()
+  // re-init the columns after some of the rows were removed
+  public Dataframe updateVars()
   {
-    // re-init the columns since we removed some of the rows
     for (String col : cols()) init(asVar(col).getType(), col);
     return this;
   }
-  public Dataframe init(Var v)
+  private Dataframe init(Var v)
   {
     if (!Tools.isSet(mData)) return this;
 
-    boolean       isNum=true;
-    Set<Object> factors=new HashSet<Object>();
+    int    counts=0;
+    boolean isNum=true;
     for (String row : mRowIDs)
     {
-      Object val = Stats.toNumber(cell(row, v.getName()));
+      Object val = cell(row, v.getName());
 
-      if (val instanceof String) isNum=false;
-      if (val!=null && (!(val instanceof String) || ((String )val).length()>0)) factors.add(val);
-      // put the cell back
-      if (row!=null && v!=null && val!=null) mData.put(row, v.getName(), val);
+      if (val!=null && val instanceof String && Strs.isA((String )val, mNAs))
+      {
+        val=null;
+        // remove the cell if the value is null
+        mData.remove(row, v.getName());
+      }
+
+      val = Stats.toNumber(val);
+      if (val!=null)
+      {
+        counts++;
+        if (!(val instanceof String) || ((String )val).length()>0) v.addFactor(val);
+        // put the cell back
+        if (row!=null && v!=null) mData.put(row, v.getName(), val);
+        if (val instanceof String) isNum=false;
+      }
     }
+    v.setNumEntries(counts).isNumeric(isNum);
     if (v.isType(Var.VarType.UNKNOWN))
     {
-      if (factors.size()>0 && (!isNum || factors.size()<Math.min(250, mRowIDs.size()*0.25)))
+      if (v.getNumFactors()>0 && (!isNum || v.getNumFactors()<Math.min(250, v.getNumEntries()*0.25)))
         v.setType(Var.VarType.CATEGORICAL);
-      else v.setType(Var.VarType.CONTINOUOUS);
+      else
+      {
+        v.setType(Var.VarType.CONTINOUOUS);
+        v.setDistribution(Stats.newDistribution(getDoubleCol(v.getName(), false)));
+      }
     }
-    if ( v.isCategorical()) v.setFactors(factors);
-
-    Tools.dispose(factors);
     return this;
   }
   public Dataframe init(Var.VarType type, String... vs)
@@ -467,23 +470,39 @@ public class Dataframe implements Disposable
       // add the var if necessary
       if (!hasVars(s)) addVar(new Variable(s));
       Var v = asVar(s);
+      if (v==null) continue;
+
       if (Tools.equals(type, Var.VarType.CATEGORICAL))
       {
-        Set<Object> factors=new HashSet<>();
-        for (String row : mRowIDs) factors.add(cell(row, s));
-        v.setFactors(factors);
-        Tools.dispose(factors);
+        int counts = 0;
+        for (String row : mRowIDs)
+        {
+          Object val = cell(row, s);
+          if (val!=null && val instanceof String && Strs.isA((String )val, mNAs))
+          {
+            val=null;
+            // remove the cell if the value is null
+            mData.remove(row, s);
+          }
+          if (val!=null)
+          {
+            counts++; v.addFactor(val);
+          }
+        }
+        v.setNumEntries(counts);
       }
       else if (Tools.equals(type, Var.VarType.CONTINOUOUS))
       {
         for (String row : mRowIDs)
         {
-          Object val = Stats.toNumber(cell(row, v.getName()));
+          if (row==null) continue;
 
+          Object val = Stats.toNumber(cell(row, v.getName()));
           if (val instanceof String) break;
           // put the cell back
-          if (row!=null && v!=null && val!=null) mData.put(row, v.getName(), val);
+          if (val!=null) mData.put(row, v.getName(), val);
         }
+        v.setDistribution(Stats.newDistribution(getDoubleCol(s, false)));
       }
       v.setType(type);
     }
@@ -599,6 +618,36 @@ public class Dataframe implements Disposable
     return outs;
   }
 
+  /** clone the data frame that has only the requested columns
+   *
+   * @param cols
+   * @return
+   */
+  public Dataframe subcol(String... cols)
+  {
+    Dataframe out = new Dataframe();
+    if (Tools.isSet(mData))
+    {
+      out.mData    = TreeBasedTable.create();
+      out.mColIDs  = new ArrayList<>(cols.length);
+      out.mNameVar = new HashMap<>();
+      for (String col : cols)
+      {
+        if (!mColIDs.contains(col)) continue;
+
+        out.mColIDs.add(col);
+        out.mNameVar.put(col, mNameVar.get(col));
+        for (String row : rows())
+          if (mData.get(row, col)!=null)
+            out.mData.put(row, col, mData.get(row, col));
+      }
+    }
+    out.setTitle(getTitle());
+    out.mKeepData = mKeepData;
+    if (mRowIDs !=null) out.mRowIDs =new ArrayList<>(mRowIDs);
+
+    return out;
+  }
   /** subset the rows according to the test conditions specified, similar to 'subset' function from R
    *
    * subset(animals, type=="cat")
@@ -655,7 +704,7 @@ public class Dataframe implements Disposable
       }
 
     // refresh the factors and update the rows
-    return out.setRowIds(rows).initVars();
+    return out.setRowIds(rows).updateVars();
   }
   /** Partial implementation of R-aggregate
    *
@@ -786,6 +835,27 @@ public class Dataframe implements Disposable
     Dataframe out = new Dataframe();
 
     return out;
+  }
+  public Dataframe removeRowsWithMissingValue()
+  {
+    // remove the row with missing value
+    List<String> missing = new ArrayList<>();
+    for (String row : rows())
+    {
+      if (row(row).values().size()<cols().size()) missing.add(row);
+    }
+    if (Tools.isSet(missing)) removeRows(missing.toArray(new String[] {}));
+    return this;
+  }
+  public List<String> getColByPopulation(int min)
+  {
+    List<String> vars = new ArrayList<>();
+    for (String col : cols())
+    {
+      Var v = asVar(col);
+      if (v!=null && v.isContinuous() && v.getNumEntries()>min) vars.add(col);
+    }
+    return vars;
   }
   //** algorithms **//
 

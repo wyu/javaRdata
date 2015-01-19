@@ -332,6 +332,17 @@ public class Tools
     }
     return bytes;
   }
+  public static double[] toDoubleArray(Collection<Double> s)
+  {
+    if (s==null) return null;
+    double[] data = new double[s.size()];
+    int order=0;
+    for (Double d : s)
+    {
+      data[order++] = d;
+    }
+    return data;
+  }
   public static BitSet fromByteArray(byte[] bytes)
   {
     BitSet bits = new BitSet();
@@ -358,5 +369,12 @@ public class Tools
   public static <T> T fromLast(List<T> s, int n)
   {
     return s!=null && s.size()>2 ? s.get(s.size()-n) : null;
+  }
+  public static boolean hasNULL(Collection s)
+  {
+    if (s==null) return true;
+    for (Object v : s) if (v==null) return true;
+
+    return false;
   }
 }

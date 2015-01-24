@@ -221,4 +221,23 @@ public class Points
     }
     return sumY != 0 ? sumXY / sumY : null;
   }
+  public static <T extends Point> Double sumY(List<T> data)
+  {
+    if (data==null) return null;
+
+    double sum = 0d;
+    for (T xy : data) sum += xy.getY();
+
+    return sum;
+  }
+  public static <T extends Point> List<Double> toYs(List<T> data)
+  {
+    if (Tools.isSet(data))
+    {
+      List<Double> ys = new ArrayList<>(data.size());
+      for (T xy : data) ys.add(xy.getY());
+      return ys;
+    }
+    return null;
+  }
 }

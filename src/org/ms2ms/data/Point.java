@@ -1,5 +1,7 @@
 package org.ms2ms.data;
 
+import org.ms2ms.utils.Tools;
+
 /**
  * ** Copyright 2014-2015 ms2ms.org
  * <p/>
@@ -24,5 +26,10 @@ public class Point implements Comparable<Point>
   public int compareTo(Point o)
   {
     return Double.compare(mX, o.getX());
+  }
+  @Override
+  public String toString()
+  {
+    return Tools.d2s(getX(), 2) + "\t" + Tools.d2s(getY(), 2);
   }
 }

@@ -1,7 +1,8 @@
 package org.ms2ms.math;
 
 import com.google.common.collect.Range;
-import com.google.common.collect.TreeMultimap;
+import org.apache.commons.math.stat.descriptive.moment.Skewness;
+import org.apache.commons.math3.stat.descriptive.moment.Kurtosis;
 import org.ms2ms.data.Point;
 import org.ms2ms.utils.Strs;
 import org.ms2ms.utils.Tools;
@@ -22,22 +23,22 @@ import java.util.*;
 public class Histogram
 {
   private String        mTitle;
-  private Double        mStep;
-  private Double        mSumY = null;
+  private Transformer.processor eTransform = Transformer.processor.none;
+  private int           mHistogramSize = 12;
+  private Double        mStep, mSumY = null, mMean, mMedian, mStdev, mKurtosisNormality, mSkewness;
   private Range<Double> mRange;
-  private List<Point> mHistogram;
-  private List<Double> mData = null;
-  private boolean       mIsLog = false;
+  private List<Point>   mHistogram;
+  private List<Double>  mData = null;
 
   public Histogram() { super(); mData = new ArrayList<>(); }
   public Histogram(String title, Double step, Range<Double> range)
   {
     init(title, step, range);
   }
-  public Histogram(String title, boolean is_log)
+  public Histogram(int size)
   {
-    setTitle(title);
-    mIsLog     = is_log;
+    setTitle("unTitled");
+    mHistogramSize=size;
     mHistogram = null;
     mData      = new ArrayList<Double>();
   }
@@ -46,6 +47,16 @@ public class Histogram
     setTitle(title);
     mHistogram = null;
     mData      = new ArrayList<Double>();
+  }
+  public Histogram(int size, double[] data)
+  {
+    setTitle("unTitled");
+    mHistogramSize=size;
+    mHistogram = null;
+    mData      = new ArrayList<Double>();
+
+    for (double d : data) add(d);
+    survey();
   }
   public Histogram(String title, Double[] steps)
   {
@@ -58,23 +69,23 @@ public class Histogram
         mHistogram.add(new Point(s, 0.0));
       }
       setRange(Range.closed(Tools.front(steps), Tools.back(steps)));
-      setStep(null);
+      setStepSize(null);
+      mHistogramSize=mHistogram.size();
     }
   }
   protected void init(String title, Double step, Range<Double> range)
   {
-    setStep(step); setRange(range); setTitle(title);
+    setStepSize(step); setRange(range); setTitle(title);
     mHistogram = new ArrayList<Point>();
     for (int i = 0; i <= (int )Math.round(((range.upperEndpoint() - range.lowerEndpoint()) / step)); i++)
     {
       mHistogram.add(new Point(i * mStep + mRange.lowerEndpoint(), 0.0));
     }
+    mHistogramSize=mHistogram.size();
   }
 
-  public boolean       isLog() { return mIsLog; }
-  public void          isLog(boolean s) { mIsLog = s; }
-  public String        getTitle()     { return mTitle; }
-  public Double        getStep()      { return mStep; }
+  public String        getTitle()       { return mTitle; }
+  public Double        getStepSize()    { return mStep; }
   public Range<Double> getRange()
   {
     if (mRange == null && Tools.isSet(mData))
@@ -88,9 +99,12 @@ public class Histogram
   public Histogram setHistogram(List<Point> s) { mHistogram = s; return this; }
   public Double        getTotals()    { survey(); return mSumY; }
   public List<Double>  getData()      { return mData; }
+  public Double getSkewness() { return mSkewness; }
+  public Double getKurtosis() { return mKurtosisNormality; }
 
+  public Histogram setTransform(Transformer.processor s) { eTransform=s; return this; }
   public void setTitle(String        s) { mTitle = s; }
-  public void setStep( Double        s) { mStep  = s; }
+  public void setStepSize(Double s)   { mStep  = s; }
   public void setRange(Range<Double> s) { mRange = s; }
   public void setRange(Double lower, Double upper) { mRange = Range.closed(lower, upper); }
   public void increment(int s) { increment(s, 1d); }
@@ -112,8 +126,7 @@ public class Histogram
 
     if (Tools.isSet(mHistogram))
     {
-      x = to(x);
-      if (getStep() != null && getStep() != 0)
+      if (getStepSize() != null && getStepSize() != 0)
       {
         int pos = (int )Math.round((x - mRange.lowerEndpoint()) / mStep);
         // any point out of the bound will just add to the edge, WYU 120707
@@ -147,7 +160,7 @@ public class Histogram
   {
     if (Tools.isSet(x)) for (Double X : x) add(X, 1d);
   }
-  public double getBin(int i) { return from(mHistogram.get(i).getX()); }
+  public double getBin(int i) { return mHistogram.get(i).getX(); }
   public double getCounts(int i) { return mHistogram.get(i).getY(); }
   public int size() { return mHistogram != null ? mHistogram.size() : 0; }
   public boolean isSet() { return Tools.isSet(mHistogram); }
@@ -191,11 +204,40 @@ public class Histogram
     }
     return made;
   }
-  public void survey()
+  public Histogram survey()
   {
-    mSumY = 0d;
-    if (Tools.isSet(getHistogram()))
-      for (Point xy : getHistogram()) mSumY += xy.getY();
+    // generate the histogram from the data if necessary
+    if (!Tools.isSet(mHistogram) && Tools.isSet(mData)) generate(mHistogramSize);
+
+    if (Tools.isSet(mData))
+    {
+      mMean   = Stats.mean(mData);
+      mMedian = Stats.median(mData);
+      mStdev  = Stats.stdev( mData);
+    }
+    if (Tools.isSet(mHistogram))
+    {
+      List<Double> ys = Points.toYs(getHistogram());
+      mSumY   = Stats.sum(   ys);
+/*
+      Skewness quantifies how symmetrical the distribution is.
+          A symmetrical distribution has a skewness of zero.
+          An asymmetrical distribution with a long tail to the right (higher values) has a positive skew.
+          An asymmetrical distribution with a long tail to the left (lower values) has a negative skew.
+
+          Any threshold or rule of thumb is arbitrary, but here is one:
+              If the skewness is greater than 1.0 (or less than -1.0),
+              the skewness is substantial and the distribution is far from symmetrical.
+
+      Kurtosis quantifies whether the shape of the data distribution matches the Gaussian distribution.
+          A Gaussian distribution has a kurtosis of 0.
+          A flatter distribution has a negative kurtosis,
+          A distribution more peaked than a Gaussian distribution has a positive kurtosis.
+*/
+      mKurtosisNormality = new Kurtosis().evaluate(Tools.toDoubleArray(ys));
+      mSkewness          = new Skewness().evaluate(Tools.toDoubleArray(ys));
+    }
+    return this;
   }
 //  public Double getProbability(Double x)
 //  {
@@ -208,6 +250,7 @@ public class Histogram
     if (Tools.isSet(getHistogram()))
       for (Point xy : getHistogram()) xy.setY(0f);
   }
+  public Histogram generate() { return generate(mHistogramSize); }
   public Histogram generate(int step_num)
   {
     if (!Tools.isSet(mData) || step_num == 0) return this;
@@ -236,6 +279,7 @@ public class Histogram
 
     for (Histogram H : histos) H.generate(step_num, range);
   }
+/*
   public void generate()
   {
     if (!Tools.isSet(mData)) return;
@@ -248,11 +292,12 @@ public class Histogram
       mHistogram.add(new Point(slot, slot_val.get(slot).size()));
 
   }
+*/
   public void generate(int step_num, Range<Double> initial_range)
   {
     if (!Tools.isSet(mData)) return;
 
-    Range<Double> range = Range.closed(to(initial_range.lowerEndpoint()), to(initial_range.upperEndpoint()));
+    Range<Double> range = Range.closed(initial_range.lowerEndpoint(), initial_range.upperEndpoint());
 
     if (step_num <= 0) step_num = (int )(range.upperEndpoint()-range.lowerEndpoint());
 
@@ -272,7 +317,7 @@ public class Histogram
       if (!Tools.isSet(H.getData())) continue;
       Collections.sort(H.getData());
       range = Tools.extendLower(range, H.getData().get(0));
-      range = Tools.extendUpper(range, H.getData().get(H.getData().size()-1));
+      range = Tools.extendUpper(range, H.getData().get(H.getData().size() - 1));
     }
 
     for (Histogram H : grams)
@@ -286,17 +331,6 @@ public class Histogram
     Collection<Histogram> gs = new ArrayList<Histogram>();
     gs.add(A); gs.add(B);
     generate(gs, step_num);
-  }
-  private Double to(Double s)
-  {
-    //if (s != null && s > 0 && mIsLog) return Math.log(s);
-    //return s;
-    return isLog() ? Math.log(s) : s;
-  }
-  private Double from(Double s)
-  {
-    if (s != null && mIsLog) return Math.exp(s);
-    return s;
   }
   public Histogram calcProb(Histogram positives, Histogram negatives)
   {
@@ -365,5 +399,29 @@ public class Histogram
   {
     double t = getTotals();
     for (Point p : getHistogram()) p.setY(100d * p.getY() / t);
+  }
+  public static Histogram bestTransform(Histogram orig, double max_skewness, double max_kurtosis,
+                                        Transformer.processor... processors)
+  {
+    // loop thro some transformation to achieve better normality
+    // http://imaging.mrc-cbu.cam.ac.uk/statswiki/FAQ/Simon
+    if (Math.abs(orig.getSkewness())>max_skewness || orig.getKurtosis()>max_kurtosis)
+    {
+      for (Transformer.processor proc : processors)
+      {
+        try
+        {
+          Histogram processed = new Histogram(orig.mHistogramSize);
+          for (Double d : orig.getData())
+          {
+            processed.add(Stats.transform(d, proc));
+          }
+          processed.setTransform(proc).survey();
+          if (Math.abs(processed.getSkewness())<=max_skewness && processed.getKurtosis()<=max_kurtosis) return processed;
+        }
+        catch (Exception e) { }
+      }
+    }
+    return orig;
   }
 }

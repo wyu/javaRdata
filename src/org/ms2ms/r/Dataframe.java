@@ -456,7 +456,7 @@ public class Dataframe implements Disposable
       else
       {
         v.setType(Var.VarType.CONTINOUOUS);
-        v.setDistribution(Stats.newHistogram(getDoubleCol(v.getName(), false), 64));
+        v.setDistribution(Stats.newHistogram(16, getDoubleCol(v.getName(), false)));
       }
     }
     return this;
@@ -502,7 +502,7 @@ public class Dataframe implements Disposable
           // put the cell back
           if (val!=null) mData.put(row, v.getName(), val);
         }
-        v.setDistribution(Stats.newHistogram(getDoubleCol(s, false), 64));
+        v.setDistribution(Stats.newHistogram(16, getDoubleCol(s, false)));
       }
       v.setType(type);
     }

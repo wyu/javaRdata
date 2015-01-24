@@ -216,6 +216,14 @@ public class Stats
     }
     return out;
   }
+  public static Double sum(Collection<Double> ys)
+  {
+    if (!Tools.isSet(ys)) return null;
+
+    Double sum=0d;
+    for (Double y : ys) sum+=y;
+    return sum;
+  }
   public static Integer[] newIntArray(int start, int end)
   {
     Integer[] out = new Integer[end-start];
@@ -298,17 +306,38 @@ public class Stats
 
     return smoothed;
   }
-  public static Histogram newHistogram(Collection<Double> data, int steps)
+  public static Histogram newHistogram(int steps, Collection<Double> data)
   {
-    return newHistogram(Tools.toDoubleArray(data), steps);
+    return newHistogram(steps, Tools.toDoubleArray(data));
   }
-  public static Histogram newHistogram(double[] data, int steps)
+  public static Histogram newHistogram(int steps, double... data)
   {
-    if (data==null) return null;
+    if (!Tools.isSet(data)) return null;
 
-    Histogram hist = new Histogram();
+    return Histogram.bestTransform(new Histogram(steps, data),
+        1, 6, Transformer.processor.log,Transformer.processor.sqrt);
+  }
+/* Following Huber et al. Bioinformatics, 18, S96-S104, 2003 we apply the arcsinh transformation t,
+   t: intensity -> gamma*arcsinh(a + b*intensity), where arcsinh(x) = log(x + sqrt(x^2 + 1)),
+   which stabilizes the variance of the peak intensities, i.e. after this transformation all peak intensities
+   have the same variance independent of their height. This transformation is equal to the log transformation
+   for large intensities. According to Huber et al, this transformation is valid for error models of the form:
+   var(I) = (c1*I+c2)^2 + c3 i.e. the variance of the intensity I depend quadratically on the intensity itself.
+   The parameters gamma, a and b are related to the ci's as follows: gamma = 1/c1, a=c2/sqrt(c3), b=c1/sqrt(c3),
+   or may be estimated otherwise.
+*/
 
-    for (double d : data) hist.add(d);
-    return hist.generate(steps);
+  public static double arcsinh(double s) { return Math.log(s + Math.sqrt(Math.pow(s, 2d) + 1d)); }
+  public static double transform(double s, Transformer.processor proc)
+  {
+    switch (proc)
+    {
+      case log:     return Math.log(s);
+      case log2:    return Math.log(s)/Math.log(2);
+      case inverse: return 1d/s;
+      case sqrt:    return Math.sqrt(s);
+      case arcsinh: return arcsinh(s);
+    }
+    return s;
   }
 }

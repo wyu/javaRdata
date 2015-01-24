@@ -125,8 +125,8 @@ public class ParCoordsTest extends TestAbstract
       if (v!=null && v.isContinuous() && v.getNumEntries()>500)
       {
         System.out.println(v.getNumEntries() + "\t" + v.isCategorical() + "\t" + v.getNumFactors() + "\t" + col);
+        top = parseTransmartHeader(top, col, '\\', v);
       }
-      top = parseTransmartHeader(top, col, '\\', v);
     }
     System.out.println(dat.rows().size()+"rows.");
   }

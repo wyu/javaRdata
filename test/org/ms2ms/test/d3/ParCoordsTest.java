@@ -52,8 +52,12 @@ public class ParCoordsTest extends TestAbstract
   @Test
   public void prepareParCoordsCSV() throws Exception
   {
+    // {cohort_v=10, cohort_c=88, cohort_b=110, cohort_d=101, cohort_a=311}
+    String cohort="\\Study Groups\\cohort", ctrl_level="cohort_a";
+
     Dataframe dat = new Dataframe("/media/data/test/data/clinical_i2b2trans_adult.txt", '\t').setNAs("NA","null").init();
-    String[] headers = {
+    String[] header5 = {
+        "\\Study Groups\\cohort",
         "\\Clinical Data\\Lung Biopsy Immunopathology\\Broncoscopy Visit\\Submucosa\\CD4 T cells (cells/mm^2)",
         "\\Clinical Data\\Haematology and biochemistry tests\\Screening\\eosinophils (x10^3/uL)",
         "\\Biomarker Data\\Baseline Visit\\Serum\\Genentech Periostin Assay\\Periostin (ng/mL)",
@@ -69,10 +73,9 @@ public class ParCoordsTest extends TestAbstract
 //      if (v!=null && v.isContinuous() && v.getNumEntries()>600) vars.add(col);
       top = parseTransmartHeader(top, col, '\\', dat.asVar(col));
     }
-    headers = vars.toArray(new String[] {});
-
-    // {cohort_v=10, cohort_c=88, cohort_b=110, cohort_d=101, cohort_a=311}
-    String cohort="\\Study Groups\\cohort", ctrl_level="cohort_a";
+    vars.add(cohort);
+//    String[] headers = vars.toArray(new String[] {});
+    String[] headers = header5;
 
     // divide the rows into control and study populations
     Dataframe ctrl=dat.subset(cohort+"=="+ctrl_level), study=dat.subset(cohort + "!=" + ctrl_level), output=new Dataframe();
@@ -83,12 +86,16 @@ public class ParCoordsTest extends TestAbstract
       String[] items = Strs.split(col, '\\'); String c=items[items.length-1];
       for (String row : study.rows())
       {
-        Double val = (Double )study.cell(row, col);
-        if (val!=null)
+        if (study.cell(row, col) instanceof Double)
         {
-          val = (val-C.getDistribution().getNumericalMean()) / Math.sqrt(C.getDistribution().getNumericalVariance());
-          output.put(row, c, val);
+          Double val = (Double )study.cell(row, col);
+          if (val!=null)
+          {
+            //val = (val-C.getDistribution().getNumericalMean()) / Math.sqrt(C.getDistribution().getNumericalVariance());
+            output.put(row, c, val);
+          }
         }
+        else output.put(row, c, study.cell(row, col));
       }
     }
     output.init().removeRowsWithMissingValue();
@@ -102,7 +109,7 @@ public class ParCoordsTest extends TestAbstract
     if (Tools.isSet(missing)) output.removeRows(missing.toArray(new String[] {}));
 
 */
-    IOs.write("/tmp/adult5.csv", output.csv(2));
+    IOs.write("/tmp/adult4.csv", output.csv(2));
   }
 
   @Test

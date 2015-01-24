@@ -1,6 +1,7 @@
 package org.ms2ms.r;
 
-import org.apache.commons.math3.random.EmpiricalDistribution;
+import com.bigml.histogram.NumericTarget;
+import org.ms2ms.math.Histogram;
 import org.ms2ms.utils.Tools;
 
 import java.util.*;
@@ -19,7 +20,7 @@ public class Variable implements Var
   private String       mName;
   private Map<Object, Integer> mFactors;
   private VarType      eType = VarType.UNKNOWN;
-  private EmpiricalDistribution mDist; // for the continuous type
+  private Histogram mDist; // for the continuous type
 
   public Variable(String s)            { setName(s); }
   public Variable(String s, VarType t) { setName(s); eType=t; }
@@ -28,9 +29,9 @@ public class Variable implements Var
   public VarType getType() { return eType; }
   public int getNumFactors() { return mFactors!=null?mFactors.size():0; }
   public int getNumEntries() { return mEntries; }
-  public EmpiricalDistribution getDistribution() { return mDist; }
+  public Histogram getDistribution() { return mDist; }
   public Var setNumEntries(int s) { mEntries=s; return this; }
-  public Var setDistribution(EmpiricalDistribution s) { mDist=s; return this; }
+  public Var setDistribution(Histogram s) { mDist=s; return this; }
 
   public boolean isCategorical() { return isType(VarType.CATEGORICAL); }
   public boolean isContinuous()  { return isType(VarType.CONTINOUOUS); }

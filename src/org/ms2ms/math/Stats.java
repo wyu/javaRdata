@@ -7,7 +7,6 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.analysis.interpolation.LoessInterpolator;
 import org.apache.commons.math.analysis.polynomials.PolynomialSplineFunction;
-import org.apache.commons.math3.random.EmpiricalDistribution;
 import org.ms2ms.utils.Strs;
 import org.ms2ms.utils.Tools;
 
@@ -299,16 +298,17 @@ public class Stats
 
     return smoothed;
   }
-  public static EmpiricalDistribution newDistribution(Collection<Double> data)
+  public static Histogram newHistogram(Collection<Double> data, int steps)
   {
-    return newDistribution(Tools.toDoubleArray(data));
+    return newHistogram(Tools.toDoubleArray(data), steps);
   }
-  public static EmpiricalDistribution newDistribution(double[] data)
+  public static Histogram newHistogram(double[] data, int steps)
   {
     if (data==null) return null;
 
-    EmpiricalDistribution dist = new EmpiricalDistribution();
-    dist.load(data);
-    return dist;
+    Histogram hist = new Histogram();
+
+    for (double d : data) hist.add(d);
+    return hist.generate(steps);
   }
 }

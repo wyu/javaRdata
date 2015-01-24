@@ -377,4 +377,12 @@ public class Tools
 
     return false;
   }
+  public static Range<Double> extendLower(Range<Double> s, Double x)
+  {
+    return s!=null && s.lowerEndpoint()>x ? Range.closed(x, s.upperEndpoint()) : s;
+  }
+  public static Range<Double> extendUpper(Range<Double> s, Double x)
+  {
+    return s!=null && s.upperEndpoint()<x ? Range.closed(s.lowerEndpoint(), x) : s;
+  }
 }

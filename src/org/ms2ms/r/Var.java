@@ -1,10 +1,9 @@
 package org.ms2ms.r;
 
-import org.apache.commons.math3.random.EmpiricalDistribution;
-import org.apache.solr.util.stats.Histogram;
+import org.ms2ms.math.Histogram;
 
 import java.util.Collection;
-import java.util.List;
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,6 +32,6 @@ public interface Var
   public Var setFactors(Collection s);
   public Collection getFactors();
   public boolean isType(VarType s);
-  public EmpiricalDistribution getDistribution();
-  public Var setDistribution(EmpiricalDistribution s);
+  public Histogram getDistribution();
+  public Var setDistribution(Histogram s);
 }

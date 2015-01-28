@@ -1,11 +1,16 @@
 package org.ms2ms.r;
 
 import com.google.common.collect.*;
+import org.apache.commons.math3.ml.clustering.CentroidCluster;
+import org.apache.commons.math3.ml.clustering.Clusterable;
+import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
 import org.ms2ms.Disposable;
 import org.ms2ms.data.NameValue;
 import org.ms2ms.data.collect.MapOfMultimap;
 import org.ms2ms.data.collect.MultiTreeTable;
 import org.ms2ms.math.Stats;
+import org.ms2ms.math.clustering.ParCoodsClusterable;
+import org.ms2ms.math.clustering.SlopeConvergenceDistance;
 import org.ms2ms.utils.*;
 
 import java.io.IOException;
@@ -26,7 +31,7 @@ public class Dataframe implements Disposable
   private List<String>               mRowIDs, mColIDs;
   private Map<String, Var>           mNameVar;
   private Table<String, String, Object> mData;
-  private String[]                   mNAs;
+//  private String[]                   mNAs;
 
   public Dataframe()                                         { super(); }
   public Dataframe(String s)                                 { super(); setTitle(s); }
@@ -64,7 +69,79 @@ public class Dataframe implements Disposable
     return out;
   }
   // set the String that shall be mapped to NA
-  public Dataframe setNAs(String... s) { mNAs=s; return this; }
+  public Dataframe setNAs(String... s)
+  {
+    if (Tools.isSet(s) && Tools.isSet(mData))
+      for (String col : cols())
+      {
+        for (String row : rows())
+        {
+          Object val = cell(row, col);
+          // remove the cell if the value is null
+          if (val!=null && val instanceof String && Strs.isA((String )val, s)) mData.remove(row, col);
+        }
+        Var C = asVar(col);
+        if (C!=null)
+          for (String n : s) if (C.getFactors()!=null) C.getFactors().remove(n);
+      }
+
+    return this;
+  }
+  // recognize the situations where boolean values are appropriate
+  public Dataframe setBooleans(Object TRUE, Object FALSE)
+  {
+    if (TRUE!=null && FALSE!=null && Tools.isSet(mData))
+    {
+      for (String col : cols())
+      {
+        Var C = asVar(col);
+        if (C!=null && C.getNumFactors()==2 && C.getFactors().contains(TRUE) && C.getFactors().contains(FALSE))
+        {
+          replaceValue(col, Var.VarType.BOOLEAN, TRUE,  true);
+          replaceValue(col, Var.VarType.BOOLEAN, FALSE, false);
+//          for (String row : rows())
+//          {
+//            Object val = cell(row, col);
+//            if (val!=null && val.getClass().equals(TRUE.getClass()))
+//            {
+//              // remove the cell and replace it with 'true' or false
+//              if      (Tools.equals(TRUE,  val)) { mData.remove(row, col); mData.put(row, col, true); }
+//              else if (Tools.equals(FALSE, val)) { mData.remove(row, col); mData.put(row, col, false); }
+//            }
+//          }
+//          // update the Var
+//          C.setType(Var.VarType.BOOLEAN);
+//          C.renameFactor(TRUE, true).renameFactor(FALSE, false);
+        }
+      }
+    }
+
+    return this;
+  }
+  public Dataframe replaceValue(String col, Var.VarType toType, Object from, Object to)
+  {
+    Collection<String> cols = col==null?cols():Arrays.asList(col);
+    for (String c : cols)
+    {
+      Var C = asVar(c);
+      if (C!=null && C.getFactors().contains(from))
+      {
+        for (String row : rows())
+        {
+          Object val = cell(row, c);
+          if (val!=null && val.getClass().equals(from.getClass()))
+          {
+            // remove the cell and replace it with 'true' or false
+            if      (Tools.equals(from,  val)) { mData.remove(row, c); mData.put(row, c, to); }
+          }
+        }
+        // update the Var
+        C.setType(toType);
+        C.renameFactor(from, to);
+      }
+    }
+    return this;
+  }
   public Dataframe setTitle(String s) { mTitle=s; return this; }
 
   public Map<String, Object> row(int    i) { return mData!=null?mData.row(getRowId(i)):null; }
@@ -431,12 +508,12 @@ public class Dataframe implements Disposable
     {
       Object val = cell(row, v.getName());
 
-      if (val!=null && val instanceof String && Strs.isA((String )val, mNAs))
-      {
-        val=null;
-        // remove the cell if the value is null
-        mData.remove(row, v.getName());
-      }
+//      if (val!=null && val instanceof String && Strs.isA((String )val, mNAs))
+//      {
+//        val=null;
+//        // remove the cell if the value is null
+//        mData.remove(row, v.getName());
+//      }
 
       val = Stats.toNumber(val);
       if (val!=null)
@@ -478,12 +555,12 @@ public class Dataframe implements Disposable
         for (String row : mRowIDs)
         {
           Object val = cell(row, s);
-          if (val!=null && val instanceof String && Strs.isA((String )val, mNAs))
-          {
-            val=null;
-            // remove the cell if the value is null
-            mData.remove(row, s);
-          }
+//          if (val!=null && val instanceof String && Strs.isA((String )val, mNAs))
+//          {
+//            val=null;
+//            // remove the cell if the value is null
+//            mData.remove(row, s);
+//          }
           if (val!=null)
           {
             counts++; v.addFactor(val);
@@ -530,7 +607,7 @@ public class Dataframe implements Disposable
     Dataframe out = new Dataframe();
     if (Tools.isSet(mData))
     {
-      out.mData = TreeBasedTable.create(); out.mData.putAll(mData);
+      out.mData = HashBasedTable.create(); out.mData.putAll(mData);
     }
     out.setTitle(getTitle());
     out.mKeepData = mKeepData;
@@ -628,7 +705,7 @@ public class Dataframe implements Disposable
     Dataframe out = new Dataframe();
     if (Tools.isSet(mData))
     {
-      out.mData    = TreeBasedTable.create();
+      out.mData    = HashBasedTable.create();
       out.mColIDs  = new ArrayList<>(cols.length);
       out.mNameVar = new HashMap<>();
       for (String col : cols)
@@ -984,6 +1061,43 @@ public class Dataframe implements Disposable
     Collections.sort(out.cols());
     return out;
   }
+  public static Dataframe bundling(Dataframe data)
+  {
+    List<String> cats=new ArrayList<>(), conts=new ArrayList<>(), clusters=new ArrayList<>();
+    for (String col : data.cols())
+      if (data.asVar(col).isContinuous()) conts.add(col); else cats.add(col);
+
+    // re-arrange the continuous variables so they are grouped by their similarities
+    // we have a list of our locations we want to cluster. create a
+    List<Clusterable> clusterInput = new ArrayList<>(conts.size());
+    for (String col : conts)
+      clusterInput.add(new ParCoodsClusterable(col, data.getDoubleCol(col, true)));
+
+    // initialize a new clustering algorithm.
+    // we use KMeans++ with 10 clusters and 10000 iterations maximum.
+    // we did not specify a distance measure; the default (euclidean distance) is used.
+    KMeansPlusPlusClusterer<Clusterable> clusterer = new KMeansPlusPlusClusterer<>(5, 10000, new SlopeConvergenceDistance());
+    List<CentroidCluster<Clusterable>> clusterResults = clusterer.cluster(clusterInput);
+
+    // output the clusters
+    for (int i=0; i<clusterResults.size(); i++)
+    {
+      System.out.println("Cluster " + i);
+      for (Clusterable node : clusterResults.get(i).getPoints())
+      {
+        System.out.println(((ParCoodsClusterable )node).getCol());
+        clusters.add(((ParCoodsClusterable )node).getCol());
+      }
+      System.out.println();
+    }
+    // push them back into the dataframe
+    data.setColIds(cats).cols().addAll(clusters);
+    return data;
+  }
+//  public static Dataframe sort(Dataframe d, String... cols)
+//  {
+//
+//  }
 
   @Override
   public void dispose()

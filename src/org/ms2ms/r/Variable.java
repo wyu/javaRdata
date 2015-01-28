@@ -2,6 +2,7 @@ package org.ms2ms.r;
 
 import com.bigml.histogram.NumericTarget;
 import org.ms2ms.math.Histogram;
+import org.ms2ms.math.Transformer;
 import org.ms2ms.utils.Tools;
 
 import java.util.*;
@@ -38,6 +39,15 @@ public class Variable implements Var
   public boolean isNumeric()     { return mIsNumeric; }
   public Var isNumeric(boolean s)     { mIsNumeric=s; return this; }
 
+  public String getTitle()
+  {
+    // mention the transformation
+    if (getDistribution()!=null && getDistribution().getTransformer()!=null &&
+        !Tools.equals(getDistribution().getTransformer(), Transformer.processor.none))
+      return getDistribution().getTransformer().name() + "("+getName()+")";
+
+    return getName();
+  }
   @Override
   public boolean isType(VarType s) { return eType.equals(s);}
   @Override
@@ -56,7 +66,15 @@ public class Variable implements Var
     mFactors.put(s, mFactors.containsKey(s)?mFactors.get(s)+1:1);
     return this;
   }
-
+  public Var renameFactor(Object from, Object to)
+  {
+    if (mFactors!=null && mFactors.containsKey(from))
+    {
+      mFactors.put(to, mFactors.get(from));
+      mFactors.remove(from);
+    }
+    return this;
+  }
   public Var addFactors(Collection s)
   {
     if (s==null) { mFactors=null; return this; }
@@ -67,7 +85,7 @@ public class Variable implements Var
     return this;
   }
   public Var setName(String s) { mName=s; return this; }
-  public Collection getFactors() { return mFactors.keySet(); }
+  public Collection getFactors() { return mFactors!=null?mFactors.keySet():null; }
 
   @Override
   public boolean equals(Object s)

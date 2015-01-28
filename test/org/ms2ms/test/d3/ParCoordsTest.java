@@ -1,11 +1,18 @@
 package org.ms2ms.test.d3;
 
+import org.apache.commons.math3.ml.clustering.CentroidCluster;
+import org.apache.commons.math3.ml.clustering.Clusterable;
+import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.junit.Test;
 import org.ms2ms.data.collect.TreeNode;
 import org.ms2ms.graph.PropertyEdge;
 import org.ms2ms.graph.PropertyNode;
+import org.ms2ms.math.Stats;
+import org.ms2ms.math.Transformer;
+import org.ms2ms.math.clustering.ParCoodsClusterable;
+import org.ms2ms.math.clustering.SlopeConvergenceDistance;
 import org.ms2ms.r.Dataframe;
 import org.ms2ms.r.Var;
 import org.ms2ms.test.TestAbstract;
@@ -64,10 +71,17 @@ public class ParCoordsTest extends TestAbstract
         "\\Clinical Data\\Haematology and biochemistry tests\\Screening\\Blood Urea Nitrogen (mg/dL)",
         "\\Clinical Data\\Haematology and biochemistry tests\\Screening\\Eosinophils Pct"};
 
+    dat.replaceValue(header5[0], Var.VarType.CATEGORICAL, "cohort_a", "A");
+    dat.replaceValue(header5[0], Var.VarType.CATEGORICAL, "cohort_b", "B");
+    dat.replaceValue(header5[0], Var.VarType.CATEGORICAL, "cohort_c", "C");
+    dat.replaceValue(header5[0], Var.VarType.CATEGORICAL, "cohort_d", "D");
+    dat.replaceValue(header5[0], Var.VarType.CATEGORICAL, "cohort_v", "V");
+
     // finding the useful and well-populated variables
     List<String> vars = dat.getColByPopulation(600);
     TreeNode top = new TreeNode("root");
-    for (String col : dat.cols())
+//    for (String col : dat.cols())
+    for (String col : header5)
     {
 //      Var v = dat.asVar(col);
 //      if (v!=null && v.isContinuous() && v.getNumEntries()>600) vars.add(col);
@@ -83,7 +97,12 @@ public class ParCoordsTest extends TestAbstract
     for (String col : headers)
     {
       Var C = ctrl.asVar(col);
-      String[] items = Strs.split(col, '\\'); String c=items[items.length-1];
+      String[] items = Strs.split(col, '\\'); C.setName(items[items.length-1]);
+//      // mention the transformation
+//      if (C.getDistribution()!=null && C.getDistribution().getTransformer()!=null &&
+//         !Tools.equals(C.getDistribution().getTransformer(), Transformer.processor.none))
+//        c = C.getDistribution().getTransformer().name() + "("+c+")";
+
       for (String row : study.rows())
       {
         if (study.cell(row, col) instanceof Double)
@@ -91,11 +110,13 @@ public class ParCoordsTest extends TestAbstract
           Double val = (Double )study.cell(row, col);
           if (val!=null)
           {
-            //val = (val-C.getDistribution().getNumericalMean()) / Math.sqrt(C.getDistribution().getNumericalVariance());
-            output.put(row, c, val);
+            // transform the value if suggested by the Var
+            val = Stats.transform(val, C.getDistribution().getTransformer());
+            val = (val-C.getDistribution().getMean()) / C.getDistribution().getStdev();
+            output.put(row, C.getTitle(), val);
           }
         }
-        else output.put(row, c, study.cell(row, col));
+        else output.put(row, C.getTitle(), study.cell(row, col));
       }
     }
     output.init().removeRowsWithMissingValue();
@@ -109,6 +130,7 @@ public class ParCoordsTest extends TestAbstract
     if (Tools.isSet(missing)) output.removeRows(missing.toArray(new String[] {}));
 
 */
+    output = Dataframe.bundling(output);
     IOs.write("/tmp/adult4.csv", output.csv(2));
   }
 

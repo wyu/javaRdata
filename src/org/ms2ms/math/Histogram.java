@@ -3,6 +3,8 @@ package org.ms2ms.math;
 import com.google.common.collect.Range;
 import org.apache.commons.math.stat.descriptive.moment.Skewness;
 import org.apache.commons.math3.stat.descriptive.moment.Kurtosis;
+import org.apache.commons.math3.stat.inference.ChiSquareTest;
+import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.ms2ms.data.Point;
 import org.ms2ms.utils.Strs;
 import org.ms2ms.utils.Tools;
@@ -25,7 +27,7 @@ public class Histogram
   private String        mTitle;
   private Transformer.processor eTransform = Transformer.processor.none;
   private int           mHistogramSize = 12;
-  private Double        mStep, mSumY = null, mMean, mMedian, mStdev, mKurtosisNormality, mSkewness;
+  private Double        mStep, mSumY = null, mMean, mMedian, mStdev, mKurtosisNormality, mSkewness, mCorr;
   private Range<Double> mRange;
   private List<Point>   mHistogram;
   private List<Double>  mData = null;
@@ -84,8 +86,18 @@ public class Histogram
     mHistogramSize=mHistogram.size();
   }
 
-  public String        getTitle()       { return mTitle; }
-  public Double        getStepSize()    { return mStep; }
+  public String       getTitle()     { return mTitle; }
+  public Double       getStepSize()  { return mStep; }
+  public List<Point>  getHistogram() { return mHistogram; }
+  public Double       getTotals()    { survey(); return mSumY; }
+  public List<Double> getData()      { return mData; }
+  public Double       getSkewness()  { return mSkewness; }
+  public Double       getKurtosis()  { return mKurtosisNormality; }
+  public Double       getMean()      { return mMean; }
+  public Double       getMedian()    { return mMedian; }
+  public Double       getStdev()     { return mStdev; }
+
+  public Transformer.processor getTransformer() { return eTransform; }
   public Range<Double> getRange()
   {
     if (mRange == null && Tools.isSet(mData))
@@ -95,13 +107,8 @@ public class Histogram
     }
     return mRange;
   }
-  public List<Point> getHistogram() { return mHistogram; }
-  public Histogram setHistogram(List<Point> s) { mHistogram = s; return this; }
-  public Double        getTotals()    { survey(); return mSumY; }
-  public List<Double>  getData()      { return mData; }
-  public Double getSkewness() { return mSkewness; }
-  public Double getKurtosis() { return mKurtosisNormality; }
 
+  public Histogram setHistogram(List<Point> s) { mHistogram = s; return this; }
   public Histogram setTransform(Transformer.processor s) { eTransform=s; return this; }
   public void setTitle(String        s) { mTitle = s; }
   public void setStepSize(Double s)   { mStep  = s; }
@@ -236,6 +243,11 @@ public class Histogram
 */
       mKurtosisNormality = new Kurtosis().evaluate(Tools.toDoubleArray(ys));
       mSkewness          = new Skewness().evaluate(Tools.toDoubleArray(ys));
+      // check whether this is a uniform dist
+      SimpleRegression R = new SimpleRegression(true);
+      for (Point xy : getHistogram())
+        R.addData(xy.getX(), xy.getY());
+      mCorr              = R.getRSquare();
     }
     return this;
   }
@@ -407,6 +419,7 @@ public class Histogram
     // http://imaging.mrc-cbu.cam.ac.uk/statswiki/FAQ/Simon
     if (Math.abs(orig.getSkewness())>max_skewness || orig.getKurtosis()>max_kurtosis)
     {
+      Histogram good = null;
       for (Transformer.processor proc : processors)
       {
         try
@@ -418,9 +431,11 @@ public class Histogram
           }
           processed.setTransform(proc).survey();
           if (Math.abs(processed.getSkewness())<=max_skewness && processed.getKurtosis()<=max_kurtosis) return processed;
+          if (Math.abs(processed.getSkewness())<=max_skewness) good = processed;
         }
         catch (Exception e) { }
       }
+      if (good!=null) return good;
     }
     return orig;
   }

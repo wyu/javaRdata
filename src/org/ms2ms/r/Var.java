@@ -14,10 +14,11 @@ import java.util.Collection;
  */
 public interface Var
 {
-  public enum VarType { CONTINOUOUS, CATEGORICAL, NUMERICAL, UNKNOWN }
+  public enum VarType { CONTINOUOUS, CATEGORICAL, NUMERICAL, BOOLEAN, UNKNOWN }
 
   public Var setName(String s);
   public String getName();
+  public String getTitle();
   public VarType getType();
   public int getNumEntries();
   public int getNumFactors();
@@ -34,4 +35,5 @@ public interface Var
   public boolean isType(VarType s);
   public Histogram getDistribution();
   public Var setDistribution(Histogram s);
+  public Var renameFactor(Object from, Object to);
 }

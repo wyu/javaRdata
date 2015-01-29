@@ -340,4 +340,5 @@ public class Stats
     }
     return s;
   }
+  public static boolean isSet(double s) { return !Double.isNaN(s) && !Double.isInfinite(s); }
 }

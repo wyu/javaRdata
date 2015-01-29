@@ -1,5 +1,9 @@
 package org.ms2ms.r;
 
+import com.apporiented.algorithm.clustering.AverageLinkageStrategy;
+import com.apporiented.algorithm.clustering.Cluster;
+import com.apporiented.algorithm.clustering.ClusteringAlgorithm;
+import com.apporiented.algorithm.clustering.DefaultClusteringAlgorithm;
 import com.google.common.collect.*;
 import org.apache.commons.math3.ml.clustering.CentroidCluster;
 import org.apache.commons.math3.ml.clustering.Clusterable;
@@ -9,6 +13,7 @@ import org.ms2ms.data.NameValue;
 import org.ms2ms.data.collect.MapOfMultimap;
 import org.ms2ms.data.collect.MultiTreeTable;
 import org.ms2ms.math.Stats;
+import org.ms2ms.math.clustering.Clusters;
 import org.ms2ms.math.clustering.ParCoodsClusterable;
 import org.ms2ms.math.clustering.SlopeConvergenceDistance;
 import org.ms2ms.utils.*;
@@ -1061,7 +1066,7 @@ public class Dataframe implements Disposable
     Collections.sort(out.cols());
     return out;
   }
-  public static Dataframe bundling(Dataframe data)
+  public static Dataframe bundling(Dataframe data, int n)
   {
     List<String> cats=new ArrayList<>(), conts=new ArrayList<>(), clusters=new ArrayList<>();
     for (String col : data.cols())
@@ -1076,7 +1081,7 @@ public class Dataframe implements Disposable
     // initialize a new clustering algorithm.
     // we use KMeans++ with 10 clusters and 10000 iterations maximum.
     // we did not specify a distance measure; the default (euclidean distance) is used.
-    KMeansPlusPlusClusterer<Clusterable> clusterer = new KMeansPlusPlusClusterer<>(5, 10000, new SlopeConvergenceDistance());
+    KMeansPlusPlusClusterer<Clusterable> clusterer = new KMeansPlusPlusClusterer<>(n, 10000, new SlopeConvergenceDistance());
     List<CentroidCluster<Clusterable>> clusterResults = clusterer.cluster(clusterInput);
 
     // output the clusters
@@ -1092,6 +1097,50 @@ public class Dataframe implements Disposable
     }
     // push them back into the dataframe
     data.setColIds(cats).cols().addAll(clusters);
+    return data;
+  }
+  public static Dataframe bundling(Dataframe data)
+  {
+    List<String> cats=new ArrayList<>(), conts=new ArrayList<>(), clusters=new ArrayList<>();
+    for (String col : data.cols())
+      if (data.asVar(col).isContinuous()) conts.add(col); else cats.add(col);
+
+    // https://github.com/lbehnke/hierarchical-clustering-java
+    double[][] distances = new double[conts.size()][conts.size()];
+    String[]   names     = new String[conts.size()];
+    List<double[]>    ds = new ArrayList<>(conts.size());
+
+    for (int i=0; i<conts.size(); i++)
+    {
+      ds.add(data.getDoubleCol(conts.get(i), true));
+      names[i] = conts.get(i);
+    }
+
+    // re-arrange the continuous variables so they are grouped by their similarities compute the similarity matrix
+    SlopeConvergenceDistance score = new SlopeConvergenceDistance();
+    for (int i=0; i<conts.size(); i++)
+      for (int j=0; j<conts.size(); j++)
+        distances[i][j]=(i==j?0d:score.compute(ds.get(i), ds.get(j)));
+
+    ClusteringAlgorithm alg = new DefaultClusteringAlgorithm();
+    Cluster c = alg.performClustering(distances, names, new AverageLinkageStrategy());
+
+    List<Cluster> leafs = new ArrayList<Cluster>();
+    Clusters.gatherLeafs(c, leafs, null);
+
+    // create the col mapping
+    data.setColIds(cats); conts.clear();
+    for (Cluster leaf : leafs)
+    {
+      String[] n = leaf.getName().split("\\~\\^\\~");
+      data.cols().add(n[1]);
+    }
+    // push them back into the dataframe
+    for (Cluster leaf : leafs)
+    {
+      String[] n = leaf.getName().split("\\~\\^\\~");
+      data.renameCol(n[1], n[0]+": "+n[1]);
+    }
     return data;
   }
 //  public static Dataframe sort(Dataframe d, String... cols)

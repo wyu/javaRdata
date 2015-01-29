@@ -23,7 +23,7 @@ public class SlopeConvergenceDistance implements DistanceMeasure
     // looking for slopes (b-a) that are close together
     double[] ab = new double[a.length];
     for (int i = 0; i < a.length; i++)
-      if (a[i]!=Double.NaN && b[i]!=Double.NaN) ab[i] = a[i]-b[i];
+      if (Stats.isSet(a[i]) && Stats.isSet(b[i])) ab[i] = a[i]-b[i];
 
     return Stats.stdev(ab, ab.length);
   }

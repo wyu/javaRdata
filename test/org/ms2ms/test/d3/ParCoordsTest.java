@@ -55,9 +55,70 @@ public class ParCoordsTest extends TestAbstract
 
     IOs.write("/tmp/adult6.csv", study.removeRowsWithMissingValue().csv(2));
   }
-
   @Test
   public void prepareParCoordsCSV() throws Exception
+  {
+    // {cohort_v=10, cohort_c=88, cohort_b=110, cohort_d=101, cohort_a=311}
+    String cohort="\\Study Groups\\cohort", ctrl_level="D";
+
+    Dataframe dat = new Dataframe("/media/data/test/data/clinical_i2b2trans_adult.txt", '\t').setNAs("NA","null").init();
+
+    dat.replaceValue(cohort, Var.VarType.CATEGORICAL, "cohort_a", "A");
+    dat.replaceValue(cohort, Var.VarType.CATEGORICAL, "cohort_b", "B");
+    dat.replaceValue(cohort, Var.VarType.CATEGORICAL, "cohort_c", "C");
+    dat.replaceValue(cohort, Var.VarType.CATEGORICAL, "cohort_d", "D");
+    dat.replaceValue(cohort, Var.VarType.CATEGORICAL, "cohort_v", "V");
+
+    // finding the useful and well-populated variables
+    List<String> vars = dat.getColByPopulation(600);
+    vars.add(cohort);
+    String[] headers = vars.toArray(new String[] {});
+
+    // divide the rows into control and study populations
+    Dataframe ctrl=dat.subset(cohort+"=="+ctrl_level), study=dat.subset(cohort + "!=" + ctrl_level), output=new Dataframe();
+    // normalize them by the control population
+    for (String col : headers)
+    {
+      Var C = ctrl.asVar(col);
+      String[] items = Strs.split(col, '\\'); C.setName(items[items.length-1]);
+//      // mention the transformation
+//      if (C.getDistribution()!=null && C.getDistribution().getTransformer()!=null &&
+//         !Tools.equals(C.getDistribution().getTransformer(), Transformer.processor.none))
+//        c = C.getDistribution().getTransformer().name() + "("+c+")";
+
+      for (String row :dat.rows())
+      {
+        if (dat.cell(row, col) instanceof Double)
+        {
+          Double val = (Double )dat.cell(row, col);
+          if (val!=null)
+          {
+            // transform the value if suggested by the Var
+            val = Stats.transform(val, C.getDistribution().getTransformer());
+            val = (val-C.getDistribution().getMean()) / C.getDistribution().getStdev();
+            output.put(row, C.getTitle(), val);
+          }
+        }
+        else output.put(row, C.getTitle(), dat.cell(row, col));
+      }
+    }
+    output.init().removeRowsWithMissingValue();
+/*
+    // remove the row with missing value
+    List<String> missing = new ArrayList<>();
+    for (String row : output.rows())
+    {
+      if (output.row(row).values().size()<output.cols().size()) missing.add(row);
+    }
+    if (Tools.isSet(missing)) output.removeRows(missing.toArray(new String[] {}));
+
+*/
+    output = Dataframe.bundling(output);
+    IOs.write("/tmp/adult4.csv", output.csv(2));
+  }
+
+  @Test
+  public void prepareSelectedParCoordsCSV() throws Exception
   {
     // {cohort_v=10, cohort_c=88, cohort_b=110, cohort_d=101, cohort_a=311}
     String cohort="\\Study Groups\\cohort", ctrl_level="cohort_a";

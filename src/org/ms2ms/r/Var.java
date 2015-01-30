@@ -36,4 +36,5 @@ public interface Var
   public Histogram getDistribution();
   public Var setDistribution(Histogram s);
   public Var renameFactor(Object from, Object to);
+  public Var reset();
 }

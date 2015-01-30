@@ -92,6 +92,17 @@ public class Variable implements Var
   {
     return Tools.equals(getName(), ((Var )s).getName()) && Tools.equals(getType(), ((Var )s).getType());
   }
+  public Var reset()
+  {
+    mIsNumeric = false;
+    mEntries   = 0;
+    mName      = null;
+    eType      = VarType.UNKNOWN;
+    mDist      = null;
+    Tools.dispose(mFactors);
+
+    return this;
+  }
 
   //**************  Utils  ***********************//
   public static Var[] toVars(String... vs)

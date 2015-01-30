@@ -554,6 +554,10 @@ public class Dataframe implements Disposable
       Var v = asVar(s);
       if (v==null) continue;
 
+      if (!Tools.isSet(rows()))
+      {
+        v.reset(); continue;
+      }
       if (Tools.equals(type, Var.VarType.CATEGORICAL))
       {
         int counts = 0;
@@ -785,6 +789,7 @@ public class Dataframe implements Disposable
           if (rows.size()==0 || !rows.contains(r)) rows.add(r);
       }
 
+    if (!Tools.isSet(rows)) { out.clear(); return out; }
     // refresh the factors and update the rows
     return out.setRowIds(rows).updateVars();
   }
@@ -1153,6 +1158,15 @@ public class Dataframe implements Disposable
   {
     mTitle=null;
     Tools.dispose(mRowIDs, mColIDs);
+    Tools.dispose(mNameVar);
+    Tools.dispose(mData);
+  }
+  public void clear()
+  {
+    mTitle    = null;
+    mKeepData = true;
+    Tools.dispose(mRowIDs);
+    Tools.dispose(mColIDs);
     Tools.dispose(mNameVar);
     Tools.dispose(mData);
   }

@@ -3,6 +3,8 @@ package org.ms2ms.utils;
 import com.google.common.collect.*;
 import org.ms2ms.Disposable;
 import org.ms2ms.data.collect.MultiTreeTable;
+import toools.set.IntHashSet;
+import toools.set.IntSet;
 
 import java.util.*;
 
@@ -359,6 +361,15 @@ public class Tools
     if (s!=null && x!=null) s.add(x);
     return s;
   }
+  public static int hashCode(Map s)
+  {
+    int hcode=0;
+    if (isSet(s))
+      for (Map.Entry E : (Collection<Map.Entry> )s.entrySet())
+        hcode += E.getKey().hashCode()+E.getValue().hashCode();
+
+    return hcode;
+  }
   public static int hashCode(Object... s)
   {
     int hcode=0;
@@ -384,5 +395,17 @@ public class Tools
   public static Range<Double> extendUpper(Range<Double> s, Double x)
   {
     return s!=null && s.upperEndpoint()<x ? Range.closed(s.lowerEndpoint(), x) : s;
+  }
+  public static Table<String, String, IntSet> put(Table<String, String, IntSet> tbl, String lbl, String val, int n)
+  {
+    IntSet s = tbl.get(lbl, val);
+    if (s==null)
+    {
+      s=new IntHashSet();
+      s.add(n);
+      tbl.put(lbl, val, s);
+    }
+    else s.add(n);
+    return tbl;
   }
 }

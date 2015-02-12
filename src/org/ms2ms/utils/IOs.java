@@ -6,6 +6,8 @@ import org.ms2ms.data.Binary;
 import org.ms2ms.math.Stats;
 
 import java.io.*;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 /**
@@ -1092,5 +1094,41 @@ public class IOs
       writer.close();
     }
     catch (IOException e) {}
+  }
+  public static List<String> listFiles(String root, FileFilter filter)
+  {
+    FileVisitor<Path> fileProcessor = new ProcessFile(filter);
+    try
+    {
+      Files.walkFileTree(Paths.get(root), fileProcessor);
+      return ProcessFile.files;
+    }
+    catch (IOException io)
+    {
+      System.out.println(io);
+    }
+
+    return null;
+  }
+  private static final class ProcessFile extends SimpleFileVisitor<Path>
+  {
+    FileFilter filter;
+    public static List<String> files = new ArrayList<>();
+
+    public ProcessFile(FileFilter f) { super(); filter=f; files.clear();}
+    @Override
+    public FileVisitResult visitFile(Path aFile, BasicFileAttributes aAttrs) throws IOException
+    {
+//      System.out.println("Processing file:" + aFile);
+      if (filter.accept(aFile.toFile())) files.add(aFile.toString());
+      return FileVisitResult.CONTINUE;
+    }
+
+    @Override
+    public FileVisitResult preVisitDirectory(Path aDir, BasicFileAttributes aAttrs) throws IOException
+    {
+//      System.out.println("Processing directory:" + aDir);
+      return FileVisitResult.CONTINUE;
+    }
   }
 }

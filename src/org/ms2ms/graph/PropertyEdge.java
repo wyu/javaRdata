@@ -23,7 +23,7 @@ public class PropertyEdge extends Property
   public PropertyEdge setScore(Double s) { mScore = s; return this; }
 
   public String getId() { return "e" + hashCode(); }
-  public String getLabel() { return mLabel != null ? mLabel : Tools.d2s(getScore(), 1); }
+  public String getLabel() { return mLabel; }
   public String getDescription() { return mDescription; }
   public String getUrl() { return mUrl; }
   public Long getID() { return mID; }

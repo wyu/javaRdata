@@ -80,6 +80,7 @@ public class Property  implements Cloneable
   {
     mProperties = new TreeMap<>(s);
   }
+  public void setProperty(String name, StringBuilder val) { setProperty(name, val.toString());}
   public void setProperty(String name, String val)
   {
     if (!Strs.isSet(name)) return;
@@ -97,6 +98,12 @@ public class Property  implements Cloneable
   public void setPropertyNotNull(String name, String val)
   {
     if (val != null) setProperty(name, val);
+  }
+  public void mergeProperty(Property p)
+  {
+    if (p!=null && Tools.isSet(p.getProperties()))
+      for (String k : p.getProperties().keySet())
+        mergeProperty(k, p.getProperty(k));
   }
   public void mergeProperty(String name, String val)
   {

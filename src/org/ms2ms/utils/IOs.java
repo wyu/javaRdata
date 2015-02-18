@@ -1,9 +1,10 @@
 package org.ms2ms.utils;
 
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Range;
+import com.google.common.collect.*;
 import org.ms2ms.data.Binary;
 import org.ms2ms.math.Stats;
+import toools.set.IntHashSet;
+import toools.set.IntSet;
 
 import java.io.*;
 import java.nio.file.*;
@@ -135,6 +136,14 @@ public class IOs
       for (double t : data) write(ds, t);
     }
   }
+  public static void write(DataOutput ds, byte[] data) throws IOException
+  {
+    write(ds, data != null ? data.length : 0);
+    if (data != null && data.length > 0)
+    {
+      ds.write(data);
+    }
+  }
   public static <T extends Binary> Collection<T> read(DataInput ds, Collection<T> data, T template) throws Exception
   {
     int n = read(ds, 0);
@@ -164,6 +173,18 @@ public class IOs
       }
     }
     return data;
+  }
+  public static byte[] readBytes(DataInput ds) throws IOException
+  {
+    int n = read(ds, 0);
+
+    if (n > 0)
+    {
+      byte[] data = new byte[n];
+      ds.readFully(data);
+      return data;
+    }
+    return null;
   }
   public static <T extends Binary> void write(DataOutput ds, List<T> data) throws IOException
   {
@@ -289,6 +310,45 @@ public class IOs
       }
     }
     return data;
+  }
+  public static IntSet readIntSet(DataInput ds) throws IOException
+  {
+    int n = read(ds, 1);
+    if (n>0)
+    {
+      IntSet out = new IntHashSet();
+      for (int i=0; i<n; i++) out.add(read(ds, 0));
+      return out;
+    }
+    return null;
+  }
+  public static Table<String,  String, IntSet> readStr2IntSet(DataInput ds) throws IOException
+  {
+    int n = read(ds, 1); // values.size()
+    if (n>0)
+    {
+      Table<String,  String, IntSet> out = HashBasedTable.create();
+      for (int i=0; i<n; i++)
+      {
+        out.put(read(ds, ""), read(ds, ""), readIntSet(ds));
+      }
+      return out;
+    }
+    return null;
+  }
+  public static Table<Integer, String,  String> readIntStr2(DataInput ds) throws IOException
+  {
+    int n = read(ds, 1); // values.size()
+    if (n>0)
+    {
+      Table<Integer, String,  String> out = HashBasedTable.create();
+      for (int i=0; i<n; i++)
+      {
+        out.put(read(ds, 0), read(ds, ""), read(ds, ""));
+      }
+      return out;
+    }
+    return null;
   }
   public static <T extends Binary> Map<Long, T>
   readLongMap(DataInput ds, Map<Long, T> data, T template) throws Exception
@@ -482,6 +542,37 @@ public class IOs
         data.get(key).write(ds);
       }
     }
+  }
+  public static void write(DataOutput ds, IntSet data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.size() : 0);
+
+    if (Tools.isSet(data))
+      for (int i : data.toIntArray()) write(ds, i);
+  }
+  public static void writeStr2IntSet(DataOutput ds, Table<String,  String, IntSet> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.values().size() : 0);
+    if (Tools.isSet(data))
+      for (String row : data.rowKeySet())
+        for (String col : data.row(row).keySet())
+        {
+          write(ds, row);
+          write(ds, col);
+          write(ds, data.get(row, col));
+        }
+  }
+  public static void writeIntStr2(DataOutput ds, Table<Integer, String,  String> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.values().size() : 0);
+    if (Tools.isSet(data))
+      for (Integer row : data.rowKeySet())
+        for (String col : data.row(row).keySet())
+        {
+          write(ds, row);
+          write(ds, col);
+          write(ds, data.get(row, col));
+        }
   }
   public static <T extends Binary> void
   writeLongMap(DataOutput ds, Map<Long, T> data) throws IOException

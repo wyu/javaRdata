@@ -26,6 +26,7 @@ public class Tools
   public static     boolean isSet(Table          s) { return s!=null && s.size()>0; }
   public static     boolean isSet(long[]         s) { return s!=null && s.length>0; }
   public static     boolean isSet(Range          s) { return s!=null && s.upperEndpoint().compareTo(s.lowerEndpoint())>=0; }
+  public static     boolean isSet(IntSet         s) { return s!=null && s.size()>0; }
 
   public static <T> T front(Collection<T> s)
   {
@@ -407,5 +408,17 @@ public class Tools
     }
     else s.add(n);
     return tbl;
+  }
+  public static IntSet intersect(IntSet A, IntSet B)
+  {
+    if (A==null && B==null) return null;
+    if (A==null) return B;
+    if (B==null) return A;
+
+    IntSet out = new IntHashSet();
+    for (Integer a : A.toIntegerArrayList())
+      if (B.contains(a)) out.add(a);
+
+    return out;
   }
 }

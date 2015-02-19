@@ -1171,6 +1171,40 @@ public class IOs
     //return value;
     return is.readUTF();
   }
+  public static void write(String out, byte[] data)
+  {
+    RandomAccessFile bin = null;
+    try
+    {
+      // save the native graph data to a separate file
+      bin = new RandomAccessFile(out, "rw");
+      bin.write(data.length);
+      write(bin, data);
+      bin.close();
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+    }
+  }
+  public static byte[] readBytes(String in)
+  {
+    RandomAccessFile bin = null;
+    try
+    {
+      // save the native graph data to a separate file
+      bin = new RandomAccessFile(in, "rw");
+      byte[] data = new byte[bin.readInt()];
+      bin.readFully(data);
+      bin.close();
+      return data;
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+    }
+    return null;
+  }
   public static void isnull(DataOutput writer, Object obj) throws IOException
   {
     write(writer, obj != null ? 1 : 0);

@@ -83,7 +83,7 @@ public class Property  implements Cloneable
   public void setProperty(String name, StringBuilder val) { setProperty(name, val.toString());}
   public void setProperty(String name, String val)
   {
-    if (!Strs.isSet(name)) return;
+    if (!Strs.isSet(name) || !Strs.isSet(val)) return;
     if (mProperties == null) mProperties = new TreeMap<>();
     mProperties.put(name, val);
   }
@@ -180,7 +180,8 @@ public class Property  implements Cloneable
     int hcode = (mIsValid?1:0);
     if (Tools.isSet(mProperties))
       for (String key : mProperties.keySet())
-        hcode += key.hashCode() + mProperties.get(key).hashCode();
+        if (key!=null && mProperties.get(key)!=null)
+          hcode += key.hashCode() + mProperties.get(key).hashCode();
 
     return hcode;
   }

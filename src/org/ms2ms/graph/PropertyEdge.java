@@ -67,13 +67,13 @@ public class PropertyEdge extends Property
       cloned = (PropertyEdge)super.clone();
 
 //      if (mProperties!=null) cloned.mProperties = mProperties.clone();
-      if (mLabel     !=null) cloned.mLabel = new String(mLabel);
+      if (mLabel      !=null) cloned.mLabel       = new String(mLabel);
       if (mDescription!=null) cloned.mDescription = new String(mDescription);
-      if (mUrl       !=null) cloned.mUrl = new String(mUrl);
-      if (mID        !=null) cloned.mID   = new Long(mID);
-      if (mSource    !=null) cloned.mSource = new Long(mSource);
-      if (mTarget    !=null) cloned.mTarget   = new Long(mTarget);
-      if (mScore!=null) cloned.mScore = new Double(mScore);
+      if (mUrl        !=null) cloned.mUrl         = new String(mUrl);
+      if (mID         !=null) cloned.mID          = new Long(mID);
+      if (mSource     !=null) cloned.mSource      = new Long(mSource);
+      if (mTarget     !=null) cloned.mTarget      = new Long(mTarget);
+      if (mScore      !=null) cloned.mScore       = new Double(mScore);
     }
     catch (CloneNotSupportedException e) {}
 

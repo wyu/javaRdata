@@ -62,6 +62,7 @@ public class Dataframe implements Disposable
 //  }
 
   //** Getters the Setters **//
+  public Table<String, String, Object> data() { return mData; }
   public int size() { return mData!=null?mData.rowKeySet().size():0; }
   public String       getTitle()      { return mTitle; }
   public String       getRowId(int i) { return mRowIDs!=null?mRowIDs.get(i):null; }
@@ -886,7 +887,18 @@ public class Dataframe implements Disposable
 
     return indice;
   }
+  public Map toMap(String from, String to)
+  {
+    if (mData!=null && mData.column(from)!=null && mData.column(to)!=null)
+    {
+      Map mapping = new HashMap();
+      for (String F : mData.column(from).keySet())
+        mapping.put(mData.get(F, from), mData.get(F, to));
 
+      return mapping;
+    }
+    return null;
+  }
   public static MultiTreeTable<Double, Double, String>[] indice(String row, String col, Dataframe... frames)
   {
     if (!Tools.isSet(frames) || !Strs.isSet(row) || !Strs.isSet(col)) return null;

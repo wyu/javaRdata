@@ -23,6 +23,7 @@ public class Tools
   public static <T> boolean isSet(T[]            s) { return s!=null && s.length>0; }
   public static <T> boolean isSet(double[]       s) { return s!=null && s.length>0; }
   public static     boolean isSet(int[]          s) { return s!=null && s.length>0; }
+  public static     boolean isSet(char[]         s) { return s!=null && s.length>0; }
   public static     boolean isSet(Table          s) { return s!=null && s.size()>0; }
   public static     boolean isSet(long[]         s) { return s!=null && s.length>0; }
   public static     boolean isSet(Range          s) { return s!=null && s.upperEndpoint().compareTo(s.lowerEndpoint())>=0; }

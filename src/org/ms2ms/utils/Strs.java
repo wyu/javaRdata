@@ -23,7 +23,7 @@ public class Strs
 
   public static String extend(String s0, String s1, String delimiter)
   {
-    return s0==null?s1:(s0+delimiter+s1);
+    return s0==null?s1:(s1!=null?s0+delimiter+s1:s0);
   }
   public static String dequotes(String s, char q)
   {

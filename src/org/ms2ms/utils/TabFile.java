@@ -1,5 +1,7 @@
 package org.ms2ms.utils;
 
+import org.ms2ms.math.Stats;
+
 import java.io.*;
 import java.util.Map;
 import java.util.TreeMap;
@@ -208,6 +210,8 @@ public class TabFile
     if (mFileReader != null) mFileReader.close();
   }
   protected void finalize() throws IOException { close(); }
+  public Double getDouble(String key) { return Stats.toDouble(get(key)); }
+  public Integer getInt(String key) { return new Integer(get(key)); }
   public String get(String key)
   {
     String value = null;

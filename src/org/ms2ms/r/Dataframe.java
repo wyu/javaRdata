@@ -31,7 +31,7 @@ import java.util.*;
  */
 public class Dataframe implements Disposable
 {
-  private String                     mTitle;
+  private String                     mTitle, mCurrentRow="unTitled";
   private boolean                    mKeepData = true;
   private List<String>               mRowIDs, mColIDs;
   private Map<String, Var>           mNameVar;
@@ -163,11 +163,13 @@ public class Dataframe implements Disposable
     }
     return mNameVar.get(s);
   }
+  public Dataframe put(String col, Object val) { return put(mCurrentRow, col, val); }
   public Dataframe put(int row, String col, Object val) { return put(row+"", col, val); }
   public Dataframe put(String row, String col, Object val)
   {
     if (row!=null && col!=null && val!=null)
     {
+      mCurrentRow=row;
       if (mData  ==null) mData = HashBasedTable.create();
       mData.put(row, col, val);
     }
@@ -238,7 +240,7 @@ public class Dataframe implements Disposable
   public StringBuffer display(String delim, String empty)
   {
     StringBuffer buf = new StringBuffer();
-    buf.append("rowid" + Strs.toString(cols(), delim) + "\n");
+    buf.append("rowid" + delim + Strs.toString(cols(), delim) + "\n");
     for (String id : rows())
     {
       buf.append(id);

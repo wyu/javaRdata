@@ -1,11 +1,10 @@
 package org.ms2ms.utils;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -371,6 +370,41 @@ public class Strs
 
     return false;
   }
+
+  /** create a new string map from an array of strings
+   *
+   * @param t is the token char
+   * @param items is one or more string in the format of "tag=val" where '=' as specified in t
+   * @return a new string map
+   */
+  public static Map<String, String> newMap(char t, String... items)
+  {
+    if (!Tools.isSet(items)) return null;
+
+    Map<String, String> pairs = new HashMap<String, String>();
+    for (String item : items)
+    {
+      String[] ss = split(item, t);
+      if (ss!=null && ss.length>1) pairs.put(ss[0], ss[1]);
+    }
+    return pairs;
+  }
+  public static Multimap<String, String> newMultimap(char t, String... items)
+  {
+    if (!Tools.isSet(items)) return null;
+
+    Multimap<String, String> pairs = HashMultimap.create();
+    for (String item : items)
+    {
+      String[] ss = split(item, t);
+      if (ss!=null && ss.length>1)
+      {
+        pairs.putAll(ss[0], split(ss[1], ";", true));
+      }
+    }
+    return pairs;
+  }
+
 //  public static String fromLast(List<String> s, int n)
 //  {
 //    return s!=null && s.size()>2 ? s.get(s.size()-n) : null;

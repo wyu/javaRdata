@@ -45,6 +45,7 @@ public class MultiTreeTable<K extends Comparable, L extends Comparable, T extend
       mData.put(key, D);
     }
     D.put(lable, data);
+//    System.out.println(D.size());
   }
 
   /** Overwrite the existing entry

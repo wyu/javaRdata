@@ -150,6 +150,15 @@ public class Stats
 
     return null;
   }
+  public static Integer toInt(Object s)
+  {
+    if (s==null) return null;
+    if      (s instanceof String)  return NumberUtils.createInteger((String) s);
+    else if (s instanceof Long  )  return ((Long   )s).intValue();
+    else if (s instanceof Integer) return ((Integer )s);
+
+    return null;
+  }
   public static Range<Double> closed(double[] s)
   {
     if (s==null) return null;

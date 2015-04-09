@@ -358,9 +358,10 @@ public class Tools
     }
     return bits;
   }
-  public static <T> Collection<T> add(Collection<T> s, T x)
+  public static <T> Collection<T> add(Collection<T> s, T... x)
   {
-    if (s!=null && x!=null) s.add(x);
+    if (s!=null && x!=null)
+      for (T t : x) s.add(t);
     return s;
   }
   public static int hashCode(Map s)

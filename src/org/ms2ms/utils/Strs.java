@@ -277,6 +277,22 @@ public class Strs
 
     return out;
   }
+  // add the strs to the beginning of the collection
+  public static String[] toStringArrayHead(Collection s, String... strs)
+  {
+    String[] out = new String[s.size()+(Tools.isSet(strs)?strs.length:0)];
+    int i=0;
+    if (Tools.isSet(strs))
+    {
+      i = strs.length;
+      for (int j=0; j<strs.length; j++) out[j]=strs[j];
+    }
+
+    if (Tools.isSet(s))
+      for (Object v : s)  out[i++]=v.toString();
+
+    return out;
+  }
   public static String[] toStringArray(Object[] s)
   {
     String[] out = new String[s.length];

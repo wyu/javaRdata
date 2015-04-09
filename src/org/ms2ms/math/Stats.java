@@ -133,11 +133,30 @@ public class Stats
   public static Double toDouble(Object s)
   {
     if (s==null) return null;
-    if      (s instanceof String)  return NumberUtils.createDouble((String )s);
-    else if (s instanceof Double)  return (Double  )s;
-    else if (s instanceof Float )  return ((Float  )s).doubleValue();
-    else if (s instanceof Long  )  return ((Long   )s).doubleValue();
-    else if (s instanceof Integer) return ((Integer)s).doubleValue();
+    try
+    {
+      if      (s instanceof String)  return NumberUtils.createDouble((String )s);
+      else if (s instanceof Double)  return (Double  )s;
+      else if (s instanceof Float )  return ((Float  )s).doubleValue();
+      else if (s instanceof Long  )  return ((Long   )s).doubleValue();
+      else if (s instanceof Integer) return ((Integer)s).doubleValue();
+    }
+    catch (NumberFormatException e) {}
+
+    return null;
+  }
+  public static Float toFloat(Object s)
+  {
+    if (s==null) return null;
+    try
+    {
+      if      (s instanceof String)  return NumberUtils.createFloat((String )s);
+      else if (s instanceof Double)  return ((Double  )s).floatValue();
+      else if (s instanceof Float )  return ((Float  )s);
+      else if (s instanceof Long  )  return ((Long   )s).floatValue();
+      else if (s instanceof Integer) return ((Integer)s).floatValue();
+    }
+    catch (NumberFormatException e) {}
 
     return null;
   }

@@ -423,4 +423,12 @@ public class Tools
 
     return out;
   }
+  public static String[] toCols(Map<String, String> row, List<String> cols)
+  {
+    String[] outs = new String[cols.size()];
+    for (int i=0; i<cols.size(); i++)
+      outs[i] = cols.get(i)!=null?row.get(cols.get(i)):null;
+
+    return outs;
+  }
 }

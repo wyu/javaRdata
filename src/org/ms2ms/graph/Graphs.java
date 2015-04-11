@@ -38,8 +38,17 @@ public class Graphs
   public static final String NAME  = "_NAME_";
   public static final String ID    = "_ID_";
   public static final String LABEL = "_LABEL_";
+  public static final String TYPE  = "_TYPE_";
 
-//  public static XgmmlReader readXGMMLs(File dir) throws Exception
+  public static final String SNP      = "SNP";
+  public static final String STUDY    = "STUDY";
+  public static final String TRAIT    = "TRAIT";
+  public static final String GENE     = "GENE";
+  public static final String DISEASE  = "DISEASE";
+  public static final String TISSUE   = "TISSUE";
+  public static final String ASSAY    = "ASSAY";
+
+  //  public static XgmmlReader readXGMMLs(File dir) throws Exception
 //  {
 ////    File dir = new File("/bioinfo/scratch/wyu/staging/network/temp/");
 //    String[] xgmmls = dir.list(new FilenameFilter() {

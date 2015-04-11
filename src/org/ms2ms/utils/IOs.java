@@ -1220,6 +1220,17 @@ public class IOs
     }
     catch (IOException e) {}
   }
+  public static Writer write(Writer w, char t, String... fields) throws IOException
+  {
+    if (Tools.isSet(fields))
+      for (int i=0; i<fields.length; i++)
+      {
+        if (fields[i]!=null) w.write(fields[i]);
+        if (i<fields.length-1) w.write(t+"");
+      }
+
+    return w;
+  }
   public static List<String> listFiles(String root, FileFilter filter)
   {
     FileVisitor<Path> fileProcessor = new ProcessFile(filter);

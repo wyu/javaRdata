@@ -325,6 +325,16 @@ public class Tools
 
     return slice;
   }
+  public static IntSet newIntSet(int... ns)
+  {
+    if (isSet(ns))
+    {
+      IntSet n = new IntHashSet();
+      for (int i : ns) n.add(i);
+      return n;
+    }
+    return null;
+  }
   public static byte[] toByteArray(BitSet bits)
   {
     //byte[] bytes = new byte[bits.length()/8+1];
@@ -364,6 +374,13 @@ public class Tools
       for (T t : x) s.add(t);
     return s;
   }
+  public static <T> Collection<Integer> add(Collection<Integer> s, IntSet x)
+  {
+    if (s!=null && x!=null)
+      for (Integer i : x.toIntegerArrayList()) s.add(i);
+    return s;
+  }
+
   public static int hashCode(Map s)
   {
     int hcode=0;
@@ -431,4 +448,28 @@ public class Tools
 
     return outs;
   }
+  public static String[] toColsHdr(Map<String, String> row, List<String> cols)
+  {
+    String[] outs = new String[cols.size()*2];
+    for (int i=0; i<cols.size(); i+=2)
+      if (cols.get(i)!=null)
+      {
+        outs[i] = cols.get(i); outs[i+1] = row.get(cols.get(i));
+      }
+
+    return outs;
+  }
+  public static String[] toColsHdr(Map<String, String> row, Map<String, String> cols)
+  {
+    String[] outs = new String[cols.size()*2];
+    int i=0;
+    for (String col : cols.keySet())
+      if (row.get(col)!=null)
+      {
+        outs[i++] = cols.get(col); outs[i++] = row.get(col);
+      }
+
+    return outs;
+  }
+
 }

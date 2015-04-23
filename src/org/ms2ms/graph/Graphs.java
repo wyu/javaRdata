@@ -19,6 +19,7 @@ import org.ms2ms.utils.TabFile;
 import org.ms2ms.utils.Tools;
 import psidev.psi.mi.xml.io.impl.PsimiXmlReader254;
 import psidev.psi.mi.xml.model.*;
+import toools.set.IntSet;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +38,9 @@ public class Graphs
 {
   public static final String NAME  = "_NAME_";
   public static final String ID    = "_ID_";
+  public static final String UID   = "_UID_";
   public static final String LABEL = "_LABEL_";
+  public static final String TITLE = "_TITLE_";
   public static final String TYPE  = "_TYPE_";
 
   public static final String SNP      = "SNP";

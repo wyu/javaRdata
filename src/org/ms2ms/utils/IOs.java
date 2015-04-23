@@ -1,6 +1,7 @@
 package org.ms2ms.utils;
 
 import com.google.common.collect.*;
+import org.apache.commons.collections15.multimap.MultiHashMap;
 import org.ms2ms.data.Binary;
 import org.ms2ms.math.Stats;
 import toools.set.IntHashSet;
@@ -1246,17 +1247,37 @@ public class IOs
 
     return null;
   }
+  public static Multimap<String, String> listDirFiles(String root, FileFilter filter)
+  {
+    FileVisitor<Path> fileProcessor = new ProcessFile(filter);
+    try
+    {
+      Files.walkFileTree(Paths.get(root), fileProcessor);
+      return ProcessFile.dir_file;
+    }
+    catch (IOException io)
+    {
+      System.out.println(io);
+    }
+
+    return null;
+  }
   private static final class ProcessFile extends SimpleFileVisitor<Path>
   {
     FileFilter filter;
     public static List<String> files = new ArrayList<>();
+    public static Multimap<String, String> dir_file = HashMultimap.create();
 
     public ProcessFile(FileFilter f) { super(); filter=f; files.clear();}
     @Override
     public FileVisitResult visitFile(Path aFile, BasicFileAttributes aAttrs) throws IOException
     {
 //      System.out.println("Processing file:" + aFile);
-      if (filter.accept(aFile.toFile())) files.add(aFile.toString());
+      if (filter.accept(aFile.toFile()))
+      {
+        files.add(aFile.toString());
+        dir_file.put(aFile.getParent().toString(), aFile.toString());
+      }
       return FileVisitResult.CONTINUE;
     }
 

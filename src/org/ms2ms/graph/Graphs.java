@@ -36,13 +36,14 @@ import java.util.logging.Level;
  */
 public class Graphs
 {
-  public static final String NAME  = "_NAME_";
-  public static final String ID    = "_ID_";
-  public static final String UID   = "_UID_";
-  public static final String LABEL = "_LABEL_";
-  public static final String TITLE = "_TITLE_";
+  public static final String NAME  = "name";
+  public static final String ID    = "id";
+  public static final String UID   = "uid";
+  public static final String LABEL = "label";
+  public static final String TITLE = "title";
   public static final String TYPE  = "_TYPE_";
 
+  public static final String DRUG     = "DRUG";
   public static final String SNP      = "SNP";
   public static final String STUDY    = "STUDY";
   public static final String TRAIT    = "TRAIT";
@@ -50,6 +51,12 @@ public class Graphs
   public static final String DISEASE  = "DISEASE";
   public static final String TISSUE   = "TISSUE";
   public static final String ASSAY    = "ASSAY";
+  public static final String CHR      = "Chr";
+  public static final String CHR_POS  = "ChrPos";
+
+  //  public static String INTACT_ACTOR_ID = "IntAct_ActorID";
+//  public static String INTACT_EXPT_ID = "IntAct_ExptID";
+//  public static String INTACT_ACTION_ID = "IntAct_ActionID";
 
   //  public static XgmmlReader readXGMMLs(File dir) throws Exception
 //  {

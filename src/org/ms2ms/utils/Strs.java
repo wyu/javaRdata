@@ -397,7 +397,8 @@ public class Strs
   {
     if (!Tools.isSet(items)) return null;
 
-    Map<String, String> pairs = new HashMap<String, String>();
+    // to preserve the insertion order
+    Map<String, String> pairs = new LinkedHashMap<>();
     for (String item : items)
     {
       String[] ss = split(item, t);
@@ -421,6 +422,15 @@ public class Strs
     return pairs;
   }
 
+  public static Map<String, String> toStrMap(String... tagvals)
+  {
+    Map<String, String> out = new HashMap<>();
+    for (int i=0; i<tagvals.length; i+=2)
+    {
+      out.put(tagvals[i], tagvals[i + 1]);
+    }
+    return out;
+  }
 //  public static String fromLast(List<String> s, int n)
 //  {
 //    return s!=null && s.size()>2 ? s.get(s.size()-n) : null;

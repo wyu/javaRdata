@@ -431,6 +431,7 @@ public class Strs
     }
     return out;
   }
+  public static int indexOf(String A, String B) { return A!=null&&B!=null?A.indexOf(B):-1; }
 //  public static String fromLast(List<String> s, int n)
 //  {
 //    return s!=null && s.size()>2 ? s.get(s.size()-n) : null;

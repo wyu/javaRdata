@@ -1237,6 +1237,8 @@ public class IOs
     FileVisitor<Path> fileProcessor = new ProcessFile(filter);
     try
     {
+      ProcessFile.files.clear(); ProcessFile.dir_file.clear();
+
       Files.walkFileTree(Paths.get(root), fileProcessor);
       return ProcessFile.files;
     }

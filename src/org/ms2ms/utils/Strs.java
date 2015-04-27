@@ -293,7 +293,7 @@ public class Strs
 
     return out;
   }
-  public static String[] toStringArray(Object[] s)
+  public static String[] toStringArray(Object... s)
   {
     String[] out = new String[s.length];
     int i=0;

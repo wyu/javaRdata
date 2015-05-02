@@ -1226,7 +1226,7 @@ public class IOs
     if (Tools.isSet(fields))
       for (int i=0; i<fields.length; i++)
       {
-        if (fields[i]!=null) w.write(fields[i]);
+        if (fields[i]!=null) w.write(fields[i].replaceAll("\n", "_").replaceAll("\r", "_"));
         if (i<fields.length-1) w.write(t+"");
       }
 
@@ -1289,5 +1289,19 @@ public class IOs
 //      System.out.println("Processing directory:" + aDir);
       return FileVisitResult.CONTINUE;
     }
+  }
+  public static void writeTo(String f, String contents)
+  {
+    try
+    {
+      FileWriter w = new FileWriter(f);
+      w.write(contents);
+      w.close();
+    }
+    catch (IOException io)
+    {
+      System.out.println(io);
+    }
+
   }
 }

@@ -376,6 +376,10 @@ public class Strs
   {
     return (A==null && B==null) || (A!=null && B!=null && A.equals(B));
   }
+  public static boolean equalsIgnoreCase(String A, String B)
+  {
+    return (A==null && B==null) || (A!=null && B!=null && A.equalsIgnoreCase(B));
+  }
   public static boolean isSet(String         s) { return s!=null && s.length()>0; }
   public static boolean isSet(StringBuilder  s) { return s!=null && s.length()>0; }
   public static boolean isA(String s, String... vals)

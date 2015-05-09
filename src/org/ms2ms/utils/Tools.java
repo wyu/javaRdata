@@ -380,6 +380,11 @@ public class Tools
       for (Integer i : x.toIntegerArrayList()) s.add(i);
     return s;
   }
+  public static IntSet addAll(IntSet A, IntSet x)
+  {
+    if (A!=null && x!=null) A.addAll(x);
+    return A;
+  }
 
   public static int hashCode(Map s)
   {

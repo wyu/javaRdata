@@ -52,6 +52,7 @@ public class Graphs
   public static final String DISEASE  = "DISEASE";
   public static final String TISSUE   = "TISSUE";
   public static final String ASSAY    = "ASSAY";
+  public static final String COMPLEX  = "COMPLEX";
   public static final String CHR      = "Chr";
   public static final String CHR_POS  = "ChrPos";
 

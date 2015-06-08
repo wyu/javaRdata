@@ -251,10 +251,12 @@ public class Dataframe implements Disposable
     }
     return buf;
   }
-  public StringBuffer csv(int decimal)
+  public StringBuffer csv(int decimal) { return csv(decimal, ","); }
+  public StringBuffer tsv(int decimal) { return csv(decimal, "\t"); }
+  public StringBuffer csv(int decimal, String delimiter)
   {
     StringBuffer buf = new StringBuffer();
-    buf.append(Strs.toString(cols(), ",") + "\n");
+    buf.append(Strs.toString(cols(), delimiter) + "\n");
     for (String id : rows())
     {
       String line=null;
@@ -265,7 +267,7 @@ public class Dataframe implements Disposable
         {
           System.out.println();
         }
-        line = Strs.extend(line, val==null?"":(val instanceof Double?Tools.d2s((Double )val, decimal):val.toString()), ",");
+        line = Strs.extend(line, val==null?"":(val instanceof Double?Tools.d2s((Double )val, decimal):val.toString()), delimiter);
       }
       buf.append(line+"\n");
     }
@@ -937,14 +939,14 @@ public class Dataframe implements Disposable
 
     return out;
   }
-  public Dataframe removeRowsWithMissingValue()
+  public Dataframe removeRowsWithMissingValue(int max)
   {
     // remove the row with missing value
+    int ncols = cols().size();
     List<String> missing = new ArrayList<>();
     for (String row : rows())
-    {
-      if (row(row).values().size()<cols().size()) missing.add(row);
-    }
+      if (row(row).values().size()+max<ncols) missing.add(row);
+
     if (Tools.isSet(missing)) removeRows(missing.toArray(new String[] {}));
     return this;
   }

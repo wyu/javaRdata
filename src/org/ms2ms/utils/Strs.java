@@ -435,6 +435,15 @@ public class Strs
     }
     return out;
   }
+  public static Map<String, String> toStrMap1(String... tagvals)
+  {
+    Map<String, String> out = new HashMap<>();
+    for (String t : tagvals)
+    {
+      out.put(t, t);
+    }
+    return out;
+  }
   public static int indexOf(String A, String B) { return A!=null&&B!=null?A.indexOf(B):-1; }
 //  public static String fromLast(List<String> s, int n)
 //  {

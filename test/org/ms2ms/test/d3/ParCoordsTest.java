@@ -35,25 +35,48 @@ public class ParCoordsTest extends TestAbstract
   @Test
   public void prepareTSNECSV() throws Exception
   {
-    Dataframe dat = new Dataframe("/media/data/test/data/clinical_i2b2trans_adult.txt", '\t').setNAs("NA","null").init();
+    Dataframe dat = new Dataframe("/media/data/test/data/clinical_i2b2trans_adult.txt", '\t').setNAs("NA","null").init(),
+            abbrs = new Dataframe("/media/data/test/data/clinical.abbr", '\t');
 
+    Collection<String> columns = dat.cols();
+    for (String col : columns)
+    {
+      String column = col;
+      for (String abbr : abbrs.rows())
+      {
+        String snip = abbrs.cell(abbr, "snip").toString(), ab = abbrs.cell(abbr, "abbr").toString();
+        if (snip.indexOf("x10^3_/uL")>0 && column.indexOf("x10^3_/uL")>0)
+        {
+          System.out.println();
+        }
+        column = column.replace(snip, ab);
+      }
+      column = column.replaceAll("\\s", "_");
+      if (!Strs.equals(col, column)) dat.renameCol(col, column);
+    }
     // {cohort_v=10, cohort_c=88, cohort_b=110, cohort_d=101, cohort_a=311}
     String cohort="\\Study Groups\\cohort", ctrl_level="cohort_a";
 
     // finding the useful and well-populated variables
-    List<String> vars = dat.getColByPopulation(600);
-    vars.add(cohort);
+    List<String> vars = dat.getColByPopulation(100);
+//    vars.add(cohort);
+
+    Collections.sort(vars);
+    for (String col : vars)
+    {
+      if (col.indexOf('(')>0 && col.indexOf(')')>0) System.out.println(col);
+    }
 
     // divide the rows into control and study populations
     Dataframe study=dat.subcol(vars.toArray(new String[] {}));
     // normalize them by the control population
-    for (String col : study.cols())
-    {
-      String[] items = Strs.split(col, '\\'); String c=items[items.length-1];
-      study.renameCol(col, items[items.length-1]);
-    }
+//    for (String col : study.cols())
+//    {
+//      String[] items = Strs.split(col, '\\'); String c=items[items.length-1];
+//      study.renameCol(col, items[items.length-1]);
+//    }
 
-    IOs.write("/tmp/adult6.csv", study.removeRowsWithMissingValue().csv(2));
+    IOs.write("/tmp/adult100.tsv", study.tsv(2));
   }
   @Test
   public void prepareParCoordsCSV() throws Exception
@@ -102,7 +125,7 @@ public class ParCoordsTest extends TestAbstract
         else output.put(row, C.getTitle(), dat.cell(row, col));
       }
     }
-    output.init().removeRowsWithMissingValue();
+    output.init().removeRowsWithMissingValue(0);
 /*
     // remove the row with missing value
     List<String> missing = new ArrayList<>();
@@ -180,7 +203,7 @@ public class ParCoordsTest extends TestAbstract
         else output.put(row, C.getTitle(), study.cell(row, col));
       }
     }
-    output.init().removeRowsWithMissingValue();
+    output.init().removeRowsWithMissingValue(0);
 /*
     // remove the row with missing value
     List<String> missing = new ArrayList<>();

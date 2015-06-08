@@ -48,6 +48,7 @@ public class Graphs
   public static final String STUDY    = "STUDY";
   public static final String TRAIT    = "TRAIT";
   public static final String GENE     = "GENE";
+  public static final String INSTANCE = "INSTANCE";
   public static final String SM       = "SM";
   public static final String DISEASE  = "DISEASE";
   public static final String TISSUE   = "TISSUE";

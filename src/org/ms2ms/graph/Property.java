@@ -87,6 +87,14 @@ public class Property  implements Cloneable
     if (mProperties == null) mProperties = new TreeMap<>();
     mProperties.put(name, val);
   }
+  public void appendProperty(String name, String val)
+  {
+    if (!Strs.isSet(name) || !Strs.isSet(val)) return;
+    if (mProperties == null) mProperties = new TreeMap<>();
+    String v = mProperties.get(name);
+    if (v==null) v=val; else if (!v.equals(val) && v.indexOf(";"+val)<=0) v=v+";"+val;
+    mProperties.put(name, v);
+  }
   public Property set(XMLNode tag, String name)
   {
     if (tag!=null && Strs.equals(tag.getTagName(), "att") && Strs.equals(tag.getAttributeValue("name"), name))
@@ -112,6 +120,11 @@ public class Property  implements Cloneable
     String old = getProperty(name);
     if ((old == null || !Tools.contains(old.split(";"), val)))
       setProperty(name, Strs.extend(old, val, ";"));
+  }
+  public void removeProperty(String... tags)
+  {
+    if (!Tools.isSet(tags) || !Tools.isSet(getProperties())) return;
+    for (String t : tags) getProperties().remove(t);
   }
   public void setProperty(String name, String new_name, Map<String, String> props)
   {

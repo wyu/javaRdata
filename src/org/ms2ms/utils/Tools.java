@@ -476,5 +476,14 @@ public class Tools
 
     return outs;
   }
+  public static Map<String, String> slice(Map<String, String> props, String... keys)
+  {
+    if (!isSet(keys) || !isSet(props)) return props;
 
+    Map<String, String> out = new HashMap<>();
+    for (String key : keys)
+      if (props.get(key)!=null) out.put(key, props.get(key));
+
+    return out;
+  }
 }

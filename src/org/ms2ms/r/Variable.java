@@ -1,6 +1,5 @@
 package org.ms2ms.r;
 
-import com.bigml.histogram.NumericTarget;
 import org.ms2ms.math.Histogram;
 import org.ms2ms.math.Transformer;
 import org.ms2ms.utils.Tools;

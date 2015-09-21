@@ -5,6 +5,8 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.
@@ -105,6 +107,40 @@ public class Strs
 
     return split(s, t, false);
   }
+  // Perl style split which retains the delimiter
+  // http://stackoverflow.com/questions/2206378/how-to-split-a-string-but-also-keep-the-delimiters
+  public static List<String> splits(String s, String pattern) {
+    assert s != null;
+    assert pattern != null;
+    return splits(s, Pattern.compile(pattern));
+  }
+  public static List<String> splits(String s, Pattern pattern)
+  {
+    assert s != null;
+    assert pattern != null;
+    Matcher m = pattern.matcher(s);
+    List<String> ret = new ArrayList<String>();
+    int start = 0;
+    while (m.find()) {
+      ret.add(s.substring(start, m.start()));
+      ret.add(m.group());
+      start = m.end();
+    }
+    ret.add(start >= s.length() ? "" : s.substring(start));
+    return ret;
+  }
+
+//  private static void testSplit(String s, String pattern) {
+//    System.out.printf("Splitting '%s' with pattern '%s'%n", s, pattern);
+//    List<String> tokens = split(s, pattern);
+//    System.out.printf("Found %d matches%n", tokens.size());
+//    int i = 0;
+//    for (String token : tokens) {
+//      System.out.printf("  %d/%d: '%s'%n", ++i, tokens.size(), token);
+//    }
+//    System.out.println();
+//  }
+//
   public static String toString(String[] ss, String dl) {
     return toString(ss, dl, 0, ss != null ? ss.length : 0);
     /*// no point to go further
@@ -382,6 +418,16 @@ public class Strs
   }
   public static boolean isSet(String         s) { return s!=null && s.length()>0; }
   public static boolean isSet(StringBuilder  s) { return s!=null && s.length()>0; }
+
+  // return TRUE if s is a part of any item from vals
+  public static boolean hasA(String s, String... vals)
+  {
+    if (Tools.isSet(vals))
+      for (String val : vals)
+        if (indexOf(s, val)>=0) return true;
+
+    return false;
+  }
   public static boolean isA(String s, String... vals)
   {
     if (Tools.isSet(vals))
@@ -431,7 +477,8 @@ public class Strs
     Map<String, String> out = new HashMap<>();
     for (int i=0; i<tagvals.length; i+=2)
     {
-      out.put(tagvals[i], tagvals[i + 1]);
+      if (i+1<tagvals.length)
+        out.put(tagvals[i], tagvals[i + 1]);
     }
     return out;
   }
@@ -443,6 +490,11 @@ public class Strs
       out.put(t, t);
     }
     return out;
+  }
+  public static String stripLastOf(String s, char t)
+  {
+    if (isSet(s) && s.indexOf(t)>=0) return s.substring(0, s.lastIndexOf(t));
+    return s;
   }
   public static int indexOf(String A, String B) { return A!=null&&B!=null?A.indexOf(B):-1; }
 //  public static String fromLast(List<String> s, int n)

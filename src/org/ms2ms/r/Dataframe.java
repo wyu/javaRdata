@@ -269,7 +269,7 @@ public class Dataframe implements Disposable
         }
         line = Strs.extend(line, val==null?"":(val instanceof Double?Tools.d2s((Double )val, decimal):val.toString()), delimiter);
       }
-      buf.append(line+"\n");
+      buf.append(line + "\n");
     }
     return buf;
   }
@@ -282,7 +282,8 @@ public class Dataframe implements Disposable
   {
     try
     {
-      writer.write(display(delim, "") + "\n");
+      try { writer.write(display(delim, "") + "\n"); }
+      finally { writer.close(); }
     }
     catch (IOException io)
     {
@@ -295,8 +296,7 @@ public class Dataframe implements Disposable
 
     SortedMap<Double, Double> line = new TreeMap<Double, Double>();
 //    Var vx=asVar(x), vy=getVar(y);
-    for (String id : rows())
-    {
+    for (String id : rows()) {
       Tools.putNotNull(line, cell(id, x), cell(id, y));
     }
     return line;

@@ -1,5 +1,6 @@
 package org.ms2ms.utils;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
@@ -22,7 +23,25 @@ public class Strs
   public static final String BLANK             = "  1lsd 00s *&**";
   public static final String ALPHA             = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
+  public static String concatenate(char t, Object... ss)
+  {
+    String out = null;
+    if (Tools.isSet(ss))
+      for (Object s : ss)
+        if (s!=null)
+        {
+          if (s instanceof Optional) out = extend(out, ((Optional) s).get().toString(), t + "");
+          else                       out = extend(out, s.toString(), t + "");
+        }
+
+    return out;
+  }
+
   public static String extend(String s0, String s1, String delimiter)
+  {
+    return s0==null?s1:(s1!=null?s0+delimiter+s1:s0);
+  }
+  public static String extend(String s0, String s1, char delimiter)
   {
     return s0==null?s1:(s1!=null?s0+delimiter+s1:s0);
   }
@@ -355,9 +374,15 @@ public class Strs
     }
     return buf.toString();
   }
-  public static String rtuncate(String s, int n)
+  // retain the last n chars of the string
+  public static String rtruncate(String s, int n)
   {
     return s==null||s.length()<n?s:s.substring(s.length()-n);
+  }
+  // retain the last n chars of the string
+  public static String truncate(String s, int n)
+  {
+    return s==null||s.length()<n?s:s.substring(0, n);
   }
   /** Converts time in milliseconds to a <code>String</code> in the format HH:mm:ss.SSS.
    *  lifted from http://www.uk-dave.com/bytes/java/long2time.php
@@ -412,6 +437,10 @@ public class Strs
   {
     return (A==null && B==null) || (A!=null && B!=null && A.equals(B));
   }
+  public static boolean equals(Optional<String> A, String B)
+  {
+    return (A!=null && A.isPresent() && B!=null && B.equals(A.get()));
+  }
   public static boolean equalsIgnoreCase(String A, String B)
   {
     return (A==null && B==null) || (A!=null && B!=null && A.equalsIgnoreCase(B));
@@ -429,6 +458,14 @@ public class Strs
     return false;
   }
   public static boolean isA(String s, String... vals)
+  {
+    if (Tools.isSet(vals))
+      for (String val : vals)
+        if (equals(s, val)) return true;
+
+    return false;
+  }
+  public static boolean isA(Optional<String> s, String... vals)
   {
     if (Tools.isSet(vals))
       for (String val : vals)

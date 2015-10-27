@@ -212,6 +212,15 @@ public class TabFile
   protected void finalize() throws IOException { close(); }
   public Double getDouble(String key) { return Stats.toDouble(get(key)); }
   public Integer getInt(String key) { return new Integer(get(key)); }
+  // return the first non-null value
+  public String getNotNull(String... tags)
+  {
+    if (Tools.isSet(tags))
+      for (String tag : tags)
+        if (mCol!=null && tag!=null && mCol.get(tag)!=null) return mCol.get(tag);
+
+    return null;
+  }
   public String get(String key)
   {
     String value = null;

@@ -28,6 +28,8 @@ public class Tools
   public static     boolean isSet(long[]         s) { return s!=null && s.length>0; }
   public static     boolean isSet(Range          s) { return s!=null && s.upperEndpoint().compareTo(s.lowerEndpoint())>=0; }
   public static     boolean isSet(IntSet         s) { return s!=null && s.size()>0; }
+  public static     boolean isTrue( Boolean      s) { return s!=null &&  s; }
+  public static     boolean isFalse(Boolean      s) { return s!=null && !s; }
 
   public static <T> T front(Collection<T> s)
   {
@@ -485,5 +487,27 @@ public class Tools
       if (props.get(key)!=null) out.put(key, props.get(key));
 
     return out;
+  }
+  public static long[] reverse(long[] array) {
+    int sz = array.length;
+    int t = sz / 2;
+
+    for(int i = 0; i < t; ++i) {
+      long tmp = array[i];
+      array[i] = array[sz - i - 1];
+      array[sz - i - 1] = tmp;
+    }
+    return array;
+  }
+  public static double[] reverse(double[] array) {
+    int sz = array.length;
+    int t = sz / 2;
+
+    for(int i = 0; i < t; ++i) {
+      double tmp = array[i];
+      array[i] = array[sz - i - 1];
+      array[sz - i - 1] = tmp;
+    }
+    return array;
   }
 }

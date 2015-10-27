@@ -181,6 +181,22 @@ public class Dataframe implements Disposable
     if (mRowIDs==null) mRowIDs = new ArrayList<>();
     mRowIDs.add(row); return this;
   }
+  // adding a new row without explicit row id.
+  public Dataframe addRow(Object... items)
+  {
+    if (Tools.isSet(items) && items.length>0 && (items.length/2)==Math.round(items.length/2))
+    {
+      if (mData==null) mData = HashBasedTable.create();
+      // creat a new row
+      String row = mData.rowKeySet().size()+""; addRowId(row);
+      for (int i=0; i<items.length; i+=2)
+      {
+        mData.put(row, items[i].toString(), items[i+1]);
+      }
+    }
+
+    return this;
+  }
   public Dataframe addRow(String id, Map<String, Object> row)
   {
     if (mData==null) mData = HashBasedTable.create();
@@ -189,7 +205,31 @@ public class Dataframe implements Disposable
 
     return this;
   }
-  public Var addVar(Var v)
+  // set the whole column for the var to a specific value
+  // same as: df$col = val
+  public Dataframe setVar(String col, String val)
+  {
+    if (!hasVars(col)) setVar(new Variable(col));
+
+    if (Strs.isSet(val))
+      for (String r : rows()) put(r, col, val);
+
+    return this;
+  }
+  // create the variable if necessary and set the new column to ys[]
+  public Dataframe setVar(String v, double[] ys)
+  {
+    if (!hasVars(v)) setVar(new Variable(v));
+
+    if (ys!=null && ys.length==rows().size())
+      for (int i=0; i<ys.length; i++)
+      {
+        put(getRowId(i), v, ys[i]);
+      }
+
+    return this;
+  }
+  public Var setVar(Var v)
   {
     if (mNameVar==null) mNameVar = new HashMap<>();
     if (mNameVar.put(v.getName(), v)==null)
@@ -282,7 +322,7 @@ public class Dataframe implements Disposable
   {
     try
     {
-      try { writer.write(display(delim, "") + "\n"); }
+      try { writer.write(display(delim, "") + "\n\r"); }
       finally { writer.close(); }
     }
     catch (IOException io)
@@ -292,7 +332,7 @@ public class Dataframe implements Disposable
   }
   public SortedMap<Double, Double> getXY(String x, String y)
   {
-    if (!hasVar(x,false) || hasVar(y,false)) return null;
+    if (!hasVar(x, false) || hasVar(y,false)) return null;
 
     SortedMap<Double, Double> line = new TreeMap<Double, Double>();
 //    Var vx=asVar(x), vy=getVar(y);
@@ -368,19 +408,6 @@ public class Dataframe implements Disposable
     }
     return ys;
   }
-  public Dataframe addVar(String v, double[] ys)
-  {
-    if (hasVars(v)) throw new RuntimeException("Variable " + v + " already exist!");
-
-    if (ys!=null && ys.length==rows().size())
-    {
-      for (int i=0; i<ys.length; i++)
-      {
-        put(getRowId(i), v, ys[i]);
-      }
-    }
-    return this;
-  }
   public Dataframe renameCol(String from, String to)
   {
     if (!Tools.isSet(cols())) return this;
@@ -448,7 +475,7 @@ public class Dataframe implements Disposable
 
       // keep only the selected cols if specified
       for (String col : (Tools.isSet(selected_cols)?selected_cols:csv.getHeaders()))
-        if (Tools.contains(csv.getHeaders(), col)) addVar(new Variable(col));
+        if (Tools.contains(csv.getHeaders(), col)) setVar(new Variable(col));
 
       // going thro the rows
       long row_counts = 0;
@@ -493,7 +520,7 @@ public class Dataframe implements Disposable
   {
     if (!Tools.isSet(mData)) return this;
 
-    setupVars();
+    mColIDs=null; mRowIDs=null; setupVars();
     if (Tools.isSet(mColIDs))
       for (String v : mColIDs)
       {
@@ -555,7 +582,7 @@ public class Dataframe implements Disposable
     for (String s : vs)
     {
       // add the var if necessary
-      if (!hasVars(s)) addVar(new Variable(s));
+      if (!hasVars(s)) setVar(new Variable(s));
       Var v = asVar(s);
       if (v==null) continue;
 
@@ -915,6 +942,30 @@ public class Dataframe implements Disposable
     return indices;
   }
 
+  // replicate the row if multiple values exist in the given col
+  public Dataframe unroll(char delimiter, String... cols)
+  {
+    if (!Tools.isSet(mData) || !Tools.isSet(cols)) return this;
+
+    int last_row = rows().size();
+    for (String col : cols)
+      for (String row : rows())
+        if (mData.get(row, col)!=null)
+        {
+          String[] items = Strs.split(mData.get(row, col).toString(), delimiter);
+          if (items.length>1)
+          {
+            put(row, col, items[0]);
+            for (int i=1; i<items.length; i++)
+            {
+              last_row++;
+              addRow(last_row+"", row(row)).put(last_row+"", col, items[i]);
+            }
+          }
+        }
+
+    return init();
+  }
   /** ftable(animals), same as ftable(animals[,c("size","type","name")])
    *
               name   chihuahua   greatdane   lynx  tiger
@@ -1029,7 +1080,7 @@ public class Dataframe implements Disposable
     // create the merged results
     Dataframe out = new Dataframe();
     // deposite the columns
-    for (String v : xy_var_col.values()) out.addVar(new Variable(v));
+    for (String v : xy_var_col.values()) out.setVar(new Variable(v));
 
     for (String id : id_x_y.keySet())
     {

@@ -25,6 +25,22 @@ public class Stats
   {
     for (long i=0l; i<18l; i++) sLnFactorials.put(i, Math.log(factorial(i)));
   }
+  public static double geomean(Collection<Double> s)
+  {
+    if (!Tools.isSet(s)) return 0;
+
+    double avg = 1d;
+    for (Double v : s) avg*=v;
+    return Math.pow(avg, 1.0/(double )s.size());
+  }
+  public static double products(Collection<Double> s)
+  {
+    if (!Tools.isSet(s)) return 0;
+
+    double avg = 1d;
+    for (Double v : s) avg*=v;
+    return avg;
+  }
   public static double mean(Collection<Double> s)
   {
     if (!Tools.isSet(s)) return 0;
@@ -166,6 +182,8 @@ public class Stats
     if      (s instanceof String)  return NumberUtils.createLong((String) s);
     else if (s instanceof Long  )  return ((Long   )s);
     else if (s instanceof Integer) return ((Integer )s).longValue();
+    else if (s instanceof Double)  return ((Double  )s).longValue();
+    else if (s instanceof Float)   return ((Float   )s).longValue();
 
     return null;
   }
@@ -173,8 +191,10 @@ public class Stats
   {
     if (s==null) return null;
     if      (s instanceof String)  return NumberUtils.createInteger((String) s);
-    else if (s instanceof Long  )  return ((Long   )s).intValue();
+    else if (s instanceof Long  )  return ((Long    )s).intValue();
     else if (s instanceof Integer) return ((Integer )s);
+    else if (s instanceof Double)  return ((Double  )s).intValue();
+    else if (s instanceof Float)   return ((Float   )s).intValue();
 
     return null;
   }

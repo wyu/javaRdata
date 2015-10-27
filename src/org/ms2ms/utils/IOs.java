@@ -1,12 +1,13 @@
 package org.ms2ms.utils;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.*;
-import org.apache.commons.collections15.multimap.MultiHashMap;
 import org.ms2ms.data.Binary;
 import org.ms2ms.math.Stats;
 import toools.set.IntHashSet;
 import toools.set.IntSet;
 
+import javax.annotation.Nonnull;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -83,6 +84,36 @@ public class IOs
 ////    isnull(ds, t);
 ////    if (t != null) write(ds, t.toString());
 //  }
+  public static void writeOpStr(DataOutput ds, @Nonnull Optional<String> t) throws IOException
+  {
+    write(ds, t.isPresent());
+    if (t.isPresent()) write(ds, t.get());
+  }
+  public static void writeOpDouble(DataOutput ds, @Nonnull Optional<Double> t) throws IOException
+  {
+    write(ds, t.isPresent());
+    if (t.isPresent()) write(ds, t.get());
+  }
+  public static void writeOpFloat(DataOutput ds, @Nonnull Optional<Float> t) throws IOException
+  {
+    write(ds, t.isPresent());
+    if (t.isPresent()) write(ds, t.get());
+  }
+  public static void writeOpInt(DataOutput ds, @Nonnull Optional<Integer> t) throws IOException
+  {
+    write(ds, t.isPresent());
+    if (t.isPresent()) write(ds, t.get());
+  }
+  public static void writeOpLong(DataOutput ds, @Nonnull Optional<Long> t) throws IOException
+  {
+    write(ds, t.isPresent());
+    if (t.isPresent()) write(ds, t.get());
+  }
+  public static void writeOpBoolean(DataOutput ds, @Nonnull Optional<Boolean> t) throws IOException
+  {
+    write(ds, t.isPresent());
+    if (t.isPresent()) write(ds, t.get());
+  }
   public static void write(DataOutput ds, BitSet t) throws IOException
   {
     byte[] bs = t != null ? Tools.toByteArray(t) : null;
@@ -323,6 +354,49 @@ public class IOs
     }
     return null;
   }
+  public static Optional<String> readOpStr(DataInput ds) throws IOException
+  {
+    Optional<String> r;
+    if (Tools.isTrue(read(ds, false))) r=Optional.of(read(ds, "")); else r=Optional.absent();
+
+    return r;
+  }
+  public static Optional<Double> readOpDouble(DataInput ds) throws IOException
+  {
+    Optional<Double> r;
+    if (Tools.isTrue(read(ds, false))) r=Optional.of(read(ds, 0d)); else r=Optional.absent();
+
+    return r;
+  }
+  public static Optional<Integer> readOpInt(DataInput ds) throws IOException
+  {
+    Optional<Integer> r;
+    if (Tools.isTrue(read(ds, false))) r=Optional.of(read(ds, 0)); else r=Optional.absent();
+
+    return r;
+  }
+  public static Optional<Float> readOpFloat(DataInput ds) throws IOException
+  {
+    Optional<Float> r;
+    if (Tools.isTrue(read(ds, false))) r=Optional.of(read(ds, 0f)); else r=Optional.absent();
+
+    return r;
+  }
+  public static Optional<Long> readOpLong(DataInput ds) throws IOException
+  {
+    Optional<Long> r;
+    if (Tools.isTrue(read(ds, false))) r=Optional.of(read(ds, 0l)); else r=Optional.absent();
+
+    return r;
+  }
+  public static Optional<Boolean> readOpBoolean(DataInput ds) throws IOException
+  {
+    Optional<Boolean> r;
+    if (Tools.isTrue(read(ds, false))) r=Optional.of(read(ds, false)); else r=Optional.absent();
+
+    return r;
+  }
+
   public static Table<String,  String, IntSet> readStr2IntSet(DataInput ds) throws IOException
   {
     int n = read(ds, 1); // values.size()
@@ -1121,8 +1195,7 @@ public class IOs
     Long val = is.readLong();
     return (val != null ? val : value);
   }
-  public static Double read(DataInput is,
-                            Double    value) throws IOException
+  public static Double read(DataInput is, Double value) throws IOException
   {
     if (is.readInt() == 0)
     {
@@ -1302,6 +1375,18 @@ public class IOs
     {
       System.out.println(io);
     }
+  }
+  public static String row(char t, @Nonnull Map<String, Object> R, String _default, @Nonnull String... cols)
+  {
+    String line=null;
+    for (String col : cols)
+      line = Strs.extend(line, R.containsKey(col) ? R.get(col).toString() : _default, t);
 
+    return line;
+  }
+  public static Writer writeLine(@Nonnull Writer w, String line) throws IOException
+  {
+    if (line!=null) w.write(line+"\n");
+    return w;
   }
 }

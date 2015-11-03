@@ -389,4 +389,12 @@ public class Stats
     return s;
   }
   public static boolean isSet(double s) { return !Double.isNaN(s) && !Double.isInfinite(s); }
+  public static int compareTo(Comparable A, Comparable B)
+  {
+    if (A==null && B==null) return 0;
+    if (A==null) return -1;
+    if (B==null) return  1;
+
+    return A.compareTo(B);
+  }
 }

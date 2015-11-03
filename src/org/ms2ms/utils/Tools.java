@@ -1,11 +1,14 @@
 package org.ms2ms.utils;
 
 import com.google.common.collect.*;
+import org.expasy.mzjava.proteomics.ms.ident.PeptideMatch;
 import org.ms2ms.Disposable;
 import org.ms2ms.data.collect.MultiTreeTable;
 import toools.set.IntHashSet;
 import toools.set.IntSet;
 
+import javax.annotation.Nonnull;
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -509,5 +512,71 @@ public class Tools
       array[sz - i - 1] = tmp;
     }
     return array;
+  }
+
+  /* @param ordered is an ordered map of key-obj
+   * @param x is the desired location of the key
+   * @return a subtable where each column has at least an object below and above the x
+   */
+  public static <R extends Comparable, C extends Comparable, T extends Object> RowSortedTable<R, C, T>
+      interpolate(@Nonnull RowSortedTable<R, C, T> ordered, R x)
+  {
+    SortedSet<R>    tail=ordered.rowKeySet().tailSet(x);
+    NavigableSet<R> head=new TreeSet<R>(ordered.rowKeySet().headSet(x)).descendingSet();
+
+    // step through the upper and lower ranks
+    RowSortedTable<R, C, T> sub = TreeBasedTable.create();
+    for (C col : ordered.columnKeySet())
+      for (R row : head)
+        if (ordered.contains(row, col))
+        {
+          sub.put(row, col, ordered.get(row, col)); break;
+        }
+    for (C col : ordered.columnKeySet())
+      for (R row : tail)
+        if (ordered.contains(row, col))
+        {
+          sub.put(row, col, ordered.get(row, col)); break;
+        }
+
+/*
+    // create an ordered list of row keys
+    R[] rows = (R[] )Array.newInstance(x.getClass(), ordered.rowKeySet().size());
+    int counts=0;
+    for (R r : ordered.rowKeySet()) rows[counts++]=r;
+
+    // sort the numbers
+    Arrays.sort(rows);
+
+    int pos = Arrays.binarySearch(rows, x);
+    // convert it to the upper bound of the interval if not matched
+    if (pos<0) pos = -1*(pos+1);
+
+    // expand upward if permitted
+    int lower=rows.length, upper=0;
+    for (C col : ordered.columnKeySet())
+      for (int i=pos; i<rows.length; i++)
+        if (ordered.contains(rows[i], col))
+        {
+          if (i>upper) upper=i;
+          break;
+        }
+    // check the other direction
+    for (C col : ordered.columnKeySet())
+      for (int i=pos-1; i>=0; i--)
+        if (ordered.contains(rows[i], col))
+        {
+          if (i<lower) lower=i;
+          break;
+        }
+
+    // create the sub-table
+    RowSortedTable<R, C, T> sub = TreeBasedTable.create();
+    for (int i=lower; i<upper; i++)
+      for (C col : ordered.row(rows[i]).keySet())
+        if (ordered.contains(rows[i], col)) sub.put(rows[i], col, ordered.get(rows[i], col));
+*/
+
+    return sub;
   }
 }

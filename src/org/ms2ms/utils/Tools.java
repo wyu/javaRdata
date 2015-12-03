@@ -579,4 +579,23 @@ public class Tools
 
     return sub;
   }
+  public static int lastIndexBelow(@Nonnull List<Double> s, int start, double value)
+  {
+    if (start<s.size())
+      for (int i=start; i<s.size(); i++)
+        if (s.get(i)>value) return i-1;
+
+    // signal invalid start
+    return -1;
+  }
+
+  public static int firstIndexAbove(@Nonnull List<Double> s, int start, double value)
+  {
+    if (start<s.size())
+      for (int i=start; i<s.size(); i++)
+        if (s.get(i)>value) return i;
+
+    // signal invalid start
+    return -1;
+  }
 }

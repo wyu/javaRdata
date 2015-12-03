@@ -493,7 +493,7 @@ public class Dataframe implements Disposable
 
         addRowId(id);
         // deposit the cells
-        for (String v : cols()) mData.put(id, v, csv.get(v));
+        for (String v : cols()) if (csv.get(v)!=null) mData.put(id, v, csv.get(v));
       }
       csv.close();
       setupVars();

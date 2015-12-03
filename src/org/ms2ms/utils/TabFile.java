@@ -210,8 +210,9 @@ public class TabFile
     if (mFileReader != null) mFileReader.close();
   }
   protected void finalize() throws IOException { close(); }
-  public Double getDouble(String key) { return Stats.toDouble(get(key)); }
-  public Integer getInt(String key) { return new Integer(get(key)); }
+  public Double  getDouble(String key) { return Stats.toDouble(get(key)); }
+  public Float   getFloat( String key) { return Stats.toFloat( get(key)); }
+  public Integer getInt(   String key) { return new Integer(   get(key)); }
   // return the first non-null value
   public String getNotNull(String... tags)
   {

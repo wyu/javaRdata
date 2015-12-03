@@ -397,4 +397,9 @@ public class Stats
 
     return A.compareTo(B);
   }
+  public static double d2d(double x, int n)
+  {
+    double y=Math.round(x*Math.pow(10d,n))/Math.pow(10d,n);
+    return y;
+  }
 }

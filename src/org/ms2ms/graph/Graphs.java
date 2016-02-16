@@ -10,21 +10,12 @@ import com.thinkaurelius.titan.core.schema.TitanManagement;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.TransactionalGraph;
 import com.tinkerpop.blueprints.Vertex;
-import org.apache.hadoop.mapred.InvalidInputException;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.Graph;
-import org.junit.Assert;
 import org.ms2ms.utils.Strs;
-import org.ms2ms.utils.TabFile;
 import org.ms2ms.utils.Tools;
-import psidev.psi.mi.xml.io.impl.PsimiXmlReader254;
 import psidev.psi.mi.xml.model.*;
-import toools.set.IntSet;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
-import java.util.logging.Level;
 
 /**
  * ** Copyright 2014-2015 ms2ms.org

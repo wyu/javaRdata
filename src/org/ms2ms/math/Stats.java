@@ -23,7 +23,7 @@ public class Stats
 
   static
   {
-    for (long i=0l; i<18l; i++) sLnFactorials.put(i, Math.log(factorial(i)));
+    for (long i=0L; i<18L; i++) sLnFactorials.put(i, Math.log(factorial(i)));
   }
   public static double geomean(Collection<Double> s)
   {
@@ -79,7 +79,7 @@ public class Stats
   }
   public static long factorial(long n)
   {
-    long prod = 1l;
+    long prod = 1L;
     for (long k=1; k<=n; ++k) prod *= k;
     return prod;
   }

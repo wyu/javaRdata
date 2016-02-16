@@ -237,6 +237,7 @@ public class ParCoordsTest extends TestAbstract
     System.out.println(dat.rows().size()+"rows.");
   }
   /* \Exacerbations\Screening\Event 6\Addition of LABA or other long acting bronchodilators=\Exacerbations\Screening\Event 6\Addition of LABA or other long acting bronchodilators */
+/*
   private static DirectedGraph<PropertyNode, PropertyEdge> parseTransmartHeader(
                  DirectedGraph<PropertyNode, PropertyEdge> g, Map<String, PropertyNode> nodes, String col, char delimiter)
   {
@@ -259,6 +260,7 @@ public class ParCoordsTest extends TestAbstract
     }
     return g;
   }
+*/
 
   private static TreeNode parseTransmartHeader(TreeNode root, String col, char delimiter, Object data)
   {

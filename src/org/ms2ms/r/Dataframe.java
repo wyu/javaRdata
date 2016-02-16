@@ -5,6 +5,7 @@ import com.apporiented.algorithm.clustering.Cluster;
 import com.apporiented.algorithm.clustering.ClusteringAlgorithm;
 import com.apporiented.algorithm.clustering.DefaultClusteringAlgorithm;
 import com.google.common.collect.*;
+import org.apache.commons.collections15.multimap.MultiHashMap;
 import org.apache.commons.math3.ml.clustering.CentroidCluster;
 import org.apache.commons.math3.ml.clustering.Clusterable;
 import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
@@ -18,6 +19,8 @@ import org.ms2ms.math.clustering.ParCoodsClusterable;
 import org.ms2ms.math.clustering.SlopeConvergenceDistance;
 import org.ms2ms.utils.*;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
@@ -312,6 +315,22 @@ public class Dataframe implements Disposable
       buf.append(line + "\n");
     }
     return buf;
+  }
+  public void csv(String out, int decimal, String delimiter)
+  {
+    try
+    {
+      FileWriter writer = null;
+      try
+      {
+        writer = new FileWriter(out);
+        writer.write(csv(decimal, delimiter).toString());
+      }
+      finally {
+        if (writer!=null) writer.close();
+      }
+    }
+    catch (IOException ie) {}
   }
   @Override
   public String toString()
@@ -893,6 +912,17 @@ public class Dataframe implements Disposable
       Object v = cell(rowid, row);
       if (v instanceof String && Strs.isSet((String)v)) indice.put((String )v, rowid);
     }
+
+    return indice;
+  }
+  public Multimap<String, String> IndexByCol(String col)
+  {
+//    if (!hasVar(col,true)) return null;
+
+    Multimap<String, String> indice = HashMultimap.create();
+    for (String rowid : rows())
+      if (cell(rowid, col)!=null)
+        indice.put(cell(rowid, col).toString(), rowid);
 
     return indice;
   }

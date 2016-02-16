@@ -289,6 +289,14 @@ public class Tools
 
     return false;
   }
+  public static <T> Collection<T> overlap(T[] A, T[] B)
+  {
+    return overlap(Arrays.asList(A), Arrays.asList(B));
+  }
+  public static <T> Collection<T> onlyA(T[] A, T[] B)
+  {
+    return onlyA(Arrays.asList(A), Arrays.asList(B));
+  }
   public static <T> Collection<T> overlap(Collection<T> A, Collection<T> B)
   {
     if (A==null || B==null) return null;
@@ -298,6 +306,16 @@ public class Tools
       if (contains(B, t1)) shared.add(t1);
 
     return shared;
+  }
+  public static <T> Collection<T> onlyA(Collection<T> A, Collection<T> B)
+  {
+    if (A==null || B==null) return null;
+
+    Set<T> only = new HashSet<T>(), bb = new HashSet<>(B);
+    for (T t1 : A)
+      if (!bb.contains(t1)) only.add(t1);
+
+    return only;
   }
   public static Number negates(Number s)
   {

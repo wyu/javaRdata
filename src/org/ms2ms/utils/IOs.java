@@ -2,8 +2,10 @@ package org.ms2ms.utils;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
+import com.hfg.util.FileUtil;
 import org.ms2ms.data.Binary;
 import org.ms2ms.math.Stats;
+import org.neo4j.io.fs.FileUtils;
 import toools.set.IntHashSet;
 import toools.set.IntSet;
 
@@ -385,7 +387,7 @@ public class IOs
   public static Optional<Long> readOpLong(DataInput ds) throws IOException
   {
     Optional<Long> r;
-    if (Tools.isTrue(read(ds, false))) r=Optional.of(read(ds, 0l)); else r=Optional.absent();
+    if (Tools.isTrue(read(ds, false))) r=Optional.of(read(ds, 0L)); else r=Optional.absent();
 
     return r;
   }
@@ -1322,6 +1324,66 @@ public class IOs
 
     return null;
   }
+  // http://www.mkyong.com/java/how-to-execute-shell-command-from-java/
+  public static String executeCommand(String command)
+  {
+    StringBuffer output = new StringBuffer();
+
+    Process p;
+    try {
+      p = Runtime.getRuntime().exec(command);
+      p.waitFor();
+      BufferedReader reader =
+          new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+      String line = "";
+      while ((line = reader.readLine())!= null) {
+        output.append(line + "\n");
+      }
+
+    } catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+
+    return output.toString();
+  }
+  // not recursive. Having lots of trouble reproducing the behavious of "ls" using the other calls
+  public static List<String> listFiles(String tsv)
+  {
+    // TODO still not working
+    String listing = executeCommand("ls "+tsv);
+//    try
+//    {
+////      String tmp = "/tmp/temp.list";
+////      Process proc = Runtime.getRuntime().exec("ls "+tsv+" > "+tmp);
+////
+////      // wait for the result
+////      proc.waitFor();
+////
+////      List<String> lines = readLines(tmp);
+////
+////      FileUtils.deleteFile(new File(tmp));
+//
+//      return null;
+////      System.out.println(proc.toString());
+//    }
+//    catch (IOException|InterruptedException e)
+//    {
+//      e.printStackTrace();
+//    }
+//    File[] files = tsv.getParentFile().listFiles();
+//    List<String> filenames = new ArrayList<>();
+//    for (File file : files)
+//    {
+//      if (file.getName().matches(tsv.getName()))
+//      {
+//        filenames.add(file.getAbsolutePath());
+//      }
+//    }
+
+    return null;
+  }
   public static Multimap<String, String> listDirFiles(String root, FileFilter filter)
   {
     FileVisitor<Path> fileProcessor = new ProcessFile(filter);
@@ -1336,6 +1398,18 @@ public class IOs
     }
 
     return null;
+  }
+  public static List<String> readLines(String file) throws IOException
+  {
+    BufferedReader reader = new BufferedReader(new FileReader(file));
+    List<String> lines = new ArrayList<>();
+    while (reader.ready())
+    {
+      lines.add(reader.readLine());
+    }
+    reader.close();
+
+    return lines;
   }
   private static final class ProcessFile extends SimpleFileVisitor<Path>
   {

@@ -24,6 +24,9 @@ public class Strs
   public static final String BLANK             = "  1lsd 00s *&**";
   public static final String ALPHA             = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
+  public static final Pattern PTN_SIGNS        = Pattern.compile("(?=[(+)(\\-)])");
+  public static final Pattern PTN_SIGNS_DGT    = Pattern.compile("[+-.\\d]+");
+
   public static String concatenate(char t, Object... ss)
   {
     String out = null;
@@ -72,6 +75,17 @@ public class Strs
   {
     List<String> list  = new ArrayList<String>();
     String[]     items = s.split(regx);
+    for (String ss : items)
+      if (!trim || isSet(ss.trim()))
+        list.add(trim ? ss.trim() : ss);
+    // return the list
+    return list;
+  }
+  public static List<String> split(String s, Pattern p, boolean trim)
+  {
+//    Pattern.compile(regex).split(this, limit)
+    List<String> list  = new ArrayList<String>();
+    String[]     items = p.split(s, 0);
     for (String ss : items)
       if (!trim || isSet(ss.trim()))
         list.add(trim ? ss.trim() : ss);

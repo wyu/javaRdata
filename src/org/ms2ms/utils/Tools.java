@@ -178,6 +178,13 @@ public class Tools
       for (Collection s : ss)
         if (s!=null) { s.clear(); s=null; }
   }
+  public static void dispose(StringBuffer s)
+  {
+    if (s!=null)
+    {
+      s.delete(0, s.length()); s=null;
+    }
+  }
   public static void dispose(Map... ss)
   {
     if (isSet(ss))

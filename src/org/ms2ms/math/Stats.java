@@ -189,12 +189,15 @@ public class Stats
   }
   public static Integer toInt(Object s)
   {
-    if (s==null) return null;
-    if      (s instanceof String)  return NumberUtils.createInteger((String) s);
-    else if (s instanceof Long  )  return ((Long    )s).intValue();
-    else if (s instanceof Integer) return ((Integer )s);
-    else if (s instanceof Double)  return ((Double  )s).intValue();
-    else if (s instanceof Float)   return ((Float   )s).intValue();
+    try
+    {
+      if      (s instanceof String)  return NumberUtils.createInteger((String) s);
+      else if (s instanceof Long  )  return ((Long    )s).intValue();
+      else if (s instanceof Integer) return ((Integer )s);
+      else if (s instanceof Double)  return ((Double  )s).intValue();
+      else if (s instanceof Float)   return ((Float   )s).intValue();
+    }
+    catch (Exception e) {}
 
     return null;
   }

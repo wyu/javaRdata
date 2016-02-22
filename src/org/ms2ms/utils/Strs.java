@@ -177,14 +177,9 @@ public class Strs
 //    System.out.println();
 //  }
 //
-  public static String toString(String[] ss, String dl) {
-    return toString(ss, dl, 0, ss != null ? ss.length : 0);
-    /*// no point to go further
-    if (ss == null) return null;
-    String made = new String();
-    for (int i = 0; i != ss.length; i++) if (ss[i] != null) made = extend(made, ss[i], dl);
-    // return the concatenated string
-    return made; */
+  public static String toString(String[] ss, String dl)
+  {
+    return ss!=null&&ss.length==1?ss[0]:(toString(ss, dl, 0, ss != null ? ss.length : 0));
   }
   public static <K, T> String toString(Map<K, T> ss, String dl) {
     // no point to go further

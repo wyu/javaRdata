@@ -29,9 +29,9 @@ public class Stats
   {
     if (!Tools.isSet(s)) return 0;
 
-    double avg = 1d;
-    for (Double v : s) avg*=v;
-    return Math.pow(avg, 1.0/(double )s.size());
+    double avg = 0d, counts=0;
+    for (Double v : s) if (v!=null && v!=0) { avg += Math.log(v); counts++; }
+    return Math.exp(avg/counts);
   }
   public static double products(Collection<Double> s)
   {
@@ -40,6 +40,14 @@ public class Stats
     double avg = 1d;
     for (Double v : s) avg*=v;
     return avg;
+  }
+  public static double ratio_products(Collection<Double> s)
+  {
+    if (!Tools.isSet(s)) return 0;
+
+    double avg = 1d;
+    for (Double v : s) avg*=(1-v);
+    return 1-avg;
   }
   public static double mean(Collection<Double> s)
   {

@@ -294,6 +294,23 @@ public class Dataframe implements Disposable
     }
     return buf;
   }
+  public StringBuffer wiki(int deci)
+  {
+    StringBuffer buf = new StringBuffer();
+
+    for (String col : cols()) buf.append("||"+col);
+    buf.append("||\n");
+    for (String id : rows())
+    {
+      for (String v : cols())
+      {
+        Object val = (cells(id, v) != null && cells(id, v)[0] != null ? cells(id, v)[0] : null);
+        buf.append("|" + (val!=null?(val instanceof Double?Stats.d2d((double)val, deci):val):" "));
+      }
+      buf.append("|\n");
+    }
+    return buf;
+  }
   public StringBuffer csv(int decimal) { return csv(decimal, ","); }
   public StringBuffer tsv(int decimal) { return csv(decimal, "\t"); }
   public StringBuffer csv(int decimal, String delimiter)
@@ -341,7 +358,20 @@ public class Dataframe implements Disposable
   {
     try
     {
-      try { writer.write(display(delim, "") + "\n\r"); }
+      try
+      {
+        writer.write("rowid" + delim + Strs.toString(cols(), delim) + "\n");
+        for (String id : rows())
+        {
+          writer.write(id);
+          for (String v : cols())
+            // not worry about the vector in the cell!
+            writer.write(delim + (cell(id, v)!=null ? cell(id, v) : ""));
+
+          writer.write("\n"); // terminate the line
+        }
+//        writer.write(display(delim, "") + "\n\r");
+      }
       finally { writer.close(); }
     }
     catch (IOException io)
@@ -926,6 +956,7 @@ public class Dataframe implements Disposable
 
     return indice;
   }
+  // construct a sorted index by two cols of the data frame. For example, mz vs RT
   public MultiTreeTable<Double, Double, String> index(String row, String col)
   {
     if (!hasVar(row,false) || !hasVar(col,false)) return null;

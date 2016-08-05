@@ -157,6 +157,9 @@ public class TabFile
   //--------------------------------------------------------------------------
   public boolean hasNext() throws IOException
   {
+    // reset the current line
+    mCurrentLine=null;
+
     // read-in the line in a separated step
     // skip line starting with 'skip' if asked
     if (Strs.isSet(mSkip))
@@ -170,8 +173,8 @@ public class TabFile
     else mCurrentLine = mFileReader.readLine();
 
     // split the fields according to the delimiter
-    String[] cols = split(mCurrentLine);
-    if (mCurrentLine != null && Tools.isSet(cols))
+    String[] cols=mCurrentLine!=null?split(mCurrentLine):null;
+    if (/*mCurrentLine!=null && */Tools.isSet(cols))
     {
       // forget the duplicated header
       while (Strs.isSet(cols[0]) && Strs.isSet(mHds[0]) && cols[0].equals(mHds[0]))
@@ -210,9 +213,29 @@ public class TabFile
     if (mFileReader != null) mFileReader.close();
   }
   protected void finalize() throws IOException { close(); }
-  public Double  getDouble(String key) { return Stats.toDouble(get(key)); }
-  public Float   getFloat( String key) { return Stats.toFloat( get(key)); }
-  public Integer getInt(   String key) { return new Integer(   get(key)); }
+  public Double  getDouble(String... keys)
+  {
+    if (Tools.isSet(keys))
+      for (String key : keys)
+        if (get(key)!=null) return Stats.toDouble(get(key));
+    return null;
+  }
+  public Float  getFloat(String... keys)
+  {
+    if (Tools.isSet(keys))
+      for (String key : keys)
+        if (get(key)!=null) return Stats.toFloat(get(key));
+    return null;
+  }
+  public Integer  getInt(String... keys)
+  {
+    if (Tools.isSet(keys))
+      for (String key : keys)
+        if (get(key)!=null) return Stats.toInt(get(key));
+    return null;
+  }
+//  public Float   getFloat( String key) { return Stats.toFloat( get(key)); }
+//  public Integer getInt(   String key) { return new Integer(   get(key)); }
   // return the first non-null value
   public String getNotNull(String... tags)
   {

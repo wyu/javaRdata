@@ -623,4 +623,13 @@ public class Tools
     // signal invalid start
     return -1;
   }
+  public static <T> Collection<T> flatten(Collection<Collection<T>> s)
+  {
+    if (s==null) return null;
+
+    Collection<T> ss = new ArrayList<T>();
+    for (Collection<T> s1 : s) ss.addAll(s1);
+
+    return ss;
+  }
 }

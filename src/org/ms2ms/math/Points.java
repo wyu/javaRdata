@@ -221,7 +221,7 @@ public class Points
     }
     return sumY != 0 ? sumXY / sumY : null;
   }
-  public static <T extends Point> Double sumY(List<T> data)
+  public static <T extends Point> Double sumY(Collection<T> data)
   {
     if (data==null) return null;
 

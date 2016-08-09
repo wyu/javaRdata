@@ -16,7 +16,7 @@ public class MultiTreeTable<K extends Comparable, L extends Comparable, T extend
 {
   private SortedMap<K, TreeMultimap<L, T>> mData;
 
-  public MultiTreeTable() { super(); mData = new TreeMap<K, TreeMultimap<L, T>>(); }
+  public MultiTreeTable() { super(); mData = new TreeMap<>(); }
 
   public long size()
   {
@@ -25,16 +25,6 @@ public class MultiTreeTable<K extends Comparable, L extends Comparable, T extend
 
     return counts;
   }
-/*
-  public long row_size()
-  {
-    return getData().keySet().size();
-  }
-  public long col_size()
-  {
-    return getData().keySet().size();
-  }
-*/
   public void put(K key, L lable, T data)
   {
     if (mData == null) mData = new TreeMap<>();
@@ -133,24 +123,6 @@ public class MultiTreeTable<K extends Comparable, L extends Comparable, T extend
   public SortedMap<K, TreeMultimap<L, T>> getData() { return mData; }
   public void clear() { if (getData() != null) getData().clear(); }
 
-/*
-  public boolean remove(K key, L label, T val)
-  {
-    if (val != null)
-    {
-
-      boolean outcome = cells(key, label).remove(val);
-      if (outcome)
-      {
-        if (!Tools.isSet(cells(key, label))) row(key).remove(label);
-        if (!Tools.isSet(row(key)))        getData().remove(key);
-      }
-
-      return outcome;
-    }
-    return false;
-  }
-*/
   public boolean remove(K key1, K key2)
   {
     Set<K> removed = new HashSet<K>(getData().subMap(key1, key2).keySet());

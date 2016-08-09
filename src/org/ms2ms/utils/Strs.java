@@ -220,7 +220,7 @@ public class Strs
   public static <T> String toString(Collection<T> ss, String dl) {
     // no point to go further
     if (ss == null) return null;
-    String made = new String();
+    String made = null;
     for (T t : ss)
       if (t != null) made = extend(made, t.toString(), dl);
     // return the concatenated string
@@ -546,6 +546,26 @@ public class Strs
     return s;
   }
   public static int indexOf(String A, String B) { return A!=null&&B!=null?A.indexOf(B):-1; }
+
+  public static char[] shuffle(char[] chars)
+  {
+    Random rnd = new Random(System.nanoTime());
+    // Shuffle array
+    for (int i=chars.length; i>1; i--)
+    {
+      int j=rnd.nextInt(i);
+      char c=chars[i-1];
+      chars[i-1]=chars[j]; chars[j]=c;
+    }
+    return chars;
+  }
+  public static String toString(char[] sequence, int left, int right)
+  {
+    StringBuilder buf = new StringBuilder();
+    buf.append(Arrays.copyOfRange(sequence, left, right));
+
+    return buf.toString();
+  }
 //  public static String fromLast(List<String> s, int n)
 //  {
 //    return s!=null && s.size()>2 ? s.get(s.size()-n) : null;

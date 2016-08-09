@@ -1,6 +1,7 @@
 package org.ms2ms.utils;
 
 import com.google.common.collect.*;
+import org.expasy.mzjava.core.ms.PpmTolerance;
 import org.expasy.mzjava.proteomics.ms.ident.PeptideMatch;
 import org.ms2ms.Disposable;
 import org.ms2ms.data.collect.MultiTreeTable;
@@ -130,6 +131,12 @@ public class Tools
       }
 
     return pool;
+  }
+  public static <K, V> Multimap<K,V> putAll(Multimap<K,V> map, Map<K,V> in)
+  {
+    if (map!=null && in!=null)
+      for (K key : in.keySet()) map.put(key, in.get(key));
+    return map;
   }
   public static <K, V> Map<K,V> putAll(Map<K,V> map, Map<K,V> in)
   {
@@ -631,5 +638,11 @@ public class Tools
     for (Collection<T> s1 : s) ss.addAll(s1);
 
     return ss;
+  }
+  public static PpmTolerance scalePpmTolerance(PpmTolerance ppm, double scale)
+  {
+    if (ppm==null) return ppm;
+
+    return new PpmTolerance(scale*1E6*(ppm.getMax(500d)-500d)/500d);
   }
 }

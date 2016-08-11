@@ -113,7 +113,8 @@ public class Tools
   }
   public static String d2s(double s, int i)
   {
-    return format(s, i, 0);
+//    return format(s, i, 0);
+    return String.format("%."+i+"f", s);
   }
 
   public static <C extends Comparable> Collection<Range<C>> merge(Collection<Range<C>> r)

@@ -413,4 +413,12 @@ public class Stats
     double y=Math.round(x*Math.pow(10d,n))/Math.pow(10d,n);
     return y;
   }
+  public static Double percentile(Collection<Double> data, double pct)
+  {
+    if (data==null) return null;
+
+    List<Double> d = new ArrayList<>(data);
+    Collections.sort(d);
+    return d.get((int )Math.round(data.size()*pct*0.01));
+  }
 }

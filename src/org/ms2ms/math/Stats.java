@@ -1,14 +1,13 @@
 package org.ms2ms.math;
 
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Range;
-import com.google.common.collect.TreeMultimap;
+import com.google.common.collect.*;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.analysis.interpolation.LoessInterpolator;
 import org.apache.commons.math.analysis.polynomials.PolynomialSplineFunction;
 import org.ms2ms.utils.Strs;
 import org.ms2ms.utils.Tools;
+import org.uncommons.maths.combinatorics.PermutationGenerator;
 
 import java.util.*;
 
@@ -20,6 +19,7 @@ public class Stats
   public enum Aggregator { MEAN, MEDIAN, STDEV, COUNT }
 
   static private Map<Long, Double> sLnFactorials = new HashMap<Long, Double>();
+  static private Table<Integer, Integer, Collection<int[]>> sPermutationCache = HashBasedTable.create();
 
   static
   {
@@ -420,5 +420,71 @@ public class Stats
     List<Double> d = new ArrayList<>(data);
     Collections.sort(d);
     return d.get((int )Math.round(data.size()*pct*0.01));
+  }
+  public static Collection<int[]> permutations(int n, int r)
+  {
+    if (sPermutationCache.contains(n, r)) return sPermutationCache.get(n,r);
+
+    Multimap<String, List<Integer>> outcomes = HashMultimap.create();
+    Collection<int[]> permuted = new ArrayList<>();
+
+    // initiate a blank array of 0's
+    List<Integer> mods = new ArrayList<>(); for (int i=0; i<n; i++) mods.add(0);
+    // go thro the scenario
+    for (int i=1; i<=r; i++)
+    {
+      mods.set(i-1, 1); outcomes.clear();
+      PermutationGenerator perm = new PermutationGenerator(mods);
+      while (perm.hasMore())
+      {
+        List<Integer> row = perm.nextPermutationAsList();
+//        System.out.println(Strs.toString(row, ","));
+        outcomes.put(Strs.toString(row, ","), row);
+      }
+      for (List<Integer> row : outcomes.values())
+      {
+        int[] rr = new int[row.size()];
+        for (int j=0; j<row.size(); j++) rr[j]=row.get(j);
+        permuted.add(rr);
+      }
+    }
+    // deposit it in the cache
+    sPermutationCache.put(n, r, permuted);
+
+    return permuted;
+  }
+  public static boolean hasPositive(Collection<Double> s)
+  {
+    if (Tools.isSet(s))
+      for (Double d : s) if (d>0) return true;
+    return false;
+  }
+  public static double absSum(Collection<Double> s)
+  {
+    double sum=0;
+    if (Tools.isSet(s))
+      for (Double d : s) sum+=Math.abs(d);
+    return sum;
+  }
+  public static double ppm(double obs, double calc) { return 1E6*(obs-calc)/calc; }
+  public static double kai2(double[] pts)
+  {
+    if (pts==null) return 0d;
+
+    double kai=0d;
+    for (double s : pts) kai+=(s*s);
+
+    return kai;
+  }
+  public static double kai2(List<Double>... pts)
+  {
+    if (pts==null) return 0d;
+
+    double kai=0d;
+    for (List<Double> pt : pts)
+      if (pt!=null)
+        for (double s : pt) kai+=(s*s);
+
+    return kai;
   }
 }

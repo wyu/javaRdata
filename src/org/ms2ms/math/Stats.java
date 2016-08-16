@@ -18,7 +18,7 @@ public class Stats
 {
   public enum Aggregator { MEAN, MEDIAN, STDEV, COUNT }
 
-  static private Map<Long, Double> sLnFactorials = new HashMap<Long, Double>();
+  static private Map<Long, Double> sLnFactorials = new HashMap<>();
   static private Table<Integer, Integer, Collection<int[]>> sPermutationCache = HashBasedTable.create();
 
   static
@@ -94,7 +94,7 @@ public class Stats
   public static double ln_combination(long n, long k) { return ln_factorial(n)-ln_factorial(k)-ln_factorial(n-k); }
   public static double ln_factorial(long n)
   {
-    if (n>18) return 0.5d*Math.log(2d*(double )n*3.14) + (double )n*Math.log((double )n) - (double )n;
+    if (n>17) return 0.5d*Math.log(2d*(double )n*3.14) + (double )n*Math.log((double )n) - (double )n;
     return sLnFactorials.get(n);
   }
   public static double hypergeometricPval1(long success, long trials, long success_population, long population)
@@ -113,7 +113,7 @@ public class Stats
                lnfac_pop_sucpop - ln_factorial(trials-success) - ln_factorial(population-success_population-trials+success) - ln_pop_trials;
       prob += Math.exp(p);
     }
-    return Math.log(prob);
+    return Math.log10(prob);
   }
   public static Number aggregate(Collection data, Aggregator func)
   {

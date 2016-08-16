@@ -651,4 +651,13 @@ public class Tools
 
     return new PpmTolerance(scale*1E6*(ppm.getMax(500d)-500d)/500d);
   }
+  public static <T> List<T> copyOf(List<T> s, int left, int right)
+  {
+    if (s==null || left<0 || right>s.size()) return s;
+
+    List<T> ss = new ArrayList<>();
+    for (int i=left; i<right; i++) ss.add(s.get(i));
+
+    return ss;
+  }
 }

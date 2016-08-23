@@ -439,4 +439,49 @@ public class Histogram
     }
     return orig;
   }
+  public Map<String, Double> fitNormDist()
+  {
+    double A=0; // the amplitude of the dist
+    SimpleRegression R = new SimpleRegression(true);
+    for (Point xy : getHistogram())
+      if (xy.getY()>0)
+      {
+        R.addData(Math.log(xy.getY()), xy.getX());
+        if (xy.getY()>A) A=xy.getY();
+      }
+
+    // compute the definition of a norm dist
+    Map<String, Double> params = new HashMap<>();
+    params.put("amplitude",A);
+    params.put("sigma",    R.getSlope()/-2d);
+    params.put("mean",     R.getIntercept()+2*Math.log(A)*(params.get("sigma")+1d));
+
+    return params;
+  }
+  public SimpleRegression getLogRegression()
+  {
+    double A=0, sum=0; int apex=0; // the amplitude of the dist
+    for (int i=0; i<getHistogram().size(); i++)
+    {
+      sum+=getHistogram().get(i).getY();
+      if (getHistogram().get(i).getY() > A) { A = getHistogram().get(i).getY(); apex = i; }
+    }
+
+    SimpleRegression R = new SimpleRegression(true); int i=apex; double counts=0d, steps=0;
+    while (i<getHistogram().size())
+    {
+      Point xy = getHistogram().get(i);
+      counts+=xy.getY(); steps+=mStep;
+      if (counts>1)
+      {
+//        System.out.println(Tools.d2s(xy.getX(), 2) + "\t" + Math.log(counts/(steps*sum)) + "\t" + steps);
+        R.addData(xy.getX(), Math.log(counts/(steps*sum)));
+        counts=steps=0d;
+      }
+      i++;
+    }
+//    System.out.println("r2="+R.getRSquare());
+
+    return R;
+  }
 }

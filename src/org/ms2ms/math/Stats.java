@@ -94,6 +94,8 @@ public class Stats
   public static double ln_combination(long n, long k) { return ln_factorial(n)-ln_factorial(k)-ln_factorial(n-k); }
   public static double ln_factorial(long n)
   {
+    if (n<=0)
+      System.out.print("");
     if (n>17) return 0.5d*Math.log(2d*(double )n*3.14) + (double )n*Math.log((double )n) - (double )n;
     return sLnFactorials.get(n);
   }
@@ -261,7 +263,7 @@ public class Stats
       throw new RuntimeException("Not able to interpolate: ", me);
     }
   }
-  public static double[] sum(double[]... ys)
+  public static double[] matrix_sum(double[]... ys)
   {
     if (!Tools.isSet(ys)) return null;
 
@@ -281,6 +283,14 @@ public class Stats
 
     Double sum=0d;
     for (Double y : ys) sum+=y;
+    return sum;
+  }
+  public static double sum(double[] ys)
+  {
+    if (!Tools.isSet(ys)) return 0;
+
+    double sum=0d;
+    for (double y : ys) sum+=y;
     return sum;
   }
   public static Integer[] newIntArray(int start, int end)

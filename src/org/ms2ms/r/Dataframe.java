@@ -5,7 +5,6 @@ import com.apporiented.algorithm.clustering.Cluster;
 import com.apporiented.algorithm.clustering.ClusteringAlgorithm;
 import com.apporiented.algorithm.clustering.DefaultClusteringAlgorithm;
 import com.google.common.collect.*;
-import org.apache.commons.collections15.multimap.MultiHashMap;
 import org.apache.commons.math3.ml.clustering.CentroidCluster;
 import org.apache.commons.math3.ml.clustering.Clusterable;
 import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
@@ -19,7 +18,6 @@ import org.ms2ms.math.clustering.ParCoodsClusterable;
 import org.ms2ms.math.clustering.SlopeConvergenceDistance;
 import org.ms2ms.utils.*;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -316,20 +314,24 @@ public class Dataframe implements Disposable
   public StringBuffer csv(int decimal, String delimiter)
   {
     StringBuffer buf = new StringBuffer();
-    buf.append(Strs.toString(cols(), delimiter) + "\n");
-    for (String id : rows())
+
+    if (size()>0)
     {
-      String line=null;
-      for (String v : cols())
+      buf.append(Strs.toString(cols(), delimiter) + "\n");
+      for (String id : rows())
       {
-        Object val = cell(id, v);
-        if (val==null)
+        String line=null;
+        for (String v : cols())
         {
-          System.out.println();
+          Object val = cell(id, v);
+          if (val==null)
+          {
+            System.out.println();
+          }
+          line = Strs.extend(line, val==null?"":Tools.o2s(val, decimal), delimiter);
         }
-        line = Strs.extend(line, val==null?"":(val instanceof Double?Tools.d2s((Double )val, decimal):val.toString()), delimiter);
+        buf.append(line + "\n");
       }
-      buf.append(line + "\n");
     }
     return buf;
   }
@@ -504,7 +506,7 @@ public class Dataframe implements Disposable
         }
       }
     // re-init the columns since we removed some of the rows
-    for (String col : cols()) init(asVar(col));
+    for (String col : cols()) init(asVar(col), true);
 
     return this;
   }
@@ -565,7 +567,7 @@ public class Dataframe implements Disposable
     return this;
   }
   // go through the table to determine the type of the variables. Convert them to number if necessary
-  public Dataframe init()
+  public Dataframe init(boolean toNum)
   {
     if (!Tools.isSet(mData)) return this;
 
@@ -574,7 +576,7 @@ public class Dataframe implements Disposable
       for (String v : mColIDs)
       {
         Var V = asVar(v);
-        if (V!=null) { V.setFactors(null); init(V);}
+        if (V!=null) { V.setFactors(null); init(V, true);}
       }
     return this;
   }
@@ -584,7 +586,7 @@ public class Dataframe implements Disposable
     for (String col : cols()) init(asVar(col).getType(), col);
     return this;
   }
-  private Dataframe init(Var v)
+  private Dataframe init(Var v, boolean toNum)
   {
     if (!Tools.isSet(mData)) return this;
 
@@ -601,7 +603,7 @@ public class Dataframe implements Disposable
 //        mData.remove(row, v.getName());
 //      }
 
-      val = Stats.toNumber(val);
+      if (toNum) val = Stats.toNumber(val);
       if (val!=null)
       {
         counts++;
@@ -759,12 +761,12 @@ public class Dataframe implements Disposable
   public static Dataframe readtable(String src, char delimiter, boolean init, String... idcols)
   {
     Dataframe f = new Dataframe(src, delimiter, idcols);
-    return init?f.init():f;
+    return init?f.init(true):f;
   }
   public static Dataframe readtable(String src, String[] selected_cols, char delimiter, boolean init, String... idcols)
   {
     Dataframe f = new Dataframe(src, selected_cols, delimiter, idcols);
-    return init?f.init():f;
+    return init?f.init(true):f;
   }
 
   //********** R or Matlab style algorithms ***************//
@@ -927,7 +929,7 @@ public class Dataframe implements Disposable
       }
       out.put(id, keys.key[0].toString(), Stats.aggregate(body.get(keys), func));
     }
-    out.init(); Tools.dispose(body);
+    out.init(true); Tools.dispose(body);
     out.reorder(ObjectArrays.concat(rows, Strs.toStringArray(asVar(col).getFactors()), String.class));
 
     return out;
@@ -1025,7 +1027,7 @@ public class Dataframe implements Disposable
           }
         }
 
-    return init();
+    return init(true);
   }
   /** ftable(animals), same as ftable(animals[,c("size","type","name")])
    *

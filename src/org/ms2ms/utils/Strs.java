@@ -559,6 +559,17 @@ public class Strs
     }
     return chars;
   }
+  public static char[] rnd(char[] chars)
+  {
+    Random rnd = new Random(System.nanoTime());
+    char[] out = new char[chars.length];
+    // making the copy of the char at the random location
+    for (int i=0; i<chars.length; i++)
+    {
+      out[i]=chars[rnd.nextInt(chars.length)];
+    }
+    return out;
+  }
   public static String toString(char[] sequence, int left, int right)
   {
     StringBuilder buf = new StringBuilder();

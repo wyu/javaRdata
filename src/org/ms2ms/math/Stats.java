@@ -94,7 +94,7 @@ public class Stats
   public static double ln_combination(long n, long k) { return ln_factorial(n)-ln_factorial(k)-ln_factorial(n-k); }
   public static double ln_factorial(long n)
   {
-    if (n<=0)
+    if (n<0)
       System.out.print("");
     if (n>17) return 0.5d*Math.log(2d*(double )n*3.14) + (double )n*Math.log((double )n) - (double )n;
     return sLnFactorials.get(n);

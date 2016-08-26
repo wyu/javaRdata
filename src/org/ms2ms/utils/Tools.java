@@ -116,6 +116,17 @@ public class Tools
 //    return format(s, i, 0);
     return String.format("%."+i+"f", s);
   }
+  public static String o2s(Object s, int i)
+  {
+    if (s==null) return "NULL";
+
+    if      (s instanceof Integer || s instanceof Long) return s.toString();
+    else if (s instanceof String) return (String )s;
+    else if (s instanceof Float)  return d2s(((Float )s).doubleValue(), i);
+    else if (s instanceof Double) return d2s(((Double )s), i);
+
+    return s.toString();
+  }
 
   public static <C extends Comparable> Collection<Range<C>> merge(Collection<Range<C>> r)
   {

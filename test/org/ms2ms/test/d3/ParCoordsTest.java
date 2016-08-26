@@ -1,24 +1,13 @@
 package org.ms2ms.test.d3;
 
-import org.apache.commons.math3.ml.clustering.CentroidCluster;
-import org.apache.commons.math3.ml.clustering.Clusterable;
-import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
-import org.jgrapht.DirectedGraph;
-import org.jgrapht.graph.SimpleDirectedGraph;
 import org.junit.Test;
 import org.ms2ms.data.collect.TreeNode;
-import org.ms2ms.graph.PropertyEdge;
-import org.ms2ms.graph.PropertyNode;
 import org.ms2ms.math.Stats;
-import org.ms2ms.math.Transformer;
-import org.ms2ms.math.clustering.ParCoodsClusterable;
-import org.ms2ms.math.clustering.SlopeConvergenceDistance;
 import org.ms2ms.r.Dataframe;
 import org.ms2ms.r.Var;
 import org.ms2ms.test.TestAbstract;
 import org.ms2ms.utils.IOs;
 import org.ms2ms.utils.Strs;
-import org.ms2ms.utils.Tools;
 
 import java.util.*;
 
@@ -35,7 +24,7 @@ public class ParCoordsTest extends TestAbstract
   @Test
   public void prepareTSNECSV() throws Exception
   {
-    Dataframe dat = new Dataframe("/media/data/test/data/clinical_i2b2trans_adult.txt", '\t').setNAs("NA","null").init(),
+    Dataframe dat = new Dataframe("/media/data/test/data/clinical_i2b2trans_adult.txt", '\t').setNAs("NA","null").init(true),
             abbrs = new Dataframe("/media/data/test/data/clinical.abbr", '\t');
 
     Collection<String> columns = dat.cols();
@@ -84,7 +73,7 @@ public class ParCoordsTest extends TestAbstract
     // {cohort_v=10, cohort_c=88, cohort_b=110, cohort_d=101, cohort_a=311}
     String cohort="\\Study Groups\\cohort", ctrl_level="D";
 
-    Dataframe dat = new Dataframe("/media/data/test/data/clinical_i2b2trans_adult.txt", '\t').setNAs("NA","null").init();
+    Dataframe dat = new Dataframe("/media/data/test/data/clinical_i2b2trans_adult.txt", '\t').setNAs("NA","null").init(true);
 
     dat.replaceValue(cohort, Var.VarType.CATEGORICAL, "cohort_a", "A");
     dat.replaceValue(cohort, Var.VarType.CATEGORICAL, "cohort_b", "B");
@@ -125,7 +114,7 @@ public class ParCoordsTest extends TestAbstract
         else output.put(row, C.getTitle(), dat.cell(row, col));
       }
     }
-    output.init().removeRowsWithMissingValue(0);
+    output.init(true).removeRowsWithMissingValue(0);
 /*
     // remove the row with missing value
     List<String> missing = new ArrayList<>();
@@ -146,7 +135,7 @@ public class ParCoordsTest extends TestAbstract
     // {cohort_v=10, cohort_c=88, cohort_b=110, cohort_d=101, cohort_a=311}
     String cohort="\\Study Groups\\cohort", ctrl_level="cohort_a";
 
-    Dataframe dat = new Dataframe("/media/data/test/data/clinical_i2b2trans_adult.txt", '\t').setNAs("NA","null").init();
+    Dataframe dat = new Dataframe("/media/data/test/data/clinical_i2b2trans_adult.txt", '\t').setNAs("NA","null").init(true);
     String[] header5 = {
         "\\Study Groups\\cohort",
         "\\Clinical Data\\Lung Biopsy Immunopathology\\Broncoscopy Visit\\Submucosa\\CD4 T cells (cells/mm^2)",
@@ -203,7 +192,7 @@ public class ParCoordsTest extends TestAbstract
         else output.put(row, C.getTitle(), study.cell(row, col));
       }
     }
-    output.init().removeRowsWithMissingValue(0);
+    output.init(true).removeRowsWithMissingValue(0);
 /*
     // remove the row with missing value
     List<String> missing = new ArrayList<>();
@@ -221,7 +210,7 @@ public class ParCoordsTest extends TestAbstract
   @Test
   public void examineAdultCSV() throws Exception
   {
-    Dataframe dat = new Dataframe("/media/data/test/data/clinical_i2b2trans_adult.txt", '\t').setNAs("NA","null").init();
+    Dataframe dat = new Dataframe("/media/data/test/data/clinical_i2b2trans_adult.txt", '\t').setNAs("NA","null").init(true);
 
     TreeNode top = new TreeNode("root");
     System.out.println("entries\tcat\tfactor\tcolumn header");

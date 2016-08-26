@@ -96,6 +96,7 @@ public class Histogram
   public Double       getMean()      { return mMean; }
   public Double       getMedian()    { return mMedian; }
   public Double       getStdev()     { return mStdev; }
+  public Double       getCentroid()  { return Tools.isSet(mHistogram) ? Points.centroid(mHistogram) : null; }
 
   public Transformer.processor getTransformer() { return eTransform; }
   public Range<Double> getRange()
@@ -458,7 +459,7 @@ public class Histogram
 
     return params;
   }
-  public SimpleRegression getLogRegression()
+  public SimpleRegression getRegression(boolean logT)
   {
     double A=0, sum=0; int apex=0; // the amplitude of the dist
     for (int i=0; i<getHistogram().size(); i++)
@@ -475,7 +476,7 @@ public class Histogram
       if (counts>1)
       {
 //        System.out.println(Tools.d2s(xy.getX(), 2) + "\t" + Math.log(counts/(steps*sum)) + "\t" + steps);
-        R.addData(xy.getX(), Math.log(counts/(steps*sum)));
+        R.addData(xy.getX(), logT?Math.log(counts/(steps*sum)):counts/(steps*sum));
         counts=steps=0d;
       }
       i++;

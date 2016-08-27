@@ -576,7 +576,7 @@ public class Dataframe implements Disposable
       for (String v : mColIDs)
       {
         Var V = asVar(v);
-        if (V!=null) { V.setFactors(null); init(V, true);}
+        if (V!=null) { V.setFactors(null); init(V, toNum);}
       }
     return this;
   }
@@ -595,13 +595,6 @@ public class Dataframe implements Disposable
     for (String row : mRowIDs)
     {
       Object val = cell(row, v.getName());
-
-//      if (val!=null && val instanceof String && Strs.isA((String )val, mNAs))
-//      {
-//        val=null;
-//        // remove the cell if the value is null
-//        mData.remove(row, v.getName());
-//      }
 
       if (toNum) val = Stats.toNumber(val);
       if (val!=null)

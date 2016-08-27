@@ -461,6 +461,8 @@ public class Histogram
   }
   public SimpleRegression getRegression(boolean logT)
   {
+    if (!Tools.isSet(getHistogram())) return null;
+
     double A=0, sum=0; int apex=0; // the amplitude of the dist
     for (int i=0; i<getHistogram().size(); i++)
     {

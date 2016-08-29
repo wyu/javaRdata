@@ -671,4 +671,30 @@ public class Tools
 
     return ss;
   }
+  public static <T> T[] c(T[]... ss)
+  {
+    if (!isSet(ss)) return null;
+
+    int counts=0;
+    for (T[] s : ss) counts+=s.length;
+
+    List<T> out = new ArrayList<T>(counts);
+    for (T[] s : ss)
+      for (T t : s) out.add(t);
+
+    return out.toArray(ss[0]);
+  }
+  public static int[] c(int[]... ss)
+  {
+    if (!isSet(ss)) return null;
+
+    int counts=0;
+    for (int[] s : ss) counts+=s.length;
+
+    int[] out = new int[counts]; int i=0;
+    for (int[] s : ss)
+      for (int t : s) out[i++]=t;
+
+    return out;
+  }
 }

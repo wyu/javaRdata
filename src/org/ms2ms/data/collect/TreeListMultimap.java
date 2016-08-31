@@ -1,6 +1,7 @@
 package org.ms2ms.data.collect;
 
 import com.google.common.collect.Range;
+import org.ms2ms.Disposable;
 import org.ms2ms.utils.Tools;
 
 import java.util.*;
@@ -8,7 +9,7 @@ import java.util.*;
 /**
  * Created by yuw on 8/8/16.
  */
-public class TreeListMultimap<K extends Comparable, V>
+public class TreeListMultimap<K extends Comparable, V> implements Disposable
 {
   private int mListCapacity=500;
   private SortedMap<K, List<V>> mData;
@@ -101,4 +102,9 @@ public class TreeListMultimap<K extends Comparable, V>
   public static <K extends Comparable, V> TreeListMultimap<K,V>
   create() { return new TreeListMultimap<>(); }
 
+  @Override
+  public void dispose()
+  {
+    Tools.dispose(mData);
+  }
 }

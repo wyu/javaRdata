@@ -302,6 +302,16 @@ public class Tools
 
     return true;
   }
+  public static boolean equals(Collection A, Collection B)
+  {
+    if (A==null && B==null) return true;
+    if (A==null || B==null || A.size()!=B.size()) return false;
+
+    for (Object a : A)
+      if (!B.contains(a)) return false;
+
+    return true;
+  }
   public static boolean equals(Object A, Object B)
   {
     if (A==null && B==null) return true;

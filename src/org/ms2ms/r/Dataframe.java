@@ -177,6 +177,11 @@ public class Dataframe implements Disposable
 
     return this;
   }
+  public Dataframe put(String row, String col, Double val, int decimal)
+  {
+    if (val!=null && Strs.isSet(col)) put(row, col, Tools.d2s(val, decimal));
+    return this;
+  }
   public Dataframe addRowId(String row)
   {
     if (mRowIDs==null) mRowIDs = new ArrayList<>();

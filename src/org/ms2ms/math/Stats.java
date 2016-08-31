@@ -497,4 +497,17 @@ public class Stats
 
     return kai;
   }
+  public static Map<Double, Double> scaleQVal(SortedMap<Double, Boolean> scale)
+  {
+    if (scale==null) return null;
+
+    Map<Double, Double> qval = new HashMap<>(); double counts=0d, decoys=0d;
+    for (Double scr : scale.keySet())
+    {
+      counts++;
+      if (scale.get(scr)) decoys++;
+      qval.put(scr, 2d*decoys/counts);
+    }
+    return qval;
+  }
 }

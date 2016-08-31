@@ -2,6 +2,9 @@ package org.ms2ms.math;
 
 import com.google.common.collect.Range;
 import org.apache.commons.math.stat.descriptive.moment.Skewness;
+import org.apache.commons.math3.exception.TooManyIterationsException;
+import org.apache.commons.math3.fitting.GaussianCurveFitter;
+import org.apache.commons.math3.fitting.WeightedObservedPoints;
 import org.apache.commons.math3.stat.descriptive.moment.Kurtosis;
 import org.apache.commons.math3.stat.inference.ChiSquareTest;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
@@ -27,7 +30,7 @@ public class Histogram
   private String        mTitle;
   private Transformer.processor eTransform = Transformer.processor.none;
   private int           mHistogramSize = 12;
-  private Double        mStep, mSumY = null, mMean, mMedian, mStdev, mKurtosisNormality, mSkewness, mCorr;
+  private Double        mStep, mSumY = null, mMean, mMedian, mStdev, mKurtosisNormality, mSkewness, mCorr, mCenter, mTop, mSigma;
   private Range<Double> mRange;
   private List<Point>   mHistogram;
   private List<Double>  mData = null;
@@ -96,6 +99,9 @@ public class Histogram
   public Double       getMean()      { return mMean; }
   public Double       getMedian()    { return mMedian; }
   public Double       getStdev()     { return mStdev; }
+  public Double       getCenter()    { return mCenter; }
+  public Double       getTop()       { return mTop; }
+  public Double       getSigma()     { return mSigma; }
   public Double       getCentroid()  { return Tools.isSet(mHistogram) ? Points.centroid(mHistogram) : null; }
 
   public Transformer.processor getTransformer() { return eTransform; }
@@ -486,5 +492,46 @@ public class Histogram
 //    System.out.println("r2="+R.getRSquare());
 
     return R;
+  }
+  public Histogram fitGaussian(boolean upper)
+  {
+    if (Tools.isSet(getHistogram()))
+    {
+      WeightedObservedPoints obs = new WeightedObservedPoints();
+      // watch out for truncation
+      int start=0;
+      if (upper)
+      {
+        int totals=getData().size(), remainder=(int )(totals*0.9);
+        // let's find out where the start is to avoid truncation
+        for (int i=getHistogram().size()-1; i>=0; i--)
+          if (totals>remainder) totals-=getHistogram().get(i).getY(); else break;
+      }
+      for (int i=start; i<getHistogram().size(); i++)
+        if (getHistogram().get(i).getY()>0)
+          obs.add(getHistogram().get(i).getX(), getHistogram().get(i).getY());
+
+      Point top = Points.basePoint(getHistogram());
+      // let's make the best guess
+      mTop=top.getY(); mCenter=getCentroid(); mSigma=getStdev();
+      try
+      {
+        // fit the model --> Normalization, Mean, Sigma
+        double[] initials = new double[] {mTop, mCenter, mSigma},
+            parameters = GaussianCurveFitter.create().withStartPoint(initials).withMaxIterations(1000).fit(obs.toList());
+
+        if (parameters!=null && parameters.length>2)
+        {
+          mTop=parameters[0]; mCenter=parameters[1]; mSigma=parameters[2];
+        }
+      }
+      catch (TooManyIterationsException e)
+      {
+      }
+//      System.out.println("Score\tOccurances");
+//      for (Point pt : getHistogram()) System.out.println(pt.getX()+"\t"+pt.getY());
+//      System.out.println("\nTop="+mTop+", Center="+mCenter+", Sigma="+mSigma);
+    }
+    return this;
   }
 }

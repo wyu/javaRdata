@@ -424,7 +424,8 @@ public class Strs
   {
     // consider only the single residue change
     boolean matched = false;
-    String regex = seq2.replaceAll("[IL]", "[IL]").replaceAll("[QK]", "[QK]");
+//    String regex = seq2.replaceAll("[IL]", "[IL]").replaceAll("[QK]", "[QK]");
+    String regex = seq2.replaceAll("[IL]", "[IL]");
     matched = seq1.matches(regex);
 
     // let's consider the di-one residue mapping (Kinter, p83)

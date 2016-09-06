@@ -1,5 +1,6 @@
 package org.ms2ms.math;
 
+import com.google.common.collect.Ordering;
 import com.google.common.collect.Range;
 import org.apache.commons.math.stat.descriptive.moment.Skewness;
 import org.apache.commons.math3.exception.TooManyIterationsException;
@@ -32,6 +33,7 @@ public class Histogram
   private int           mHistogramSize = 12;
   private Double        mStep, mSumY = null, mMean, mMedian, mStdev, mKurtosisNormality, mSkewness, mCorr, mCenter, mTop, mSigma;
   private Range<Double> mRange;
+  private List<Point>   mCumulative;
   private List<Point>   mHistogram;
   private List<Double>  mData = null;
 
@@ -533,5 +535,50 @@ public class Histogram
 //      System.out.println("\nTop="+mTop+", Center="+mCenter+", Sigma="+mSigma);
     }
     return this;
+  }
+  public Histogram trimFromUpper()
+  {
+    if (!Tools.isSet(getHistogram())) return this;
+
+    int start=0;
+    for (int i=getHistogram().size()-2; i>0; i--)
+    {
+      if (getHistogram().get(i).getY()>0 &&
+          getHistogram().get(i-1).getY()>getHistogram().get(i).getY() &&
+          getHistogram().get(i+1).getY()>getHistogram().get(i).getY()) { start=i; break; }
+    }
+    if (start>0)
+      for (int i=0; i<start; i++) getHistogram().remove(0);
+
+    return this;
+  }
+  public Histogram generateCumulative(int size)
+  {
+    if (!Tools.isSet(mData)) return this;
+
+    Collections.sort(mData, Ordering.natural().reverse());
+
+    int step = (int )Math.round((double )mData.size()/(double )size);
+    mCumulative = new ArrayList<>();
+    for (int i=0; i<mData.size(); i+=step)
+    {
+      mCumulative.add(new Point(mData.get(i), (i+1)));
+    }
+
+    return this;
+  }
+  public void printHistogram()
+  {
+    double base = (double )mData.size();
+    System.out.println("Score\tOccurances-"+getTitle());
+    for (Point pt : getHistogram()) if (pt.getY()!=0) System.out.println(pt.getX()+"\t"+(pt.getY()/base));
+    System.out.println("\nTop="+mTop+", Center="+mCenter+", Sigma="+mSigma);
+  }
+  public void printCumulatives()
+  {
+    double base = (double )mData.size();
+    System.out.println("Score\tCumulatives-"+getTitle());
+    for (Point pt : mCumulative) if (pt.getY()!=0) System.out.println(pt.getX()+"\t"+(pt.getY()/base));
+    System.out.println();
   }
 }

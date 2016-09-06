@@ -21,9 +21,9 @@ public class Tools
   static String BLANKS = "            ";
 
   public static <T> boolean isSet(Collection<T>  s) { return s!=null && s.size()>0; }
-  public static <T> boolean isSet(Map            s) { return s!=null && s.size()>0; }
-  public static <T> boolean isSet(MultiTreeTable s) { return s!=null && s.size()>0; }
-  public static <T> boolean isSet(Multimap       s) { return s!=null && s.size()>0; }
+  public static <T> boolean isSet(Map            s) { return s!=null && s.keySet().size()>0; }
+  public static <T> boolean isSet(MultiTreeTable s) { return s!=null && s.keySet().size()>0; }
+  public static <T> boolean isSet(Multimap       s) { return s!=null && s.keySet().size()>0; }
   public static <T> boolean isSet(T[]            s) { return s!=null && s.length>0; }
   public static <T> boolean isSet(double[]       s) { return s!=null && s.length>0; }
   public static     boolean isSet(int[]          s) { return s!=null && s.length>0; }
@@ -375,7 +375,7 @@ public class Tools
     if (s==null) return s;
 
     SortedSetMultimap<Double, V> reversed = TreeMultimap.create();
-    for (Double k : s.keys()) reversed.putAll(-k, s.get(k));
+    for (Double k : s.keySet()) reversed.putAll(-k, s.get(k));
 
     return reversed;
   }

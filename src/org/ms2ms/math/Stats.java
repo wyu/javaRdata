@@ -18,12 +18,14 @@ public class Stats
 {
   public enum Aggregator { MEAN, MEDIAN, STDEV, COUNT }
 
-  static private Map<Long, Double> sLnFactorials = new HashMap<>();
+  static private Map<Long,   Double> sLnFactorials = new HashMap<>();
+  static private Map<Double, Double> sLnDblFactorials = new HashMap<>();
   static private Table<Integer, Integer, Collection<int[]>> sPermutationCache = HashBasedTable.create();
 
   static
   {
     for (long i=0L; i<18L; i++) sLnFactorials.put(i, Math.log(factorial(i)));
+    for (Double i=0d; i<18d; i++) sLnDblFactorials.put(i, Math.log(factorial(i)));
   }
   public static double geomean(Collection<Double> s)
   {
@@ -88,16 +90,22 @@ public class Stats
   public static long factorial(long n)
   {
     long prod = 1L;
-    for (long k=1; k<=n; ++k) prod *= k;
+    for (long k=1; k<=n; ++k)
+      prod *= k;
     return prod;
   }
   public static double ln_combination(long n, long k) { return ln_factorial(n)-ln_factorial(k)-ln_factorial(n-k); }
   public static double ln_factorial(long n)
   {
-    if (n<0)
-      System.out.print("");
+//    if (n<0)
+//      System.out.print("");
     if (n>17) return 0.5d*Math.log(2d*(double )n*3.14) + (double )n*Math.log((double )n) - (double )n;
     return sLnFactorials.get(n);
+  }
+  public static double ln_factorial(double n)
+  {
+    if (n>17) return 0.5d*Math.log(2d*n*3.14) + n*Math.log(n) - n;
+    return sLnDblFactorials.get(n);
   }
   public static double hypergeometricPval1(long success, long trials, long success_population, long population)
   {
@@ -509,5 +517,79 @@ public class Stats
       qval.put(scr, 2d*decoys/counts);
     }
     return qval;
+  }
+  public static double factorial(double n)
+  {
+    if (n<2) return 1;
+    // compute the exact factorial. Could be costly!
+    double f=1d;
+    for (double i=1d; i<=n; i++) f*=i;
+
+    return f;
+  }
+// http://stackoverflow.com/questions/1095650/how-can-i-efficiently-calculate-the-binomial-cumulative-distribution-function
+  public static double binomial_exact(double s, double n, double p)
+  {
+//  >>> prob(20, 0.3, 100)
+//  0.016462853241869437
+//
+//      >>> 1-prob(40-1, 0.3, 100)
+//  0.020988576003924564
+
+    double prob=0d, x=1.0-p, a=n-s, b=s+1, c=a+b-1;
+
+    for (double j=a; j<c+1; j++)
+    {
+//      double y1=factorial(c)/(factorial(j)*factorial(c-j));
+//      double y2=Math.pow(x,j);
+//      double y3=Math.pow(1-x,c-j);
+//      prob += y1*y2*y3;
+      prob += factorial(c)/(factorial(j)*factorial(c-j)) * Math.pow(x,j) * Math.pow(1-x,c-j);
+    }
+
+    return prob;
+  }
+  // return cummulative binomial prob using log-transformed aprox of factorial fn.
+  public static double binomial(double s, double n, double p)
+  {
+    double prob=0d, x=1.0-p, a=n-s, b=s+1, c=a+b-1;
+    for (double j=a; j<c+1; j++)
+      prob += Math.exp(ln_factorial(c)-(ln_factorial(j)+ln_factorial(c-j)) + j*Math.log(x) + (c-j)*Math.log(1 - x));
+
+    return prob;
+  }
+  public static double erf_Horner(double z)
+  {
+    double t = 1d/(1d + 0.5 * Math.abs(z));
+    // use Horner's method
+    double ans = 1 - t * Math.exp( -z*z - 1.26551223 +
+        t * ( 1.00002368 +
+        t * ( 0.37409196 +
+        t * ( 0.09678418 +
+        t * (-0.18628806 +
+        t * ( 0.27886807 +
+        t * (-1.13520398 +
+        t * ( 1.48851587 +
+        t * (-0.82215223 +
+        t * ( 0.17087277))))))))));
+
+    return z>=0d?ans:(ans*-1d);
+  }
+  // Normal Estimate, good for large n
+  public static double binomial_normal_estimate(int s, int n, double p)
+  {
+    double u = n*p, o = Math.sqrt(u*(1-p));
+
+    return 0.5*(1 + erf_Horner((s-u)/(o*Math.sqrt(2))));
+  }
+
+  public static double binomial_poisson_estimate(double s, double n, double p)
+  {
+    double L = n*p, sum = 0d;
+
+    for (double i=0d; i<s+1d; i++)
+      sum += Math.exp(i*Math.log(L)-ln_factorial(i));
+
+    return sum*Math.exp(L*-1d);
   }
 }

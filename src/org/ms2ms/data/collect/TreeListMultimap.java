@@ -31,6 +31,7 @@ public class TreeListMultimap<K extends Comparable, V> implements Disposable
     return mData!=null ? Tools.isSet(mData.subMap(k1, k2)) : false;
   }
   public long size(Range<K> r) { return size(r.lowerEndpoint(), r.upperEndpoint()); }
+  public long keySize(Range<K> s) { return keySize(s.lowerEndpoint(), s.upperEndpoint()); }
   public long keySize(K k1, K k2)
   {
     if (mData!=null)

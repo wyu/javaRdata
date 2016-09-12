@@ -282,6 +282,33 @@ public class Histogram
     generate(step_num, range);
     return this;
   }
+  public Histogram generate2pts(int step_num, double min_step)
+  {
+    if (!Tools.isSet(mData) || step_num == 0) return this;
+
+    Collections.sort(mData);
+
+    // setup the quatiles
+    mCenter = mData.get((int )Math.round(mData.size()*0.5));
+    mSigma  = mData.get((int )Math.round(mData.size()*0.75)) - mCenter;
+    mHistogram = new ArrayList<>();
+
+    if (step_num>mData.size()*0.5) step_num = (int )Math.round(mData.size()*0.5);
+
+    int   step = (int )Math.round((double )mData.size()/(double )step_num), i=0, start=i;
+    while (i<mData.size())
+    {
+      int stop = (i+step<mData.size()?i+step:(mData.size()-1)); i+=step;
+      if (Math.abs(mData.get(stop)-mData.get(start))>=min_step)
+      {
+        mHistogram.add(new Point(mData.get(start), 100d * ((stop-start) / (double) mData.size()) / (mData.get(stop)-mData.get(start))));
+        start=i;
+      }
+    }
+    mHistogramSize=mHistogram.size();
+
+    return this;
+  }
   public static void generate(int step_num, Histogram... histos)
   {
     generate(step_num, Arrays.asList(histos));
@@ -448,53 +475,53 @@ public class Histogram
     }
     return orig;
   }
-  public Map<String, Double> fitNormDist()
-  {
-    double A=0; // the amplitude of the dist
-    SimpleRegression R = new SimpleRegression(true);
-    for (Point xy : getHistogram())
-      if (xy.getY()>0)
-      {
-        R.addData(Math.log(xy.getY()), xy.getX());
-        if (xy.getY()>A) A=xy.getY();
-      }
-
-    // compute the definition of a norm dist
-    Map<String, Double> params = new HashMap<>();
-    params.put("amplitude",A);
-    params.put("sigma",    R.getSlope()/-2d);
-    params.put("mean",     R.getIntercept()+2*Math.log(A)*(params.get("sigma")+1d));
-
-    return params;
-  }
-  public SimpleRegression getRegression(boolean logT)
-  {
-    if (!Tools.isSet(getHistogram())) return null;
-
-    double A=0, sum=0; int apex=0; // the amplitude of the dist
-    for (int i=0; i<getHistogram().size(); i++)
-    {
-      sum+=getHistogram().get(i).getY();
-      if (getHistogram().get(i).getY() > A) { A = getHistogram().get(i).getY(); apex = i; }
-    }
-
-    SimpleRegression R = new SimpleRegression(true); int i=apex; double counts=0d, steps=0;
-    while (i<getHistogram().size())
-    {
-      Point xy = getHistogram().get(i);
-      counts+=xy.getY(); steps+=mStep;
-      if (counts>1)
-      {
-//        System.out.println(Tools.d2s(xy.getX(), 2) + "\t" + Math.log(counts/(steps*sum)) + "\t" + steps);
-        R.addData(xy.getX(), logT?Math.log(counts/(steps*sum)):counts/(steps*sum));
-        counts=steps=0d;
-      }
-      i++;
-    }
-//    System.out.println("r2="+R.getRSquare());
-
-    return R;
-  }
+//  public Map<String, Double> fitNormDist()
+//  {
+//    double A=0; // the amplitude of the dist
+//    SimpleRegression R = new SimpleRegression(true);
+//    for (Point xy : getHistogram())
+//      if (xy.getY()>0)
+//      {
+//        R.addData(Math.log(xy.getY()), xy.getX());
+//        if (xy.getY()>A) A=xy.getY();
+//      }
+//
+//    // compute the definition of a norm dist
+//    Map<String, Double> params = new HashMap<>();
+//    params.put("amplitude",A);
+//    params.put("sigma",    R.getSlope()/-2d);
+//    params.put("mean",     R.getIntercept()+2*Math.log(A)*(params.get("sigma")+1d));
+//
+//    return params;
+//  }
+//  public SimpleRegression getRegression(boolean logT)
+//  {
+//    if (!Tools.isSet(getHistogram())) return null;
+//
+//    double A=0, sum=0; int apex=0; // the amplitude of the dist
+//    for (int i=0; i<getHistogram().size(); i++)
+//    {
+//      sum+=getHistogram().get(i).getY();
+//      if (getHistogram().get(i).getY() > A) { A = getHistogram().get(i).getY(); apex = i; }
+//    }
+//
+//    SimpleRegression R = new SimpleRegression(true); int i=apex; double counts=0d, steps=0;
+//    while (i<getHistogram().size())
+//    {
+//      Point xy = getHistogram().get(i);
+//      counts+=xy.getY(); steps+=mStep;
+//      if (counts>1)
+//      {
+////        System.out.println(Tools.d2s(xy.getX(), 2) + "\t" + Math.log(counts/(steps*sum)) + "\t" + steps);
+//        R.addData(xy.getX(), logT?Math.log(counts/(steps*sum)):counts/(steps*sum));
+//        counts=steps=0d;
+//      }
+//      i++;
+//    }
+////    System.out.println("r2="+R.getRSquare());
+//
+//    return R;
+//  }
   public Histogram fitGaussian(boolean upper)
   {
     if (Tools.isSet(getHistogram()))
@@ -515,7 +542,7 @@ public class Histogram
 
       Point top = Points.basePoint(getHistogram());
       // let's make the best guess
-      mTop=top.getY(); mCenter=getCentroid(); mSigma=getStdev();
+      mTop=top.getY(); if (mCenter==null) mCenter=getCentroid(); if (mSigma==null) mSigma=mCenter*0.25d;
       try
       {
         // fit the model --> Normalization, Mean, Sigma
@@ -527,8 +554,11 @@ public class Histogram
           mTop=parameters[0]; mCenter=parameters[1]; mSigma=parameters[2];
         }
       }
-      catch (TooManyIterationsException e)
+      catch (Exception e)
       {
+        // try our best guess, not worry about the spread
+        mCenter=getCentroid(); mSigma=null;
+//        e.printStackTrace();
       }
 //      System.out.println("Score\tOccurances");
 //      for (Point pt : getHistogram()) System.out.println(pt.getX()+"\t"+pt.getY());
@@ -536,37 +566,57 @@ public class Histogram
     }
     return this;
   }
-  public Histogram trimFromUpper()
+  // assess the center and upper quatile of a distribution truncated at the lower end
+  // assume that the histogram is already sorted from low to high
+  public Histogram assessTruncated()
   {
     if (!Tools.isSet(getHistogram())) return this;
 
-    int start=0;
-    for (int i=getHistogram().size()-2; i>0; i--)
+    if (getHistogram().size()==1)
     {
-      if (getHistogram().get(i).getY()>0 &&
-          getHistogram().get(i-1).getY()>getHistogram().get(i).getY() &&
-          getHistogram().get(i+1).getY()>getHistogram().get(i).getY()) { start=i; break; }
+      mCenter = Tools.front(getHistogram()).getX(); mSigma=null;
     }
-    if (start>0)
-      for (int i=0; i<start; i++) getHistogram().remove(0);
+    mCenter = getCentroid();
+    if (getHistogram().size()<=3) { mSigma=null; return this; }
+
+    // locate the upper quatile
+    int apex = Points.findClosest(getHistogram(), mCenter), upperQ = (int )Math.round((getHistogram().size()+apex)*0.5d);
+
+    if (upperQ<getHistogram().size()-1 && upperQ>apex) mSigma = getHistogram().get(upperQ).getX();
 
     return this;
   }
-  public Histogram generateCumulative(int size)
-  {
-    if (!Tools.isSet(mData)) return this;
-
-    Collections.sort(mData, Ordering.natural().reverse());
-
-    int step = (int )Math.round((double )mData.size()/(double )size);
-    mCumulative = new ArrayList<>();
-    for (int i=0; i<mData.size(); i+=step)
-    {
-      mCumulative.add(new Point(mData.get(i), (i+1)));
-    }
-
-    return this;
-  }
+//  public Histogram trimFromUpper()
+//  {
+//    if (!Tools.isSet(getHistogram())) return this;
+//
+//    int start=0;
+//    for (int i=getHistogram().size()-2; i>0; i--)
+//    {
+//      if (getHistogram().get(i).getY()>0 &&
+//          getHistogram().get(i-1).getY()>getHistogram().get(i).getY() &&
+//          getHistogram().get(i+1).getY()>getHistogram().get(i).getY()) { start=i; break; }
+//    }
+//    if (start>0)
+//      for (int i=0; i<start; i++) getHistogram().remove(0);
+//
+//    return this;
+//  }
+//  public Histogram generateCumulative(int size)
+//  {
+//    if (!Tools.isSet(mData)) return this;
+//
+//    Collections.sort(mData, Ordering.natural().reverse());
+//
+//    int step = (int )Math.round((double )mData.size()/(double )size);
+//    mCumulative = new ArrayList<>();
+//    for (int i=0; i<mData.size(); i+=step)
+//    {
+//      mCumulative.add(new Point(mData.get(i), (i+1)));
+//    }
+//
+//    return this;
+//  }
   public void printHistogram()
   {
     double base = (double )mData.size();

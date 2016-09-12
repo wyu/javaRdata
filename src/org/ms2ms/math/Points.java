@@ -240,4 +240,14 @@ public class Points
     }
     return null;
   }
+  public static <T extends Point> int findClosest(List<T> pts, double x)
+  {
+    if (pts==null) return -1;
+
+    int best=-1;
+    for (int i=0; i<pts.size(); i++)
+      if (best==-1 || Math.abs(pts.get(i).getX()-x) < Math.abs(pts.get(i).getX()-pts.get(best).getX())) { best=i; }
+
+    return best;
+  }
 }

@@ -31,7 +31,7 @@ public class Histogram
   private String        mTitle;
   private Transformer.processor eTransform = Transformer.processor.none;
   private int           mHistogramSize = 12;
-  private Double        mStep, mSumY = null, mMean, mMedian, mStdev, mKurtosisNormality, mSkewness, mCorr, mCenter, mTop, mSigma;
+  private Double        mStep, mSumY = null, mMean, mMedian, mStdev, mKurtosisNormality, mSkewness, mCorr, mCenter, mTop, mSigma, mFWHH;
   private Range<Double> mRange;
   private List<Point>   mCumulative;
   private List<Point>   mHistogram;
@@ -104,6 +104,7 @@ public class Histogram
   public Double       getCenter()    { return mCenter; }
   public Double       getTop()       { return mTop; }
   public Double       getSigma()     { return mSigma; }
+  public Double       getFWHH()      { return mFWHH; }
   public Double       getCentroid()  { return Tools.isSet(mHistogram) ? Points.centroid(mHistogram) : null; }
 
   public Transformer.processor getTransformer() { return eTransform; }
@@ -577,11 +578,20 @@ public class Histogram
       mCenter = Tools.front(getHistogram()).getX(); mSigma=null;
     }
     mCenter = getCentroid();
-    if (getHistogram().size()<=3) { mSigma=null; return this; }
+    if (getHistogram().size()<=3) { mSigma=null; mFWHH=null; return this; }
 
-    // locate the upper quatile
+    // locate the upper quartile
     int apex = Points.findClosest(getHistogram(), mCenter), upperQ = (int )Math.round((getHistogram().size()+apex)*0.5d);
-
+    // locate the point above the apex where Y is 1/2 of the apex
+    double hw = Math.sqrt(getHistogram().get(apex).getY());
+    for (int i=apex; i<getHistogram().size()-1; i++)
+    {
+      if (getHistogram().get(i).getY()>hw && getHistogram().get(i+1).getY()<=hw)
+      {
+        Point xy = Points.interpolateByY(getHistogram().get(i), getHistogram().get(i+1), hw);
+        if (xy!=null) mFWHH=xy.getX()-mCenter;
+      }
+    }
     if (upperQ<getHistogram().size()-1 && upperQ>apex) mSigma = getHistogram().get(upperQ).getX();
 
     return this;

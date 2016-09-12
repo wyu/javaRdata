@@ -55,6 +55,27 @@ public class Points
     }
     return xy;
   }
+  public static <T extends Point> T interpolateByY(T p1, T p2, Double y)
+  {
+    T xy = (T )(new Point(0d, y));
+
+    if      (p1 == null || p2 == null)
+    {
+      //xy.setY(p1.getY());
+      xy = null; // undefined situation, WYU 081209
+    }
+    else if (p2.getX() - p1.getX() != 0)
+    {
+      Double k = (p2.getY() - p1.getY()) / (p2.getX() - p1.getX());
+      xy.setX(p1.getX() + (y-p1.getY()) / k);
+    }
+    else if (p2.getX() == p1.getX())
+    {
+      Double k = (p2.getY() - p1.getY()) / (p2.getX() - p1.getX());
+      xy.setY(0.5d * (p1.getY() + p2.getY()));
+    }
+    return xy;
+  }
 
   //--------------------------------------------------------------------------
   public static <T extends Point> T interpolate(List<T> ps, Double x, boolean ignore_zero)

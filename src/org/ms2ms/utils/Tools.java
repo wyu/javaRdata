@@ -707,4 +707,9 @@ public class Tools
 
     return out;
   }
+  public static <T> List<List<T>> partition(Collection<T> s, int n)
+  {
+    if (!isSet(s)) return null;
+    return Lists.partition(new ArrayList<T>(s), n);
+  }
 }

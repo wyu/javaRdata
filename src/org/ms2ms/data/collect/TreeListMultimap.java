@@ -9,17 +9,18 @@ import java.util.*;
 /**
  * Created by yuw on 8/8/16.
  */
-public class TreeListMultimap<K extends Comparable, V> implements Disposable
+public class TreeListMultimap<K extends Comparable, V> implements NavigableMultimap<K, V>
 {
   private int mListCapacity=500;
   private SortedMap<K, List<V>> mData;
 
   public TreeListMultimap() { super(); }
-  public TreeListMultimap(int s) { super(); mListCapacity=s; }
+//  public TreeListMultimap(int s) { super(); mListCapacity=s; }
   public TreeListMultimap(SortedMap<K, List<V>> s)
   { super(); mData=s; }
 
-  public                     V  put2(  K key, V data) { put(key,data); return data; }
+  @Override
+  public                     V  put2(K key, V data) { put(key,data); return data; }
   public TreeListMultimap<K, V> putAll(K key, Collection<V> data) { initByKey(key).addAll(data); return this; }
 
   public TreeListMultimap<K, V> subMap(K k1, K k2)
@@ -31,7 +32,7 @@ public class TreeListMultimap<K extends Comparable, V> implements Disposable
     return mData!=null ? Tools.isSet(mData.subMap(k1, k2)) : false;
   }
   public long size(Range<K> r) { return size(r.lowerEndpoint(), r.upperEndpoint()); }
-  public long keySize(Range<K> s) { return keySize(s.lowerEndpoint(), s.upperEndpoint()); }
+//  public long keySize(Range<K> s) { return keySize(s.lowerEndpoint(), s.upperEndpoint()); }
   public long keySize(K k1, K k2)
   {
     if (mData!=null)
@@ -56,6 +57,7 @@ public class TreeListMultimap<K extends Comparable, V> implements Disposable
     }
     return 0;
   }
+  @Override
   public List<V> subList(K k1, K k2)
   {
     if (mData!=null)
@@ -71,6 +73,7 @@ public class TreeListMultimap<K extends Comparable, V> implements Disposable
     }
     return null;
   }
+  @Override
   public void clear() { if (mData!=null) mData.clear(); }
 
   private List<V> initByKey(K key)

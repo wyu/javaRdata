@@ -290,8 +290,9 @@ public class Histogram
     Collections.sort(mData);
 
     // setup the quatiles
-    mCenter = mData.get((int )Math.round(mData.size()*0.5));
-    mSigma  = mData.get((int )Math.round(mData.size()*0.75)) - mCenter;
+    if (Math.round(mData.size()*0.5 )<mData.size()) mCenter = mData.get((int )Math.round(mData.size()*0.5));
+    if (Math.round(mData.size()*0.75)<mData.size()) mSigma  = mData.get((int )Math.round(mData.size()*0.75)) - mCenter;
+
     mHistogram = new ArrayList<>();
 
     if (step_num>mData.size()*0.5) step_num = (int )Math.round(mData.size()*0.5);

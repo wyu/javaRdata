@@ -35,6 +35,14 @@ public class Tools
   public static     boolean isTrue( Boolean      s) { return s!=null &&  s; }
   public static     boolean isFalse(Boolean      s) { return s!=null && !s; }
 
+  public static double[] cloneDoubleArray(double[] x)
+  {
+    return (x!=null?Arrays.copyOf(x, x.length):null);
+  }
+  public static float[] cloneFloatArray(float[] x)
+  {
+    return (x!=null?Arrays.copyOf(x, x.length):null);
+  }
   public static <T> T front(Collection<T> s)
   {
     if (isSet(s))

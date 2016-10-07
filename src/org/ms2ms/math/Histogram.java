@@ -9,6 +9,7 @@ import org.apache.commons.math3.fitting.WeightedObservedPoints;
 import org.apache.commons.math3.stat.descriptive.moment.Kurtosis;
 import org.apache.commons.math3.stat.inference.ChiSquareTest;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
+import org.ms2ms.Disposable;
 import org.ms2ms.data.Point;
 import org.ms2ms.utils.Strs;
 import org.ms2ms.utils.Tools;
@@ -26,7 +27,7 @@ import java.util.*;
  * Author: wyu
  * Date:   1/23/15
  */
-public class Histogram
+public class Histogram implements Disposable
 {
   private String        mTitle;
   private Transformer.processor eTransform = Transformer.processor.none;
@@ -641,5 +642,11 @@ public class Histogram
     System.out.println("Score\tCumulatives-"+getTitle());
     for (Point pt : mCumulative) if (pt.getY()!=0) System.out.println(pt.getX()+"\t"+(pt.getY()/base));
     System.out.println();
+  }
+
+  @Override
+  public void dispose()
+  {
+    Tools.dispose(mCumulative,mHistogram,mData);
   }
 }

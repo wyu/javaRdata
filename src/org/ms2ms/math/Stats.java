@@ -51,6 +51,13 @@ public class Stats
     for (Double v : s) avg*=(1-v);
     return 1-avg;
   }
+  // no bound checking
+  public static double mean0(double[] s)
+  {
+    double avg = 0d;
+    for (double v : s) avg+=v;
+    return avg/(double )s.length;
+  }
   public static double mean(Collection<Double> s)
   {
     if (!Tools.isSet(s)) return 0;

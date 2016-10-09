@@ -18,7 +18,7 @@ public class ConcurrentNavigableMultimap<K extends Comparable, V> implements Nav
   private ConcurrentNavigableMap<K, ConcurrentLinkedQueue<V>> mData;
 
   public ConcurrentNavigableMultimap() { super(); }
-  //  public TreeListMultimap(int s) { super(); mListCapacity=s; }
+//  public ConcurrentNavigableMultimap(int s) { super(); mListCapacity=s; }
   public ConcurrentNavigableMultimap(ConcurrentSkipListMap<K, ConcurrentLinkedQueue<V>> s)
   { super(); mData=s; }
   public ConcurrentNavigableMultimap(ConcurrentNavigableMap<K, ConcurrentLinkedQueue<V>> s)

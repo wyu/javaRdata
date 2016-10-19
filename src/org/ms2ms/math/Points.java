@@ -251,6 +251,15 @@ public class Points
 
     return sum;
   }
+  public static <T extends Point> Double sumY(List<T> data, int i0)
+  {
+    if (data==null) return null;
+
+    double sum = 0d;
+    for (int i=i0; i<data.size(); i++) sum += data.get(i).getY();
+
+    return sum;
+  }
   public static <T extends Point> List<Double> toYs(List<T> data)
   {
     if (Tools.isSet(data))

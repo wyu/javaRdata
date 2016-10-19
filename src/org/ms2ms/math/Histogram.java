@@ -583,18 +583,29 @@ public class Histogram implements Disposable
     if (getHistogram().size()<=3) { mSigma=null; mFWHH=null; return this; }
 
     // locate the upper quartile
-    int apex = Points.findClosest(getHistogram(), mCenter), upperQ = (int )Math.round((getHistogram().size()+apex)*0.5d);
+    int apex    = Points.findClosest(getHistogram(), mCenter);
+    double half = Points.sumY(getHistogram(), apex);
+//        upperQ = (int )Math.round((getHistogram().size()+apex)*0.5d),
+
     // locate the point above the apex where Y is 1/2 of the apex
-    double hw = Math.sqrt(getHistogram().get(apex).getY());
+    double hw = Math.sqrt(getHistogram().get(apex).getY()), sum=0d, q4=half*0.6827d; mSigma=null;
     for (int i=apex; i<getHistogram().size()-1; i++)
     {
+      sum+=getHistogram().get(i).getY();
+      if (mSigma==null && sum>=q4)
+      {
+        Point x1=getHistogram().get(i), x2=getHistogram().get(i+1);
+        x1.setY(sum); x2.setY(sum+x2.getY());
+        Point mid = Points.interpolateByY(x1, x2, q4);
+        if (mid!=null) mSigma=mid.getX();
+      }
       if (getHistogram().get(i).getY()>hw && getHistogram().get(i+1).getY()<=hw)
       {
         Point xy = Points.interpolateByY(getHistogram().get(i), getHistogram().get(i+1), hw);
         if (xy!=null) mFWHH=xy.getX()-mCenter;
       }
     }
-    if (upperQ<getHistogram().size()-1 && upperQ>apex) mSigma = getHistogram().get(upperQ).getX();
+//    if (upperQ<getHistogram().size()-1 && upperQ>apex) mSigma = getHistogram().get(upperQ).getX();
 
     return this;
   }

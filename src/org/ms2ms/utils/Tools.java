@@ -446,6 +446,12 @@ public class Tools
       for (T t : x) s.add(t);
     return s;
   }
+  public static <T> Collection<T> addAll(Collection<T> s, Collection<T> x)
+  {
+    if (s!=null && x!=null)
+      for (T t : x) s.add(t);
+    return s;
+  }
   public static <T> Collection<Integer> add(Collection<Integer> s, IntSet x)
   {
     if (s!=null && x!=null)
@@ -719,5 +725,21 @@ public class Tools
   {
     if (!isSet(s)) return null;
     return Lists.partition(new ArrayList<T>(s), n);
+  }
+  public static <K, V> boolean hasKeys(Map<K,V> map, K... keys)
+  {
+    if (map==null || keys==null) return false;
+    for (K k : keys)
+      if (!map.containsKey(k)) return false;
+
+    return true;
+  }
+  public static <K, V> boolean hasKeys(Map<K,V> map, Collection<K> keys)
+  {
+    if (map==null || keys==null) return false;
+    for (K k : keys)
+      if (!map.containsKey(k)) return false;
+
+    return true;
   }
 }

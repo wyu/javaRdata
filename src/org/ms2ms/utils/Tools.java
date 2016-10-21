@@ -747,12 +747,21 @@ public class Tools
 
     return false;
   }
-  public static Collection<Float> seek(float[] AAs, float left, float right)
+  public static Collection<Float> find(float[] AAs, float left, float right)
   {
     Collection<Float> found = new HashSet<>();
     if (AAs!=null && right>left)
       for (float AA : AAs)
         if (AA>=left && AA<=right) found.add(AA);
+
+    return found;
+  }
+  public static Float findClosest(float[] AAs, float target, float tol)
+  {
+    Float found = null, delta=tol;
+    if (AAs!=null)
+      for (float AA : AAs)
+        if (Math.abs(AA-target)<=delta) { found=AA; delta=Math.abs(AA-target); }
 
     return found;
   }

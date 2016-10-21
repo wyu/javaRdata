@@ -420,6 +420,14 @@ public class Strs
            isIsobaricTo(seq1, seq2) ||
            isIsobaricTo(seq2, seq1);
   }
+  public static boolean isIsobaric(String seq1, Collection<String> seq2s)
+  {
+    if (Tools.isSet(seq2s) && Strs.isSet(seq1))
+      for (String seq2 : seq2s)
+        if (Tools.equals(seq1,seq2) || isIsobaricTo(seq1,seq2) || isIsobaricTo(seq2,seq1)) return true;
+
+    return false;
+  }
   public static boolean isIsobaricTo(String seq1, String seq2)
   {
     // consider only the single residue change

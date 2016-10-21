@@ -163,6 +163,11 @@ public class Tools
     if (map!=null && in!=null) map.putAll(in);
     return map;
   }
+  public static <K extends Enum<K>, V> EnumMap<K,V> put(EnumMap<K, V> map, K key, V in)
+  {
+    if (map!=null && in!=null) map.put(key, in);
+    return map;
+  }
   public static boolean contains(int[] tt, int t)
   {
     if (isSet(tt))
@@ -736,10 +741,19 @@ public class Tools
   }
   public static <K, V> boolean hasKeys(Map<K,V> map, Collection<K> keys)
   {
-    if (map==null || keys==null) return false;
-    for (K k : keys)
-      if (!map.containsKey(k)) return false;
+    if (map!=null && keys!=null)
+      for (K k : keys)
+        if (map.containsKey(k)) return true;
 
-    return true;
+    return false;
+  }
+  public static Collection<Float> seek(float[] AAs, float left, float right)
+  {
+    Collection<Float> found = new HashSet<>();
+    if (AAs!=null && right>left)
+      for (float AA : AAs)
+        if (AA>=left && AA<=right) found.add(AA);
+
+    return found;
   }
 }

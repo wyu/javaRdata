@@ -18,18 +18,11 @@ public class ConcurrentNavigableMultimap<K extends Comparable, V> implements Nav
   private ConcurrentNavigableMap<K, ConcurrentLinkedQueue<V>> mData;
 
   public ConcurrentNavigableMultimap() { super(); }
-//  public ConcurrentNavigableMultimap(int s) { super(); mListCapacity=s; }
   public ConcurrentNavigableMultimap(ConcurrentSkipListMap<K, ConcurrentLinkedQueue<V>> s)
   { super(); mData=s; }
   public ConcurrentNavigableMultimap(ConcurrentNavigableMap<K, ConcurrentLinkedQueue<V>> s)
   {
     super(); mData=s;
-//    if (s!=null)
-//    {
-//      mData = new ConcurrentSkipListMap<K, List<V>>();
-//      for (K key : s.keySet())
-//        mData.put(key, s.get(key));
-//    }
   }
 
   public                     V  put2(  K key, V data) { put(key,data); return data; }
@@ -67,6 +60,18 @@ public class ConcurrentNavigableMultimap<K extends Comparable, V> implements Nav
 
         return s;
       }
+    }
+    return 0;
+  }
+  @Override
+  public long size()
+  {
+    if (mData!=null)
+    {
+      long s=0;
+      for (ConcurrentLinkedQueue<V> v : mData.values()) s+=v.size();
+
+      return s;
     }
     return 0;
   }

@@ -13,6 +13,8 @@ public interface NavigableMultimap<K, V> extends Disposable
 
   long keySize(K k1, K k2);
 
+  long size();
+
   List<V> subList(K k1, K k2);
 
   void clear();

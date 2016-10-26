@@ -57,6 +57,16 @@ public class TreeListMultimap<K extends Comparable, V> implements NavigableMulti
     }
     return 0;
   }
+  public long size()
+  {
+    if (mData!=null)
+    {
+      long s=0;
+      for (List<V> v : mData.values()) s+=v.size();
+      return s;
+    }
+    return 0;
+  }
   @Override
   public List<V> subList(K k1, K k2)
   {

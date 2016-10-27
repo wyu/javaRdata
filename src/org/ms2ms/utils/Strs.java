@@ -586,6 +586,14 @@ public class Strs
 
     return buf.toString();
   }
+  public static boolean hasSubStr(String s, Collection<String> strs)
+  {
+    if (s!=null && strs!=null)
+      for (String str : strs)
+        if (s.indexOf(str)>=0) return true;
+
+    return false;
+  }
 //  public static String fromLast(List<String> s, int n)
 //  {
 //    return s!=null && s.size()>2 ? s.get(s.size()-n) : null;

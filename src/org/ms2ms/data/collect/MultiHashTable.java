@@ -1,6 +1,7 @@
 package org.ms2ms.data.collect;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultimap;
 import org.ms2ms.utils.Tools;
@@ -27,13 +28,18 @@ public class MultiHashTable<K, L, T>
 
     return counts;
   }
+  private Multimap<L,T> newMultimap()
+  {
+    return HashMultimap.create();
+  }
   public void put(K key, L lable, T data)
   {
     if (mData == null) mData = new TreeMap<>();
     Multimap<L, T> D = mData.get(key);
     if (D == null)
     {
-      D = HashMultimap.create();
+      // to preseve multiple copies of the same objects. Oct 28, 2016
+      D = newMultimap();
       mData.put(key, D);
     }
     D.put(lable, data);
@@ -51,7 +57,9 @@ public class MultiHashTable<K, L, T>
     Multimap<L, T> D = mData.get(key);
     if (D == null)
     {
-      D = HashMultimap.create();
+      // to preseve multiple copies of the same objects. Oct 28, 2016
+      D = newMultimap();
+//      D = HashMultimap.create();
       mData.put(key, D);
     }
     else D.clear();
@@ -62,7 +70,9 @@ public class MultiHashTable<K, L, T>
     if (mData == null) mData = new HashMap<>();
     Multimap<L, T> D = mData.get(key);
     if (D == null) {
-      D = HashMultimap.create();
+      // to preseve multiple copies of the same objects. Oct 28, 2016
+      D = newMultimap();
+//      D = HashMultimap.create();
       D.putAll(data);
       mData.put(key, D);
     }
@@ -74,7 +84,9 @@ public class MultiHashTable<K, L, T>
     Multimap<L, T> D = mData.get(key);
     if (D == null)
     {
-      D = HashMultimap.create();
+      // to preseve multiple copies of the same objects. Oct 28, 2016
+      D = newMultimap();
+//      D = HashMultimap.create();
       D.putAll(lable, data);
       mData.put(key, D);
     }
@@ -109,7 +121,9 @@ public class MultiHashTable<K, L, T>
     for (K k : keySet())
       if (get(k, s) != null)
       {
-        Multimap<L, T> d = HashMultimap.create();
+        // to preseve multiple copies of the same objects. Oct 28, 2016
+        Multimap<L, T> d = newMultimap();
+//        Multimap<L, T> d = HashMultimap.create();
         d.putAll(s, get(k, s));
         cols.put(k, d);
       }
@@ -125,30 +139,5 @@ public class MultiHashTable<K, L, T>
   public Map<K, Multimap<L, T>> getData() { return mData; }
   public void clear() { if (getData() != null) getData().clear(); }
 
-//  public boolean remove(K key1, K key2)
-//  {
-//    Set<K> removed = new HashSet<K>(getData().subMap(key1, key2).keySet());
-//
-//    if (Tools.isSet(removed))
-//    {
-//      for (K key : removed) getData().keySet().remove(key);
-//      return true;
-//    }
-//    removed = null;
-//
-//    return false;
-//  }
-//  public Collection<T> subset(K k0, K k1, L l0, L l1)
-//  {
-//    Collection<TreeMultimap<L, T>> slice = getData().subMap(k0, k1).values();
-//    Collection<T> values = new HashSet<T>();
-//    if (Tools.isSet(slice))
-//      for (TreeMultimap<L, T> sub : slice)
-//      {
-//        for (Collection<T> ts : sub.asMap().subMap(l0, l1).values()) values.addAll(ts);
-//      }
-//
-//    return values;
-//  }
   public static <R, C, V> MultiHashTable<R, C, V> create() { return new MultiHashTable<R, C, V>(); }
 }

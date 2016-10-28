@@ -246,6 +246,12 @@ public class Tools
       for (Disposable s : ss)
         if (s!=null) { s.dispose(); s=null; }
   }
+  public static Map putKeysVal(Object v, Map m, Object... keys)
+  {
+    if (m!=null && keys!=null && v!=null)
+      for (Object k : keys) m.put(k, v);
+    return m;
+  }
   public static Map putNotNull(Map m, Object k, Object v)
   {
     if (m!=null && k!=null && v!=null) m.put(k, v);

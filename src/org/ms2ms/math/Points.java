@@ -74,6 +74,8 @@ public class Points
       Double k = (p2.getY() - p1.getY()) / (p2.getX() - p1.getX());
       xy.setY(0.5d * (p1.getY() + p2.getY()));
     }
+    // in case where the interpolation fail, take the conservative default
+    if (Double.isInfinite(xy.getX())) xy.setX(0.5d*(p1.getX()+p2.getX()));
     return xy;
   }
 

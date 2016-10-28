@@ -32,6 +32,8 @@ public class ImmutableNavigableMap<V>
     mIndex = new int[   lens]; Arrays.fill(mIndex, -1);
   }
   public double[] getKeys() { return mKeys; }
+  public      V[] getVals() { return mValues; }
+
   public ImmutableNavigableMap<V> of(SortedMap<Double, V> map, double precision)
   {
     if (Tools.isSet(map))

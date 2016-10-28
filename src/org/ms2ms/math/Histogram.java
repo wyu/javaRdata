@@ -107,6 +107,7 @@ public class Histogram implements Disposable
   public Double       getSigma()     { return mSigma; }
   public Double       getFWHH()      { return mFWHH; }
   public Double       getCentroid()  { return Tools.isSet(mHistogram) ? Points.centroid(mHistogram) : null; }
+  public Double       getCentroid(int begin, int end)  { return Tools.isSet(mHistogram) ? Points.centroid(mHistogram.subList(begin, end>0?end:mHistogram.size())) : null; }
 
   public Transformer.processor getTransformer() { return eTransform; }
   public Range<Double> getRange()
@@ -571,7 +572,7 @@ public class Histogram implements Disposable
   }
   // assess the center and upper quatile of a distribution truncated at the lower end
   // assume that the histogram is already sorted from low to high
-  public Histogram assessTruncated()
+  public Histogram assessTruncated(int low_bound)
   {
     if (!Tools.isSet(getHistogram())) return this;
 
@@ -579,7 +580,7 @@ public class Histogram implements Disposable
     {
       mCenter = Tools.front(getHistogram()).getX(); mSigma=null;
     }
-    mCenter = getCentroid();
+    mCenter = getCentroid(low_bound,-1);
     if (getHistogram().size()<=3) { mSigma=null; mFWHH=null; return this; }
 
     // locate the upper quartile
@@ -598,6 +599,8 @@ public class Histogram implements Disposable
         x1.setY(sum); x2.setY(sum+x2.getY());
         Point mid = Points.interpolateByY(x1, x2, q4);
         if (mid!=null) mSigma=mid.getX();
+        if (Double.isInfinite(mSigma))
+          System.out.print("");
       }
       if (getHistogram().get(i).getY()>hw && getHistogram().get(i+1).getY()<=hw)
       {
@@ -605,7 +608,6 @@ public class Histogram implements Disposable
         if (xy!=null) mFWHH=xy.getX()-mCenter;
       }
     }
-//    if (upperQ<getHistogram().size()-1 && upperQ>apex) mSigma = getHistogram().get(upperQ).getX();
 
     return this;
   }

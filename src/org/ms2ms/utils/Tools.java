@@ -771,4 +771,20 @@ public class Tools
 
     return found;
   }
+  public static int hashCodes(boolean... s)
+  {
+    int h=0;
+    if (s!=null)
+      for (boolean x : s) h+=Boolean.hashCode(x);
+
+    return h;
+  }
+  public static int hashCodes(double... s)
+  {
+    int h=0;
+    if (s!=null)
+      for (double x : s) h+=Double.hashCode(x);
+
+    return h;
+  }
 }

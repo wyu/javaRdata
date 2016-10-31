@@ -107,7 +107,15 @@ public class Histogram implements Disposable
   public Double       getSigma()     { return mSigma; }
   public Double       getFWHH()      { return mFWHH; }
   public Double       getCentroid()  { return Tools.isSet(mHistogram) ? Points.centroid(mHistogram) : null; }
-  public Double       getCentroid(int begin, int end)  { return Tools.isSet(mHistogram) ? Points.centroid(mHistogram.subList(begin, end>0?end:mHistogram.size())) : null; }
+  public Double       getCentroid(int begin, int end)
+  {
+    if (Tools.isSet(mHistogram))
+    {
+      end = end>0?end:mHistogram.size();
+      return Points.centroid(end>begin?mHistogram.subList(begin, end):mHistogram);
+    }
+    return null;
+  }
 
   public Transformer.processor getTransformer() { return eTransform; }
   public Range<Double> getRange()

@@ -440,6 +440,17 @@ public class Tools
     }
     return data;
   }
+  public static int[] toIntArray(Collection<Integer> s)
+  {
+    if (s==null) return null;
+    int[] data = new int[s.size()];
+    int order=0;
+    for (Integer d : s)
+    {
+      data[order++] = d;
+    }
+    return data;
+  }
   public static BitSet fromByteArray(byte[] bytes)
   {
     BitSet bits = new BitSet();
@@ -786,5 +797,16 @@ public class Tools
       for (double x : s) h+=Double.hashCode(x);
 
     return h;
+  }
+  public static Collection sampling(Collection data, int start, int spacing)
+  {
+    if (!isSet(data) || data.size()<spacing*2) return data;
+
+    Collection out = new ArrayList(); int counts=0;
+    for (Object s : data)
+    {
+      if ((++counts+start)%spacing==0) out.add(s);
+    }
+    return out;
   }
 }

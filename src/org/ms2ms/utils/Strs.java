@@ -590,7 +590,7 @@ public class Strs
   {
     if (s!=null && strs!=null)
       for (String str : strs)
-        if (s.indexOf(str)>=0) return true;
+        if (s.indexOf(str)>=0 || str.indexOf(s)>=0) return true;
 
     return false;
   }

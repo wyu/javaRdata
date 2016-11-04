@@ -534,50 +534,50 @@ public class Histogram implements Disposable
 //
 //    return R;
 //  }
-  public Histogram fitGaussian(boolean upper)
-  {
-    if (Tools.isSet(getHistogram()))
-    {
-      WeightedObservedPoints obs = new WeightedObservedPoints();
-      // watch out for truncation
-      int start=0;
-      if (upper)
-      {
-        int totals=getData().size(), remainder=(int )(totals*0.9);
-        // let's find out where the start is to avoid truncation
-        for (int i=getHistogram().size()-1; i>=0; i--)
-          if (totals>remainder) totals-=getHistogram().get(i).getY(); else break;
-      }
-      for (int i=start; i<getHistogram().size(); i++)
-        if (getHistogram().get(i).getY()>0)
-          obs.add(getHistogram().get(i).getX(), getHistogram().get(i).getY());
-
-      Point top = Points.basePoint(getHistogram());
-      // let's make the best guess
-      mTop=top.getY(); if (mCenter==null) mCenter=getCentroid(); if (mSigma==null) mSigma=mCenter*0.25d;
-      try
-      {
-        // fit the model --> Normalization, Mean, Sigma
-        double[] initials = new double[] {mTop, mCenter, mSigma},
-            parameters = GaussianCurveFitter.create().withStartPoint(initials).withMaxIterations(1000).fit(obs.toList());
-
-        if (parameters!=null && parameters.length>2)
-        {
-          mTop=parameters[0]; mCenter=parameters[1]; mSigma=parameters[2];
-        }
-      }
-      catch (Exception e)
-      {
-        // try our best guess, not worry about the spread
-        mCenter=getCentroid(); mSigma=null;
-//        e.printStackTrace();
-      }
-//      System.out.println("Score\tOccurances");
-//      for (Point pt : getHistogram()) System.out.println(pt.getX()+"\t"+pt.getY());
-//      System.out.println("\nTop="+mTop+", Center="+mCenter+", Sigma="+mSigma);
-    }
-    return this;
-  }
+//  public Histogram fitGaussian(boolean upper)
+//  {
+//    if (Tools.isSet(getHistogram()))
+//    {
+//      WeightedObservedPoints obs = new WeightedObservedPoints();
+//      // watch out for truncation
+//      int start=0;
+//      if (upper)
+//      {
+//        int totals=getData().size(), remainder=(int )(totals*0.9);
+//        // let's find out where the start is to avoid truncation
+//        for (int i=getHistogram().size()-1; i>=0; i--)
+//          if (totals>remainder) totals-=getHistogram().get(i).getY(); else break;
+//      }
+//      for (int i=start; i<getHistogram().size(); i++)
+//        if (getHistogram().get(i).getY()>0)
+//          obs.add(getHistogram().get(i).getX(), getHistogram().get(i).getY());
+//
+//      Point top = Points.basePoint(getHistogram());
+//      // let's make the best guess
+//      mTop=top.getY(); if (mCenter==null) mCenter=getCentroid(); if (mSigma==null) mSigma=mCenter*0.25d;
+//      try
+//      {
+//        // fit the model --> Normalization, Mean, Sigma
+//        double[] initials = new double[] {mTop, mCenter, mSigma},
+//            parameters = GaussianCurveFitter.create().withStartPoint(initials).withMaxIterations(1000).fit(obs.toList());
+//
+//        if (parameters!=null && parameters.length>2)
+//        {
+//          mTop=parameters[0]; mCenter=parameters[1]; mSigma=parameters[2];
+//        }
+//      }
+//      catch (Exception e)
+//      {
+//        // try our best guess, not worry about the spread
+//        mCenter=getCentroid(); mSigma=null;
+////        e.printStackTrace();
+//      }
+////      System.out.println("Score\tOccurances");
+////      for (Point pt : getHistogram()) System.out.println(pt.getX()+"\t"+pt.getY());
+////      System.out.println("\nTop="+mTop+", Center="+mCenter+", Sigma="+mSigma);
+//    }
+//    return this;
+//  }
   // assess the center and upper quatile of a distribution truncated at the lower end
   // assume that the histogram is already sorted from low to high
   public Histogram assessTruncated(int low_bound)
@@ -607,8 +607,8 @@ public class Histogram implements Disposable
         x1.setY(sum); x2.setY(sum+x2.getY());
         Point mid = Points.interpolateByY(x1, x2, q4);
         if (mid!=null) mSigma=mid.getX();
-        if (Double.isInfinite(mSigma))
-          System.out.print("");
+//        if (Double.isInfinite(mSigma))
+//          System.out.print("");
       }
       if (getHistogram().get(i).getY()>hw && getHistogram().get(i+1).getY()<=hw)
       {

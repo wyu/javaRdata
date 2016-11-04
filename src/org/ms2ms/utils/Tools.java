@@ -564,6 +564,16 @@ public class Tools
 
     return outs;
   }
+  public static Set asSet(Collection s)
+  {
+    if (s!=null)
+    {
+      Set ss = new HashSet();
+      ss.addAll(s);
+      return ss;
+    }
+    return null;
+  }
   public static String[] toColsHdr(Map<String, String> row, Map<String, String> cols)
   {
     String[] outs = new String[cols.size()*2];

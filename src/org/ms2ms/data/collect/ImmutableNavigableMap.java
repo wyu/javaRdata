@@ -50,7 +50,10 @@ public class ImmutableNavigableMap<V>
       int k=0;
       for (Map.Entry<Double, V> E : map.entrySet())
       {
-        mIndex[index(E.getKey())]=k;
+        int idx = index(E.getKey());
+        // only update the index if not set already or larger than this one.
+        // When multiple entries share the same key, keep the smallest one
+        if (mIndex[idx]==-1 || mKeys[mIndex[idx]]>E.getKey()) mIndex[idx]=k;
         mKeys[  k]=E.getKey();
         mValues[k]=E.getValue();
         k++;

@@ -819,4 +819,9 @@ public class Tools
     }
     return out;
   }
+  public static <K,V> Multimap<K,V> remove(Multimap<K,V> map, K key, V val)
+  {
+    if (map!=null) map.remove(key, val);
+    return map;
+  }
 }

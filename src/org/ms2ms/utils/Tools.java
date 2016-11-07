@@ -228,6 +228,13 @@ public class Tools
       for (Map s : ss)
         if (s!=null) { s.clear(); s=null; }
   }
+
+  public static void dispose(MultiTreeTable... ss)
+  {
+    if (isSet(ss))
+      for (MultiTreeTable s : ss)
+        if (s!=null) { s.clear(); s=null; }
+  }
   public static void dispose(Multimap... ss)
   {
     if (isSet(ss))
@@ -823,5 +830,9 @@ public class Tools
   {
     if (map!=null) map.remove(key, val);
     return map;
+  }
+  public static boolean isLarger(Collection A, Collection B)
+  {
+    return (A!=null && (B==null || A.size()>B.size()));
   }
 }

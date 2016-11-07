@@ -1,5 +1,6 @@
 package org.ms2ms.data.collect;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.TreeMultimap;
 import org.ms2ms.utils.Tools;
 
@@ -17,6 +18,7 @@ public class MultiTreeTable<K extends Comparable, L extends Comparable, T extend
   private SortedMap<K, TreeMultimap<L, T>> mData;
 
   public MultiTreeTable() { super(); mData = new TreeMap<>(); }
+  public MultiTreeTable(Comparator<? super K> keyC) { super(); mData = new TreeMap<>(keyC); }
 
   public long size()
   {
@@ -150,4 +152,10 @@ public class MultiTreeTable<K extends Comparable, L extends Comparable, T extend
   }
   public static <R extends Comparable, C extends Comparable, V extends Comparable> MultiTreeTable<R, C, V>
   create() { return new MultiTreeTable<R, C, V>(); }
+
+  public static<R extends Comparable, C extends Comparable, V extends Comparable> MultiTreeTable<R, C, V>
+  create(Comparator<? super R> keyComparator) {
+    return new MultiTreeTable((Comparator) Preconditions.checkNotNull(keyComparator));
+  }
+
 }

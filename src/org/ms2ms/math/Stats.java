@@ -599,4 +599,21 @@ public class Stats
 
     return sum*Math.exp(L*-1d);
   }
+  public static int greaterEqualThan(Collection<Integer> vals, Double val)
+  {
+    int n=0;
+    if (Tools.isSet(vals))
+      for (Integer v : vals) if (v>=val) n++;
+
+    return n;
+  }
+//  public static int[] reducedRatio(int A, int B, double tol)
+//  {
+//    if (A!=0 && B!=0)
+//    {
+//      double r0=(double)A/(double)B, r=0;
+//      while (r==0 || )
+//    }
+//
+//  }
 }

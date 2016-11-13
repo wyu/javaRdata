@@ -1,5 +1,6 @@
 package org.ms2ms.math;
 
+import com.google.common.collect.BoundType;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Range;
 import org.apache.commons.math.stat.descriptive.moment.Skewness;
@@ -293,6 +294,22 @@ public class Histogram implements Disposable
     generate(step_num, range);
     return this;
   }
+  public Histogram generateTruncated(int step_num, int skips)
+  {
+    if (!Tools.isSet(mData) || step_num == 0) return this;
+
+    Collections.sort(mData);
+    Range<Double> range = Range.open(mData.get(0), mData.get(mData.size() - 1));
+
+    if (skips>0)
+    {
+      double step = (range.upperEndpoint()-range.lowerEndpoint())/(double )step_num;
+      range = Range.closedOpen(mData.get(0)+step*skips, range.upperEndpoint());
+      step_num-=skips;
+    }
+    generate(step_num, range);
+    return this;
+  }
   public Histogram generate2pts(int step_num, double min_step)
   {
     if (!Tools.isSet(mData) || step_num == 0) return this;
@@ -363,7 +380,8 @@ public class Histogram implements Disposable
 
     init(getTitle(), (range.upperEndpoint()-range.lowerEndpoint())/(float )step_num, range);
 
-    if (Tools.isSet(mHistogram)) for (Double x : mData) if (x != null) add(x);
+    if (Tools.isSet(mHistogram)) for (Double x : mData)
+      if (x != null && (!initial_range.lowerBoundType().equals(BoundType.CLOSED) || x>=initial_range.lowerEndpoint())) add(x);
 
     survey();
   }
@@ -588,6 +606,11 @@ public class Histogram implements Disposable
     {
       mCenter = Tools.front(getHistogram()).getX(); mSigma=null;
     }
+    // remove the zero
+    Iterator<Point> itr = getHistogram().iterator();
+    while (itr.hasNext())
+      if (itr.next().getY()==0) itr.remove();
+
     mCenter = getCentroid(low_bound,-1);
     if (getHistogram().size()<=3) { mSigma=null; mFWHH=null; return this; }
 
@@ -601,12 +624,13 @@ public class Histogram implements Disposable
     for (int i=apex; i<getHistogram().size()-1; i++)
     {
       sum+=getHistogram().get(i).getY();
-      if (mSigma==null && sum>=q4)
+      if (mSigma==null && sum>=q4 && i>0)
       {
-        Point x1=getHistogram().get(i), x2=getHistogram().get(i+1);
-        x1.setY(sum); x2.setY(sum+x2.getY());
+        Point x1 = new Point(getHistogram().get(i-1).getX(), sum-getHistogram().get(i).getY()),
+              x2 = new Point(getHistogram().get(i).getX(), sum);
+        //x1.setY(sum); x2.setY(sum+x2.getY());
         Point mid = Points.interpolateByY(x1, x2, q4);
-        if (mid!=null) mSigma=mid.getX();
+        if (mid!=null) mSigma=mid.getX()-mCenter;
 //        if (Double.isInfinite(mSigma))
 //          System.out.print("");
       }

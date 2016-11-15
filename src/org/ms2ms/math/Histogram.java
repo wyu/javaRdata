@@ -33,7 +33,7 @@ public class Histogram implements Disposable
   private String        mTitle;
   private Transformer.processor eTransform = Transformer.processor.none;
   private int           mHistogramSize = 12;
-  private Double        mStep, mSumY = null, mMean, mMedian, mStdev, mKurtosisNormality, mSkewness, mCorr, mCenter, mTop, mSigma, mFWHH;
+  private Double        mStep, mSumY = null, mMean, mMedian, mStdev, mKurtosisNormality, mSkewness, mCorr, mCenter, mTop, mSigma, mFWHH, mUpperModal;
   private Range<Double> mRange;
   private List<Point>   mCumulative;
   private List<Point>   mHistogram;
@@ -108,6 +108,8 @@ public class Histogram implements Disposable
   public Double       getSigma()     { return mSigma; }
   public Double       getFWHH()      { return mFWHH; }
   public Double       getCentroid()  { return Tools.isSet(mHistogram) ? Points.centroid(mHistogram) : null; }
+  public Double       getUpperModal() { return mUpperModal; }
+
   public Double       getCentroid(int begin, int end)
   {
     if (Tools.isSet(mHistogram))
@@ -618,6 +620,7 @@ public class Histogram implements Disposable
     int apex    = Points.findClosest(getHistogram(), mCenter);
     double half = Points.sumY(getHistogram(), apex);
 //        upperQ = (int )Math.round((getHistogram().size()+apex)*0.5d),
+    mUpperModal = getCentroid(apex,-1);
 
     // locate the point above the apex where Y is 1/2 of the apex
     double hw = Math.sqrt(getHistogram().get(apex).getY()), sum=0d, q4=half*0.6827d; mSigma=null;
@@ -626,7 +629,7 @@ public class Histogram implements Disposable
       sum+=getHistogram().get(i).getY();
       if (mSigma==null && sum>=q4 && i>0)
       {
-        Point x1 = new Point(getHistogram().get(i-1).getX(), sum-getHistogram().get(i).getY()),
+        Point x1 = new Point(getHistogram().get(i- 1).getX(), sum-getHistogram().get(i).getY()),
               x2 = new Point(getHistogram().get(i).getX(), sum);
         //x1.setY(sum); x2.setY(sum+x2.getY());
         Point mid = Points.interpolateByY(x1, x2, q4);

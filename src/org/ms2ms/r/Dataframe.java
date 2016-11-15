@@ -329,10 +329,10 @@ public class Dataframe implements Disposable
         for (String v : cols())
         {
           Object val = cell(id, v);
-          if (val==null)
-          {
-            System.out.println();
-          }
+//          if (val==null)
+//          {
+//            System.out.println();
+//          }
           line = Strs.extend(line, val==null?"":Tools.o2s(val, decimal), delimiter);
         }
         buf.append(line + "\n");

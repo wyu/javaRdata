@@ -219,12 +219,15 @@ public class Strs
   }
   public static <T> String toString(Collection<T> ss, String dl) {
     // no point to go further
-    if (ss == null) return null;
-    String made = null;
-    for (T t : ss)
-      if (t != null) made = extend(made, t.toString(), dl);
-    // return the concatenated string
-    return made;
+    if (ss!=null)
+    {
+      String made = null;
+      for (T t : ss)
+        if (t != null) made = extend(made, t.toString(), dl);
+      // return the concatenated string
+      return made;
+    }
+    return "";
   }
   public static String toString(Collection<Double> ss, int deci, String dl) {
     // no point to go further

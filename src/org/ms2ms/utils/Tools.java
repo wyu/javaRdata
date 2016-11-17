@@ -839,4 +839,5 @@ public class Tools
   {
     return (A!=null && B==null && A<B);
   }
+  public static double growth(double A, double B) { return (B-A)/(A!=0?A:B); }
 }

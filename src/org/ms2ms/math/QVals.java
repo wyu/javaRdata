@@ -32,6 +32,16 @@ public class QVals
     }
     vals.add(decoy); return this;
   }
+  public Double thresholdByFDR(double fdr)
+  {
+    double D=0d, N=0;
+    for (Double score : mCandidates.keySet())
+    {
+      D += Collections.frequency(mCandidates.get(score), true); N++;
+      if (2*D/N>fdr) return score;
+    }
+    return null;
+  }
 
   public QVals model()
   {
@@ -56,14 +66,11 @@ public class QVals
 
 //      // frequency of the decoys with the score
       D += Collections.frequency(mCandidates.get(score), true)/(double )mCandidates.get(score).size();
-      if (N<40)
-      {
-        points.add(new Point(++N, D));
+      points.add(new Point(++N, D));
 //      System.out.println(score+"\t"+N+"\t"+D);
-      }
       scores.add(score);
     }
-    mThreshold = index2score(linear(points), scores);
+    mThreshold = index2score(linear(points, 40), scores);
 
     return this;
   }
@@ -147,13 +154,14 @@ public class QVals
     }
     return null;
   }
-  private Double linear(Collection<Point> pts)
+  private Double linear(Collection<Point> pts, int limit)
   {
     if (pts!=null && pts.size()>2)
     {
       // settle for a linear fit
       SimpleRegression linear = new SimpleRegression(true);
-      for (Point pt : pts) linear.addData(pt.getX(), pt.getY());
+      for (Point pt : pts)
+        if (linear.getN()<limit) linear.addData(pt.getX(), pt.getY());
 
       return -1*linear.getIntercept()/linear.getSlope();
     }

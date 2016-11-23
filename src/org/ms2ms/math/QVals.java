@@ -154,6 +154,30 @@ public class QVals
     }
     return null;
   }
+  private Double extremeCum(Collection<Point> pts)
+  {
+    if (pts!=null && pts.size()>4)
+    {
+
+      List<WeightedObservedPoint> points = new ArrayList<>(pts.size());
+      for (Point pt : pts) points.add(new WeightedObservedPoint(1,pt.getX(), pt.getY()));
+
+      // fit a polynomial curve
+      PolynomialCurveFitter quad = PolynomialCurveFitter.create(2);
+      mCoeffs = quad.fit(points);
+
+      double d = (mCoeffs[1]*mCoeffs[1]-4*mCoeffs[0]*mCoeffs[2]),
+          x1 = (-1*mCoeffs[1]-Math.sqrt(d))/(2*mCoeffs[2]), x2 = (-1*mCoeffs[1]+Math.sqrt(d))/(2*mCoeffs[2]);
+
+      // picking the lowest of the roots
+      return Math.min(x1, x2);
+//      // inter/ex-polating for the critical score
+//      int left=(int )Math.floor(mThreshold), right=(int )Math.ceil(mThreshold);
+//      Point x = Points.interpolate(new Point(left, scores.get(left)), new Point(right, scores.get(right)), mThreshold);
+//      mThreshold = x.getY();
+    }
+    return null;
+  }
   private Double linear(Collection<Point> pts, int limit)
   {
     if (pts!=null && pts.size()>2)

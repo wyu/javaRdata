@@ -831,6 +831,13 @@ public class Tools
     if (map!=null) map.remove(key, val);
     return map;
   }
+  public static int bound(int val, int low, int high)
+  {
+    if (low>=high)
+      if (val<low) return low; else if (val>high) return high; else return val;
+
+    if (val<high) return high; else if (val>low) return low; else return val;
+  }
   public static boolean isLarger(Collection A, Collection B)
   {
     return (A!=null && (B==null || A.size()>B.size()));

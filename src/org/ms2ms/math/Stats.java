@@ -5,6 +5,9 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.analysis.interpolation.LoessInterpolator;
 import org.apache.commons.math.analysis.polynomials.PolynomialSplineFunction;
+import org.apache.commons.math3.fitting.PolynomialCurveFitter;
+import org.apache.commons.math3.fitting.WeightedObservedPoint;
+import org.ms2ms.data.Point;
 import org.ms2ms.utils.Strs;
 import org.ms2ms.utils.Tools;
 import org.uncommons.maths.combinatorics.PermutationGenerator;
@@ -607,13 +610,4 @@ public class Stats
 
     return n;
   }
-//  public static int[] reducedRatio(int A, int B, double tol)
-//  {
-//    if (A!=0 && B!=0)
-//    {
-//      double r0=(double)A/(double)B, r=0;
-//      while (r==0 || )
-//    }
-//
-//  }
 }

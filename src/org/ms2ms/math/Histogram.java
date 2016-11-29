@@ -1,14 +1,9 @@
 package org.ms2ms.math;
 
 import com.google.common.collect.BoundType;
-import com.google.common.collect.Ordering;
 import com.google.common.collect.Range;
 import org.apache.commons.math.stat.descriptive.moment.Skewness;
-import org.apache.commons.math3.exception.TooManyIterationsException;
-import org.apache.commons.math3.fitting.GaussianCurveFitter;
-import org.apache.commons.math3.fitting.WeightedObservedPoints;
 import org.apache.commons.math3.stat.descriptive.moment.Kurtosis;
-import org.apache.commons.math3.stat.inference.ChiSquareTest;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.ms2ms.Disposable;
 import org.ms2ms.data.Point;

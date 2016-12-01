@@ -11,13 +11,14 @@ import org.apache.commons.math3.analysis.differentiation.DerivativeStructure;
 import org.apache.commons.math3.analysis.differentiation.UnivariateDifferentiableFunction;
 import org.apache.commons.math3.exception.NoDataException;
 import org.apache.commons.math3.exception.NullArgumentException;
-import org.apache.commons.math3.exception.util.LocalizedFormats;
+import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 import org.ms2ms.utils.Tools;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
 
 public class Func7001 implements UnivariateDifferentiableFunction, DifferentiableUnivariateFunction, Serializable
 {
@@ -206,5 +207,23 @@ public class Func7001 implements UnivariateDifferentiableFunction, Differentiabl
     }
 
     public double value(double x, double... parameters) throws NoDataException { return Func7001.evaluate(parameters, x); }
+  }
+
+  public static double[] guessParameters(List<WeightedObservedPoint> data)
+  {
+    double[] params = new double[3];
+    if (Tools.isSet(data))
+    {
+      double y0=Double.MAX_VALUE*-1d, x0=Double.MAX_VALUE*-1d;
+      for (WeightedObservedPoint pt : data)
+      {
+        if (pt.getY()>y0) y0=pt.getY();
+        if (pt.getX()>x0) x0=pt.getX();
+      }
+      params[0]=y0; params[1]=-1d/x0; params[2]=y0*-1d/x0;
+      return params;
+    }
+
+    return null;
   }
 }

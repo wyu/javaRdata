@@ -686,6 +686,19 @@ public class Histogram implements Disposable
     for (Point pt : mCumulative) if (pt.getY()!=0) System.out.println(pt.getX()+"\t"+(pt.getY()/base));
     System.out.println();
   }
+  public String wikiHistogram()
+  {
+    if (Tools.isSet(getHistogram()))
+    {
+      StringBuilder buf = new StringBuilder("{chart:type=xyLine|title="+getTitle()+"}\n");
+      buf.append("||X||Occurrence||\n");
+      for (Point pt : getHistogram()) buf.append("|"+pt.getX()+"|"+pt.getY()+"|\n");
+      buf.append("{chart}\n");
+
+      return buf.toString();
+    }
+    return null;
+  }
 
   @Override
   public void dispose()

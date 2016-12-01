@@ -4,6 +4,7 @@ package org.ms2ms.math.equation;
  *  modelled after PolynomialFunction from Apache Math3
  */
 
+import org.apache.commons.math.optimization.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.analysis.DifferentiableUnivariateFunction;
 import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
 import org.apache.commons.math3.analysis.UnivariateFunction;
@@ -18,6 +19,7 @@ import org.ms2ms.utils.Tools;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
 
 public class Func7401 implements UnivariateDifferentiableFunction, DifferentiableUnivariateFunction, Serializable
 {

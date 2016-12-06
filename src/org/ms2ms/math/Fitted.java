@@ -1,6 +1,7 @@
 package org.ms2ms.math;
 
 import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
+import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.SimpleCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
 
@@ -80,5 +81,28 @@ public class Fitted
     }
 
     return setParams(best).setR2(1-sumRES/sumTOT);
+  }
+  public Fitted fit(int degree, List<WeightedObservedPoint> data)
+  {
+    PolynomialCurveFitter fitter=PolynomialCurveFitter.create(degree);
+
+    if (data.size()>2) {
+      setParams(fitter.fit(data));
+      // compute the R2 coeff. get the mean-Y first
+      double sum=0, sumTOT=0, sumRES=0, n=0;
+      for (WeightedObservedPoint pt : data) {
+        n++;
+        sum+=pt.getY();
+      }
+      sum/=n;
+
+      for (WeightedObservedPoint pt : data) {
+        double fx=getParams()[1]*pt.getX()+getParams()[0];
+        sumTOT+=(pt.getY()-sum)*(pt.getY()-sum);
+        sumRES+=(pt.getY()-fx)*(pt.getY()-fx);
+      }
+      return setR2(1-sumRES/sumTOT);
+    }
+    return null;
   }
 }

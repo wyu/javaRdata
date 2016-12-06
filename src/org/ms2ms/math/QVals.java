@@ -4,6 +4,8 @@ import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.ms2ms.data.Point;
+import org.ms2ms.utils.Strs;
+import org.ms2ms.utils.Tools;
 
 import java.util.*;
 
@@ -34,13 +36,14 @@ public class QVals
   }
   public Double thresholdByFDR(double fdr)
   {
-    double D=0d, N=0;
+    double D=0d, N=0, score0=Double.MAX_VALUE;
     for (Double score : mCandidates.keySet())
     {
       D += Collections.frequency(mCandidates.get(score), true); N++;
-      if (2*D/N>fdr) return score;
+      //System.out.println(getName()+"\t"+Tools.d2s(score, 2)+"\t"+D+"\t"+N+"\t"+Strs.toString(mCandidates.get(score), ";"));
+      if (2*D/N<=fdr && score<score0) score0=score;
     }
-    return null;
+    return score0;
   }
 
   public QVals model()

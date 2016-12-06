@@ -9,6 +9,8 @@ import toools.set.IntHashSet;
 import toools.set.IntSet;
 
 import javax.annotation.Nonnull;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.*;
 
@@ -119,9 +121,16 @@ public class Tools
 
     return format( s, w );
   }
+  public static String d2s(Double s, int i, String _def)
+  {
+    return s!=null?d2s(s,i):_def;
+  }
+  public static String d2s(Double s, int i)
+  {
+    return s!=null ? String.format("%."+i+"f", s) : "";
+  }
   public static String d2s(double s, int i)
   {
-//    return format(s, i, 0);
     return String.format("%."+i+"f", s);
   }
   public static String o2s(Object s, int i)
@@ -854,7 +863,27 @@ public class Tools
   }
   public static boolean lessThan(Double A, Double B)
   {
-    return (A!=null && B==null && A<B);
+    return (A!=null && B!=null && A<B);
+  }
+  public static boolean greaterThan(Double A, Double B)
+  {
+    return (A!=null && B!=null && A>B);
+  }
+  public static boolean greaterEqThan(Double A, Double B)
+  {
+    return (A!=null && B!=null && A>+B);
   }
   public static double growth(double A, double B) { return (B-A)/(A!=0?A:B); }
+
+  public static FileWriter newFileWriter(String s)
+  {
+    FileWriter devi = null;
+    try
+    {
+      devi = new FileWriter("/tmp/frag_devi.csv");
+
+    }
+    catch (IOException e) {}
+    return devi;
+  }
 }

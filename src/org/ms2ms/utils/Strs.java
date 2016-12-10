@@ -5,7 +5,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -92,7 +91,7 @@ public class Strs
     // return the list
     return list;
   }
-  public static String[] split(@Nonnull String s, char c, boolean trim)
+  public static String[] split(String s, char c, boolean trim)
   {
     if (s==null) return null;
 

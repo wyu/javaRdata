@@ -8,10 +8,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="libs" level="project" />
-    <orderEntry type="library" name="nosql" level="project" />
-    <orderEntry type="library" name="apache" level="project" />
-    <orderEntry type="library" name="grph" level="project" />
-    <orderEntry type="library" name="sci" level="project" />
+    <orderEntry type="library" exported="" name="javaRdata" level="project" />
   </component>
 </module>

@@ -2,14 +2,11 @@ package org.ms2ms.utils;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
-import com.hfg.util.FileUtil;
 import org.ms2ms.data.Binary;
 import org.ms2ms.math.Stats;
-import org.neo4j.io.fs.FileUtils;
 import toools.set.IntHashSet;
 import toools.set.IntSet;
 
-import javax.annotation.Nonnull;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -86,32 +83,32 @@ public class IOs
 ////    isnull(ds, t);
 ////    if (t != null) write(ds, t.toString());
 //  }
-  public static void writeOpStr(DataOutput ds, @Nonnull Optional<String> t) throws IOException
+  public static void writeOpStr(DataOutput ds, Optional<String> t) throws IOException
   {
     write(ds, t.isPresent());
     if (t.isPresent()) write(ds, t.get());
   }
-  public static void writeOpDouble(DataOutput ds, @Nonnull Optional<Double> t) throws IOException
+  public static void writeOpDouble(DataOutput ds, Optional<Double> t) throws IOException
   {
     write(ds, t.isPresent());
     if (t.isPresent()) write(ds, t.get());
   }
-  public static void writeOpFloat(DataOutput ds, @Nonnull Optional<Float> t) throws IOException
+  public static void writeOpFloat(DataOutput ds, Optional<Float> t) throws IOException
   {
     write(ds, t.isPresent());
     if (t.isPresent()) write(ds, t.get());
   }
-  public static void writeOpInt(DataOutput ds, @Nonnull Optional<Integer> t) throws IOException
+  public static void writeOpInt(DataOutput ds, Optional<Integer> t) throws IOException
   {
     write(ds, t.isPresent());
     if (t.isPresent()) write(ds, t.get());
   }
-  public static void writeOpLong(DataOutput ds, @Nonnull Optional<Long> t) throws IOException
+  public static void writeOpLong(DataOutput ds, Optional<Long> t) throws IOException
   {
     write(ds, t.isPresent());
     if (t.isPresent()) write(ds, t.get());
   }
-  public static void writeOpBoolean(DataOutput ds, @Nonnull Optional<Boolean> t) throws IOException
+  public static void writeOpBoolean(DataOutput ds, Optional<Boolean> t) throws IOException
   {
     write(ds, t.isPresent());
     if (t.isPresent()) write(ds, t.get());
@@ -1450,7 +1447,7 @@ public class IOs
       System.out.println(io);
     }
   }
-  public static String row(char t, @Nonnull Map<String, Object> R, String _default, @Nonnull String... cols)
+  public static String row(char t, Map<String, Object> R, String _default, String... cols)
   {
     String line=null;
     for (String col : cols)
@@ -1458,7 +1455,7 @@ public class IOs
 
     return line;
   }
-  public static Writer writeLine(@Nonnull Writer w, String line) throws IOException
+  public static Writer writeLine(Writer w, String line) throws IOException
   {
     if (line!=null) w.write(line+"\n");
     return w;

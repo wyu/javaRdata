@@ -4,7 +4,6 @@ import com.thinkaurelius.titan.core.TitanFactory;
 import com.thinkaurelius.titan.core.TitanGraph;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
-import org.slf4j.LoggerFactory;
 
 /**
  * Created with IntelliJ IDEA.

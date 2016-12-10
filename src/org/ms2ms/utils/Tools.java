@@ -2,16 +2,13 @@ package org.ms2ms.utils;
 
 import com.google.common.collect.*;
 import org.expasy.mzjava.core.ms.PpmTolerance;
-import org.expasy.mzjava.proteomics.ms.ident.PeptideMatch;
 import org.ms2ms.Disposable;
 import org.ms2ms.data.collect.MultiTreeTable;
 import toools.set.IntHashSet;
 import toools.set.IntSet;
 
-import javax.annotation.Nonnull;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -650,7 +647,7 @@ public class Tools
    * @return a subtable where each column has at least an object below and above the x
    */
   public static <R extends Comparable, C extends Comparable, T extends Object> RowSortedTable<R, C, T>
-      interpolate(@Nonnull RowSortedTable<R, C, T> ordered, R x)
+      interpolate(RowSortedTable<R, C, T> ordered, R x)
   {
     SortedSet<R>    tail=ordered.rowKeySet().tailSet(x);
     NavigableSet<R> head=new TreeSet<R>(ordered.rowKeySet().headSet(x)).descendingSet();
@@ -710,7 +707,7 @@ public class Tools
 
     return sub;
   }
-  public static int lastIndexBelow(@Nonnull List<Double> s, int start, double value)
+  public static int lastIndexBelow(List<Double> s, int start, double value)
   {
     if (start<s.size())
       for (int i=start; i<s.size(); i++)
@@ -720,7 +717,7 @@ public class Tools
     return -1;
   }
 
-  public static int firstIndexAbove(@Nonnull List<Double> s, int start, double value)
+  public static int firstIndexAbove(List<Double> s, int start, double value)
   {
     if (start<s.size())
       for (int i=start; i<s.size(); i++)

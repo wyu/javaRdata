@@ -588,7 +588,7 @@ public class Strs
 
     return buf.toString();
   }
-  public static boolean isSubStr(String A, String B)
+  public static boolean hasSubStr(String A, String B)
   {
     if (A!=null && B!=null)
       if (A.indexOf(B)>=0 || B.indexOf(A)>=0) return true;

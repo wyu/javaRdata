@@ -118,6 +118,10 @@ public class Tools
 
     return format( s, w );
   }
+  public static String d2x(double s, int i, double max)
+  {
+    return s>max?">"+d2s(max,i):d2s(s,i);
+  }
   public static String d2s(Double s, int i, String _def)
   {
     return s!=null?d2s(s,i):_def;

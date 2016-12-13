@@ -17,6 +17,7 @@ public class QVals
   private String mName;
   private Double mRoot, mThreshold;
   private Map<Double, Collection<Boolean>> mCandidates = new TreeMap<>(Collections.reverseOrder());
+  private List<Point> mPoints;
   private double[] mCoeffs=null;
 
   public QVals()         { super(); }
@@ -27,6 +28,8 @@ public class QVals
 
   public QVals put(Double score, Boolean decoy)
   {
+    if (score==null || Double.isNaN(score)) return this;
+
     Collection<Boolean> vals = mCandidates.get(score);
     if (vals==null)
     {
@@ -36,12 +39,15 @@ public class QVals
   }
   public Double thresholdByFDR(double fdr)
   {
-    double D=0d, N=0, score0=Double.MAX_VALUE;
+    mPoints = new ArrayList<>();
+
+    double D=0d, N=0, score0=Collections.max(mCandidates.keySet());
     for (Double score : mCandidates.keySet())
     {
       D += Collections.frequency(mCandidates.get(score), true); N++;
       //System.out.println(getName()+"\t"+Tools.d2s(score, 2)+"\t"+D+"\t"+N+"\t"+Strs.toString(mCandidates.get(score), ";"));
       if (2*D/N<=fdr && score<score0) score0=score;
+      mPoints.add(new Point(2*D/N, Collections.frequency(mCandidates.get(score), true)));
     }
     return score0;
   }

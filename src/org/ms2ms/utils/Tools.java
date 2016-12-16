@@ -862,6 +862,10 @@ public class Tools
   {
     return (A!=null && (B==null || A.size()>B.size()));
   }
+  public static boolean isLargerEq(Collection A, Collection B)
+  {
+    return (A!=null && (B==null || A.size()>=B.size()));
+  }
   public static boolean lessThan(Double A, Double B)
   {
     return (A!=null && B!=null && A<B);

@@ -151,6 +151,17 @@ public class IOs
         write(ds, data.get(key));
       }
   }
+  public static void writeIntLongMap(DataOutput ds, Map<Integer, Long> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.size() : 0);
+
+    if (Tools.isSet(data))
+      for (Integer key : data.keySet())
+      {
+        write(ds, key);
+        write(ds, data.get(key));
+      }
+  }
   public static <T extends Binary> void write(DataOutput ds, Collection<T> data) throws IOException
   {
     write(ds, Tools.isSet(data) ? data.size() : 0);

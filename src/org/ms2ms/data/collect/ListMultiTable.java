@@ -4,13 +4,14 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
+import org.ms2ms.Disposable;
 
 import java.util.*;
 
 /**
  * Created by yuw on 10/28/16.
  */
-public class ListMultiTable<K, L, T>
+public class ListMultiTable<K, L, T> implements Disposable
 {
   private Table<K, L, List<T>> mData;
 
@@ -113,4 +114,11 @@ public class ListMultiTable<K, L, T>
   public void clear() { if (getData() != null) getData().clear(); }
 
   public static <R, C, V> ListMultiTable<R, C, V> create() { return new ListMultiTable<R, C, V>(); }
+
+  @Override
+  public void dispose()
+  {
+    if (mData!=null) mData.clear();
+    mData=null;
+  }
 }

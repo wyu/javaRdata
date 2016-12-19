@@ -583,6 +583,8 @@ public class Strs
   }
   public static String toString(char[] sequence, int left, int right)
   {
+    if (sequence==null || right<left) return "";
+
     StringBuilder buf = new StringBuilder();
     buf.append(Arrays.copyOfRange(sequence, left, right));
 

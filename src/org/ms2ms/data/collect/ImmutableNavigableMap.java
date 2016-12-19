@@ -1,5 +1,6 @@
 package org.ms2ms.data.collect;
 
+import org.ms2ms.Disposable;
 import org.ms2ms.utils.Tools;
 
 import java.lang.reflect.Array;
@@ -8,7 +9,7 @@ import java.util.*;
 /** A simple collection to optimize for range query by a double key
  * Created by yuw on 10/8/16.
  */
-public class ImmutableNavigableMap<V>
+public class ImmutableNavigableMap<V> implements Disposable
 {
   private double   mPrecision=1d, mKeyMin=0d, mKeyMax=2000d, mKeySpan=2000d;
   private int[]    mIndex;
@@ -96,5 +97,11 @@ public class ImmutableNavigableMap<V>
 
     ImmutableNavigableMap made = new ImmutableNavigableMap();
     return made.of(map, precision);
+  }
+
+  @Override
+  public void dispose()
+  {
+    mIndex=null; mKeys=null; mValues=null;
   }
 }

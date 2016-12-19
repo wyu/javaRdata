@@ -107,8 +107,6 @@ public class Stats
   public static double ln_combination(long n, long k) { return ln_factorial(n)-ln_factorial(k)-ln_factorial(n-k); }
   public static double ln_factorial(long n)
   {
-//    if (n<0)
-//      System.out.print("");
     if (n>17) return 0.5d*Math.log(2d*(double )n*3.14) + (double )n*Math.log((double )n) - (double )n;
     return sLnFactorials.get(n);
   }
@@ -134,6 +132,12 @@ public class Stats
       prob += Math.exp(p);
     }
     return Math.log10(prob);
+  }
+  // calc the probability density
+  public static double hypergeom(long success, long trials, long success_population, long population)
+  {
+    // COMB(success_population,success) COMB(population-success_population,trials-success) / COMB(population,trials)
+    return (ln_combination(success_population,success)+ln_combination(population-success_population,trials-success)-ln_combination(population,trials))/2.30258509;
   }
   public static Number aggregate(Collection data, Aggregator func)
   {

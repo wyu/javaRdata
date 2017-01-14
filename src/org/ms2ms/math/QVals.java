@@ -1,9 +1,15 @@
 package org.ms2ms.math;
 
+import com.google.common.collect.Ordering;
+import com.google.common.collect.Range;
+import com.google.common.collect.TreeBasedTable;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
+import org.expasy.mzjava.core.ms.peaklist.Peak;
+import org.expasy.mzjava.core.ms.spectrum.AnnotatedPeak;
 import org.ms2ms.data.Point;
+import org.ms2ms.data.Point3D;
 import org.ms2ms.utils.Strs;
 import org.ms2ms.utils.Tools;
 
@@ -16,38 +22,129 @@ public class QVals
 {
   private String mName;
   private Double mRoot, mThreshold;
-  private Map<Double, Collection<Boolean>> mCandidates = new TreeMap<>(Collections.reverseOrder());
-  private List<Point> mPoints;
+  private Map<Double, Collection<Boolean>> mCandidates=new TreeMap<>(Collections.reverseOrder());
+  private TreeBasedTable<Double, Double, Collection<Boolean>> mCandidates2D = TreeBasedTable.create(Ordering.natural().reverse(),Ordering.natural().reverse());
+  private List<Point>   mPoints;
+  private List<Point3D> mPoint2Ds;
   private double[] mCoeffs=null;
 
-  public QVals()         { super(); }
-  public QVals(String s) { super(); mName=s; }
+  public QVals()
+  {
+    super();
+  }
 
-  public String getName() { return mName; }
-  public Double getThreshold() { return mThreshold; }
+  public QVals(String s)
+  {
+    super();
+    mName=s;
+  }
 
+  public String getName()
+  {
+    return mName;
+  }
+
+  public Double getThreshold()
+  {
+    return mThreshold;
+  }
+  public TreeBasedTable<Double, Double, Collection<Boolean>> getCandidates2D() { return mCandidates2D; }
+
+  public QVals putPoint3D(double x, double y, double z)
+  {
+    if (mPoint2Ds==null) mPoint2Ds = new ArrayList<>();
+    mPoint2Ds.add(new Point3D(x,y,z));
+
+    return this;
+  }
   public QVals put(Double score, Boolean decoy)
   {
-    if (score==null || Double.isNaN(score)) return this;
+    if (score==null||Double.isNaN(score)) return this;
 
-    Collection<Boolean> vals = mCandidates.get(score);
+    Collection<Boolean> vals=mCandidates.get(score);
+    if (vals==null) {
+      vals=new ArrayList<>();
+      mCandidates.put(score, vals);
+    }
+    vals.add(decoy);
+    return this;
+  }
+  public QVals put2D(Double A, Double B, Boolean decoy)
+  {
+    if (A==null||Double.isNaN(A) || B==null || Double.isNaN(B)) return this;
+
+    Collection<Boolean> vals=mCandidates2D.get(A, B);
     if (vals==null)
     {
-      vals = new ArrayList<>(); mCandidates.put(score, vals);
+      vals=new ArrayList<>();
+      mCandidates2D.put(A, B, vals);
     }
-    vals.add(decoy); return this;
+    vals.add(decoy);
+    return this;
   }
+  private Double[] thresholdByAnchoredFDR(double fdr, double min_anchor)
+  {
+    mPoint2Ds=new ArrayList<>();
+
+    double D=0d, N=0, Q=0, N0=0; Double score0=null;
+    for (Double score : mCandidates2D.rowKeySet())
+    {
+      if (Double.isInfinite(score)||Double.isNaN(score)) continue;
+
+      N0++;
+      for (Double aux : mCandidates2D.row(score).keySet())
+        for (Boolean val : mCandidates2D.get(score, aux))
+        {
+          if (aux>=min_anchor&&val) D+=1d;
+          if (aux>=min_anchor)      N++;
+        }
+      double f=2*D/N;
+      if (f<=fdr && (score0==null || score<score0)) score0=score;
+
+      for (Double aux : mCandidates2D.row(score).keySet())
+      {
+        mPoint2Ds.add(new Point3D(score, aux, f));
+        if (aux>=min_anchor && f<=fdr) Q+=mCandidates2D.get(score, aux).size();
+      }
+    }
+    return new Double[] {score0, min_anchor, D, N, Q, N0};
+  }
+  public Double[] thresholdByAnchoredFDR(double fdr, List<Double> anchors)
+  {
+    Double best_score=null, best_anchor=null, best_Q=null, N=null, N0=null;
+    if (Tools.isSet(mCandidates2D))
+      // anchored by the B first
+      for (Double a0 : anchors)
+      {
+        // {score0, min_anchor, D, N, Q, N0};
+        Double[] s0 = thresholdByAnchoredFDR(fdr, a0);
+        // is this better
+        if (s0!=null && (best_Q==null || s0[4]>best_Q))
+        {
+//          System.out.println(Tools.d2x(s0[0], 2, 999.9)+"\t"+Tools.d2x(a0, 2, 99.9)+"\t"+Tools.d2s(s0[4],0)+"\t"+Tools.d2s(s0[3],0));
+          best_score=s0[0]; best_anchor=a0; best_Q=s0[4]; N=s0[3]; N0=s0[5];
+        }
+      }
+
+    return new Double[] {best_score, best_anchor, N, best_Q, N0};
+  }
+
   public Double thresholdByFDR(double fdr)
   {
-    mPoints = new ArrayList<>();
+    if (!Tools.isSet(mCandidates)) return 999.9d;
+
+    mPoints=new ArrayList<>();
 
     double D=0d, N=0, score0=Collections.max(mCandidates.keySet());
-    for (Double score : mCandidates.keySet())
-    {
-      D += Collections.frequency(mCandidates.get(score), true); N++;
+    for (Double score : mCandidates.keySet()) {
+      if (Double.isInfinite(score)||Double.isNaN(score)) continue;
+
+      D+=Collections.frequency(mCandidates.get(score), true);
+      N++;
       //System.out.println(getName()+"\t"+Tools.d2s(score, 2)+"\t"+D+"\t"+N+"\t"+Strs.toString(mCandidates.get(score), ";"));
-      if (2*D/N<=fdr && score<score0) score0=score;
-      mPoints.add(new Point(2*D/N, Collections.frequency(mCandidates.get(score), true)));
+      if (2*D/N<=fdr&&score<score0) score0=score;
+//      mPoints.add(new Point(2*D/N, Collections.frequency(mCandidates.get(score), true)));
+      mPoints.add(new Point(score, 2*D/N));
     }
     return score0;
   }
@@ -55,12 +152,12 @@ public class QVals
   public QVals model()
   {
 //    System.out.println("\n"+mName+"\trank\tdecoys");
-    List<Point>  points = new ArrayList<>();
-    List<Double> scores = new ArrayList<>();
+    List<Point>  points=new ArrayList<>();
+    List<Double> scores=new ArrayList<>();
 
-    double N=0d, D=0d; boolean hasDecoy=false;
-    for (Double score : mCandidates.keySet())
-    {
+    double N=0d, D=0d;
+    boolean hasDecoy=false;
+    for (Double score : mCandidates.keySet()) {
 //      if (!hasDecoy && mCandidates.get(score).contains(true)) hasDecoy=true;
 //      if (hasDecoy)
 //      {
@@ -74,12 +171,12 @@ public class QVals
 //      }
 
 //      // frequency of the decoys with the score
-      D += Collections.frequency(mCandidates.get(score), true)/(double )mCandidates.get(score).size();
+      D+=Collections.frequency(mCandidates.get(score), true)/(double) mCandidates.get(score).size();
       points.add(new Point(++N, D));
 //      System.out.println(score+"\t"+N+"\t"+D);
       scores.add(score);
     }
-    mThreshold = index2score(linear(points, 40), scores);
+    mThreshold=index2score(linear(points, 40), scores);
 
     return this;
   }
@@ -142,17 +239,16 @@ public class QVals
 
   private Double quadratic(Collection<Point> pts)
   {
-    if (pts!=null && pts.size()>4)
-    {
-      List<WeightedObservedPoint> points = new ArrayList<>(pts.size());
-      for (Point pt : pts) points.add(new WeightedObservedPoint(1,pt.getX(), pt.getY()));
+    if (pts!=null&&pts.size()>4) {
+      List<WeightedObservedPoint> points=new ArrayList<>(pts.size());
+      for (Point pt : pts) points.add(new WeightedObservedPoint(1, pt.getX(), pt.getY()));
 
       // fit a polynomial curve
-      PolynomialCurveFitter quad = PolynomialCurveFitter.create(2);
-      mCoeffs = quad.fit(points);
+      PolynomialCurveFitter quad=PolynomialCurveFitter.create(2);
+      mCoeffs=quad.fit(points);
 
-      double d = (mCoeffs[1]*mCoeffs[1]-4*mCoeffs[0]*mCoeffs[2]),
-            x1 = (-1*mCoeffs[1]-Math.sqrt(d))/(2*mCoeffs[2]), x2 = (-1*mCoeffs[1]+Math.sqrt(d))/(2*mCoeffs[2]);
+      double d=(mCoeffs[1]*mCoeffs[1]-4*mCoeffs[0]*mCoeffs[2]),
+          x1=(-1*mCoeffs[1]-Math.sqrt(d))/(2*mCoeffs[2]), x2=(-1*mCoeffs[1]+Math.sqrt(d))/(2*mCoeffs[2]);
 
       // picking the lowest of the roots
       return Math.min(x1, x2);
@@ -163,20 +259,20 @@ public class QVals
     }
     return null;
   }
+
   private Double extremeCum(Collection<Point> pts)
   {
-    if (pts!=null && pts.size()>4)
-    {
+    if (pts!=null&&pts.size()>4) {
 
-      List<WeightedObservedPoint> points = new ArrayList<>(pts.size());
-      for (Point pt : pts) points.add(new WeightedObservedPoint(1,pt.getX(), pt.getY()));
+      List<WeightedObservedPoint> points=new ArrayList<>(pts.size());
+      for (Point pt : pts) points.add(new WeightedObservedPoint(1, pt.getX(), pt.getY()));
 
       // fit a polynomial curve
-      PolynomialCurveFitter quad = PolynomialCurveFitter.create(2);
-      mCoeffs = quad.fit(points);
+      PolynomialCurveFitter quad=PolynomialCurveFitter.create(2);
+      mCoeffs=quad.fit(points);
 
-      double d = (mCoeffs[1]*mCoeffs[1]-4*mCoeffs[0]*mCoeffs[2]),
-          x1 = (-1*mCoeffs[1]-Math.sqrt(d))/(2*mCoeffs[2]), x2 = (-1*mCoeffs[1]+Math.sqrt(d))/(2*mCoeffs[2]);
+      double d=(mCoeffs[1]*mCoeffs[1]-4*mCoeffs[0]*mCoeffs[2]),
+          x1=(-1*mCoeffs[1]-Math.sqrt(d))/(2*mCoeffs[2]), x2=(-1*mCoeffs[1]+Math.sqrt(d))/(2*mCoeffs[2]);
 
       // picking the lowest of the roots
       return Math.min(x1, x2);
@@ -187,12 +283,12 @@ public class QVals
     }
     return null;
   }
+
   private Double linear(Collection<Point> pts, int limit)
   {
-    if (pts!=null && pts.size()>2)
-    {
+    if (pts!=null&&pts.size()>2) {
       // settle for a linear fit
-      SimpleRegression linear = new SimpleRegression(true);
+      SimpleRegression linear=new SimpleRegression(true);
       for (Point pt : pts)
         if (linear.getN()<limit) linear.addData(pt.getX(), pt.getY());
 
@@ -203,12 +299,14 @@ public class QVals
 
   private Double index2score(Double pos, List<Double> scores)
   {
-    if (pos!=null)
-    {
-      int left=(int )Math.floor(pos), right=(int )Math.ceil(pos);
-      if (left<0) { left=0; right=1; }
+    if (pos!=null) {
+      int left=(int) Math.floor(pos), right=(int) Math.ceil(pos);
+      if (left<0) {
+        left=0;
+        right=1;
+      }
 
-      Point  x = Points.interpolate(new Point(left, scores.get(left)), new Point(right, scores.get(right)), pos);
+      Point x=Points.interpolate(new Point(left, scores.get(left)), new Point(right, scores.get(right)), pos);
       return x.getY();
     }
     return null;
@@ -269,4 +367,19 @@ public class QVals
 //      };
 //    }
 //  }
+
+  public String printPoint3D()
+  {
+    StringBuffer buf = new StringBuffer();
+    if (Tools.isSet(mPoint2Ds))
+      for (Point3D pt : mPoint2Ds)
+        buf.append(pt.getX()+"\t"+pt.getY()+"\t"+pt.getZ()+"\n");
+
+    return buf.toString();
+  }
+  @Override
+  public String toString()
+  {
+    return ">="+Tools.d2s(mThreshold, 2) + " for " + mName;
+  }
 }

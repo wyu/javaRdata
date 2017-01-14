@@ -31,6 +31,7 @@ public class Tools
   public static     boolean isSet(long[]         s) { return s!=null && s.length>0; }
   public static     boolean isSet(Range          s) { return s!=null && s.upperEndpoint().compareTo(s.lowerEndpoint())>=0; }
   public static     boolean isSet(IntSet         s) { return s!=null && s.size()>0; }
+  public static     boolean isSet(Double         s) { return s!=null && !Double.isInfinite(s) && !Double.isNaN(s); }
   public static     boolean isTrue( Boolean      s) { return s!=null &&  s; }
   public static     boolean isFalse(Boolean      s) { return s!=null && !s; }
 
@@ -118,9 +119,9 @@ public class Tools
 
     return format( s, w );
   }
-  public static String d2x(double s, int i, double max)
+  public static String d2x(Double s, int i, double max)
   {
-    return s>max?">"+d2s(max,i):d2s(s,i);
+    return s!=null?(s>max?">"+d2s(max,i):d2s(s,i)):"NUL";
   }
   public static String d2s(Double s, int i, String _def)
   {
@@ -866,17 +867,12 @@ public class Tools
   {
     return (A!=null && (B==null || A.size()>=B.size()));
   }
-  public static boolean lessThan(Double A, Double B)
-  {
-    return (A!=null && B!=null && A<B);
-  }
-  public static boolean greaterThan(Double A, Double B)
-  {
-    return (A!=null && B!=null && A>B);
-  }
+  public static boolean lessThan(     Double A, Double B) { return (isSet(A) && isSet(B) && A< B); }
+  public static boolean lessEqThan(   Double A, Double B) { return (isSet(A) && isSet(B) && A<=B); }
+  public static boolean greaterThan(  Double A, Double B) { return (isSet(A) && isSet(B) && A> B); }
   public static boolean greaterEqThan(Double A, Double B)
   {
-    return (A!=null && B!=null && A>+B);
+    return (isSet(A) && isSet(B) && A>=B);
   }
   public static double growth(double A, double B) { return (B-A)/(A!=0?A:B); }
 
@@ -890,5 +886,15 @@ public class Tools
     }
     catch (IOException e) {}
     return devi;
+  }
+  public static Collection<Double> subset(Collection<Double> vals, Range<Double> range)
+  {
+    if (vals==null || range==null) return null;
+
+    Collection<Double> subs = new ArrayList<>();
+    for (Double s : vals)
+      if (range.contains(s)) subs.add(s);
+
+    return subs;
   }
 }

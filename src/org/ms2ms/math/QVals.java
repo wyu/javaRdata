@@ -1,16 +1,12 @@
 package org.ms2ms.math;
 
 import com.google.common.collect.Ordering;
-import com.google.common.collect.Range;
 import com.google.common.collect.TreeBasedTable;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
-import org.expasy.mzjava.core.ms.peaklist.Peak;
-import org.expasy.mzjava.core.ms.spectrum.AnnotatedPeak;
 import org.ms2ms.data.Point;
 import org.ms2ms.data.Point3D;
-import org.ms2ms.utils.Strs;
 import org.ms2ms.utils.Tools;
 
 import java.util.*;
@@ -82,7 +78,7 @@ public class QVals
     vals.add(decoy);
     return this;
   }
-  private Double[] thresholdByAnchoredFDR(double fdr, double min_anchor)
+  private Double[] thresholdByAnchoredFDR(double fdr, double min_anchor, double decoy_multiple)
   {
     mPoint2Ds=new ArrayList<>();
 
@@ -98,7 +94,7 @@ public class QVals
           if (aux>=min_anchor&&val) D+=1d;
           if (aux>=min_anchor)      N++;
         }
-      double f=2*D/N;
+      double f=((decoy_multiple+1)/decoy_multiple)*D/N;
       if (f<=fdr && (score0==null || score<score0)) score0=score;
 
       for (Double aux : mCandidates2D.row(score).keySet())
@@ -109,7 +105,7 @@ public class QVals
     }
     return new Double[] {score0, min_anchor, D, N, Q, N0};
   }
-  public Double[] thresholdByAnchoredFDR(double fdr, List<Double> anchors)
+  public Double[] thresholdByAnchoredFDR(double fdr, List<Double> anchors, double decoy_multiple)
   {
     Double best_score=null, best_anchor=null, best_Q=null, N=null, N0=null;
     if (Tools.isSet(mCandidates2D))
@@ -117,7 +113,7 @@ public class QVals
       for (Double a0 : anchors)
       {
         // {score0, min_anchor, D, N, Q, N0};
-        Double[] s0 = thresholdByAnchoredFDR(fdr, a0);
+        Double[] s0 = thresholdByAnchoredFDR(fdr, a0, decoy_multiple);
         // is this better
         if (s0!=null && (best_Q==null || s0[4]>best_Q))
         {

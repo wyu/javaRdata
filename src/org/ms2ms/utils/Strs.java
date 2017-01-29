@@ -622,6 +622,15 @@ public class Strs
 
     return false;
   }
+  public static String reverse(String s)
+  {
+    if (isSet(s))
+    {
+      StringBuffer buf = new StringBuffer(s);
+      return buf.reverse().toString();
+    }
+    return s;
+  }
 //  public static String fromLast(List<String> s, int n)
 //  {
 //    return s!=null && s.size()>2 ? s.get(s.size()-n) : null;

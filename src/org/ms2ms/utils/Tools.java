@@ -385,13 +385,26 @@ public class Tools
 
     return shared;
   }
-  public static <T> int intersect_counts(Set<T> A, Set<T> B)
+  public static <T> int intersect_counts(Collection<T> A, Collection<T> B)
   {
     if (A==null || B==null) return 0;
 
     int shared=0;;
     for (T t1 : A)
       if (B.contains(t1)) shared++;
+
+    return shared;
+  }
+  public static int intersect_counts(SortedSet<Double> A, SortedSet<Double> B, double ppm)
+  {
+    if (A==null || B==null) return 0;
+
+    int shared=0;
+    for (Double t1 : A)
+    {
+      double delta = t1*ppm*1E-6;
+      if (Tools.isSet(B.subSet(t1-delta,t1+delta))) shared++;
+    }
 
     return shared;
   }

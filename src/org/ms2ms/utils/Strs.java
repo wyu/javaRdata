@@ -577,7 +577,10 @@ public class Strs
 
   public static char[] shuffle(char[] chars)
   {
-    Random rnd = new Random(System.nanoTime());
+    return shuffle(chars, new Random(System.nanoTime()));
+  }
+  public static char[] shuffle(char[] chars, Random rnd)
+  {
     // Shuffle array
     for (int i=chars.length; i>1; i--)
     {

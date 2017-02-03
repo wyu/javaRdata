@@ -894,7 +894,7 @@ public class Tools
     FileWriter devi = null;
     try
     {
-      devi = new FileWriter("/tmp/frag_devi.csv");
+      devi = new FileWriter(s);
 
     }
     catch (IOException e) {}

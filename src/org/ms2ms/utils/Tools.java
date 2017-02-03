@@ -910,4 +910,12 @@ public class Tools
 
     return subs;
   }
+  public static Integer nextInt(Random rnd, int bound, Collection<Integer> exclusion)
+  {
+    Integer next = null;
+    while (next==null || (exclusion!=null && exclusion.contains(next)))
+      next = rnd.nextInt(bound);
+
+    return next;
+  }
 }

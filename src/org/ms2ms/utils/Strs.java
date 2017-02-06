@@ -634,6 +634,25 @@ public class Strs
     }
     return s;
   }
+  public static String guessString(Object obj)
+  {
+    String out=null;
+    if (obj!=null)
+    {
+      if      (obj instanceof List)
+      {
+        for (Object ob : (List )obj)
+          if (ob!=null) out=extend(out, ob.toString(), ",");
+      }
+      else if (obj instanceof Object[])
+      {
+        for (Object ob : (Object[] )obj)
+          if (ob!=null) out=extend(out, ob.toString(), ",");
+      }
+      else out=obj.toString();
+    }
+    return out;
+  }
 //  public static String fromLast(List<String> s, int n)
 //  {
 //    return s!=null && s.size()>2 ? s.get(s.size()-n) : null;

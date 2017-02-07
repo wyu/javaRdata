@@ -78,14 +78,14 @@ public class QVals
     vals.add(decoy);
     return this;
   }
-  private Double[] thresholdByAnchoredFDR(double fdr, double min_anchor, double decoy_multiple)
+  private Double[] thresholdByAnchoredFDR(double fdr, double min_main, double min_anchor, double decoy_multiple)
   {
     mPoint2Ds=new ArrayList<>();
 
     double D=0d, N=0, Q=0, N0=0; Double score0=null;
     for (Double score : mCandidates2D.rowKeySet())
     {
-      if (Double.isInfinite(score)||Double.isNaN(score)) continue;
+      if (score<min_main || Double.isInfinite(score)||Double.isNaN(score)) continue;
 
       N0++;
       for (Double aux : mCandidates2D.row(score).keySet())
@@ -105,7 +105,7 @@ public class QVals
     }
     return new Double[] {score0, min_anchor, D, N, Q, N0};
   }
-  public Double[] thresholdByAnchoredFDR(double fdr, List<Double> anchors, double decoy_multiple)
+  public Double[] thresholdByAnchoredFDR(double fdr, double min_main, List<Double> anchors, double decoy_multiple)
   {
     Double best_score=null, best_anchor=null, best_Q=null, N=null, N0=null;
     if (Tools.isSet(mCandidates2D))
@@ -113,7 +113,7 @@ public class QVals
       for (Double a0 : anchors)
       {
         // {score0, min_anchor, D, N, Q, N0};
-        Double[] s0 = thresholdByAnchoredFDR(fdr, a0, decoy_multiple);
+        Double[] s0 = thresholdByAnchoredFDR(fdr, min_main, a0, decoy_multiple);
         // is this better
         if (s0!=null && (best_Q==null || s0[4]>best_Q))
         {

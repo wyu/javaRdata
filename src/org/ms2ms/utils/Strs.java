@@ -485,6 +485,15 @@ public class Strs
   {
     return (A==null && B==null) || (A!=null && B!=null && A.equalsIgnoreCase(B));
   }
+  public static boolean hasEqualsIgnoreCase(String A, Collection<String> Bs)
+  {
+    if (A==null && Bs==null) return true;
+    if (A!=null && Bs!=null)
+      for (String B : Bs)
+        if (A.equalsIgnoreCase(B)) return true;
+
+    return false;
+  }
   public static boolean isSet(String         s) { return s!=null && s.length()>0; }
   public static boolean isSet(StringBuilder  s) { return s!=null && s.length()>0; }
 

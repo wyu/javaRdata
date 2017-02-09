@@ -1,6 +1,8 @@
 package org.ms2ms.utils;
 
 import com.google.common.collect.*;
+import com.google.common.primitives.Booleans;
+import com.google.common.primitives.Doubles;
 import org.expasy.mzjava.core.ms.PpmTolerance;
 import org.ms2ms.Disposable;
 import org.ms2ms.data.collect.MultiTreeTable;
@@ -837,7 +839,7 @@ public class Tools
   {
     int h=0;
     if (s!=null)
-      for (boolean x : s) h+=Boolean.hashCode(x);
+      for (boolean x : s) h+=Booleans.hashCode(x);
 
     return h;
   }
@@ -845,7 +847,7 @@ public class Tools
   {
     int h=0;
     if (s!=null)
-      for (double x : s) h+=Double.hashCode(x);
+      for (double x : s) h+=Doubles.hashCode(x);
 
     return h;
   }

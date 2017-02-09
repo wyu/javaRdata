@@ -125,7 +125,7 @@ public class ParCoordsTest extends TestAbstract
     if (Tools.isSet(missing)) output.removeRows(missing.toArray(new String[] {}));
 
 */
-    output = Dataframe.bundling(output);
+//    output = Dataframe.bundling(output);
     IOs.write("/tmp/adult4.csv", output.csv(2));
   }
 
@@ -203,7 +203,7 @@ public class ParCoordsTest extends TestAbstract
     if (Tools.isSet(missing)) output.removeRows(missing.toArray(new String[] {}));
 
 */
-    output = Dataframe.bundling(output);
+//    output = Dataframe.bundling(output);
     IOs.write("/tmp/adult4.csv", output.csv(2));
   }
 

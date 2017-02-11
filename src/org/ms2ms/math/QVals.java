@@ -87,7 +87,7 @@ public class QVals
     {
       if (score<min_main || Double.isInfinite(score)||Double.isNaN(score)) continue;
 
-      N0++;
+      N0+=mCandidates2D.row(score).size();
       for (Double aux : mCandidates2D.row(score).keySet())
         for (Boolean val : mCandidates2D.get(score, aux))
         {

@@ -601,7 +601,11 @@ public class Strs
   }
   public static char[] rnd(char[] chars)
   {
-    Random rnd = new Random(System.nanoTime());
+    return rnd(chars, new Random(System.nanoTime()));
+  }
+  public static char[] rnd(char[] chars, Random rnd)
+  {
+//    Random rnd = new Random(System.nanoTime());
     char[] out = new char[chars.length];
     // making the copy of the char at the random location
     for (int i=0; i<chars.length; i++)

@@ -94,7 +94,8 @@ public class QVals
           if (aux>=min_anchor&&val) D+=1d;
           if (aux>=min_anchor)      N++;
         }
-      double f=((decoy_multiple+1)/decoy_multiple)*D/N;
+      // use the (D+1)/N formula for a recent paper
+      double f=((decoy_multiple+1)/decoy_multiple)*(D+1d)/N;
       if (f<=fdr && (score0==null || score<score0)) score0=score;
 
       for (Double aux : mCandidates2D.row(score).keySet())

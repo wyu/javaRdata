@@ -18,6 +18,7 @@ public class QVals
 {
   private String mName;
   private Double mRoot, mThreshold;
+  private Set<Integer> mScans = new HashSet<>();
   private Map<Double, Collection<Boolean>> mCandidates=new TreeMap<>(Collections.reverseOrder());
   private TreeBasedTable<Double, Double, Collection<Boolean>> mCandidates2D = TreeBasedTable.create(Ordering.natural().reverse(),Ordering.natural().reverse());
   private List<Point>   mPoints;
@@ -39,7 +40,8 @@ public class QVals
   {
     return mName;
   }
-
+  public Set<Integer> getScans() { return mScans; }
+  public QVals addScan(Integer s) { mScans.add(s); return this; }
   public Double getThreshold()
   {
     return mThreshold;
@@ -78,14 +80,14 @@ public class QVals
     vals.add(decoy);
     return this;
   }
-  private Double[] thresholdByAnchoredFDR(double fdr, double min_main, double min_anchor, double decoy_multiple)
+  private Double[] thresholdByAnchoredFDR(double fdr, Double min_main, double min_anchor, double decoy_multiple)
   {
     mPoint2Ds=new ArrayList<>();
 
     double D=0d, N=0, Q=0, N0=0; Double score0=null;
     for (Double score : mCandidates2D.rowKeySet())
     {
-      if (score<min_main || Double.isInfinite(score)||Double.isNaN(score)) continue;
+      if ((min_main!=null && score<min_main) || Double.isInfinite(score)||Double.isNaN(score)) continue;
 
       N0+=mCandidates2D.row(score).size();
       for (Double aux : mCandidates2D.row(score).keySet())
@@ -104,11 +106,13 @@ public class QVals
         if (aux>=min_anchor && f<=fdr) Q+=mCandidates2D.get(score, aux).size();
       }
     }
-    return new Double[] {score0, min_anchor, D, N, Q, N0};
+    return score0!=null ? new Double[] {score0, min_anchor, D, N, Q, N0} : null;
   }
-  public Double[] thresholdByAnchoredFDR(double fdr, double min_main, List<Double> anchors, double decoy_multiple)
+  public Double[] thresholdByAnchoredFDR(double fdr, Double min_main, List<Double> anchors, double decoy_multiple)
   {
-    Double best_score=null, best_anchor=null, best_Q=null, N=null, N0=null;
+    Double[] best = null; Double best_Q=null;
+
+//    Double best_score=null, best_anchor=null, best_Q=null, N=null, N0=null;
     if (Tools.isSet(mCandidates2D))
       // anchored by the B first
       for (Double a0 : anchors)
@@ -119,11 +123,14 @@ public class QVals
         if (s0!=null && (best_Q==null || s0[4]>best_Q))
         {
 //          System.out.println(Tools.d2x(s0[0], 2, 999.9)+"\t"+Tools.d2x(a0, 2, 99.9)+"\t"+Tools.d2s(s0[4],0)+"\t"+Tools.d2s(s0[3],0));
-          best_score=s0[0]; best_anchor=a0; best_Q=s0[4]; N=s0[3]; N0=s0[5];
+//          best_score=s0[0]; best_anchor=a0; best_Q=s0[4]; N=s0[3]; N0=s0[5];
+          best_Q=s0[4];
+          best = new Double[] {s0[0], a0, s0[3], best_Q, s0[5]};
         }
       }
 
-    return new Double[] {best_score, best_anchor, N, best_Q, N0};
+    return best;
+//    return new Double[] {best_score, best_anchor, N, best_Q, N0};
   }
 
   public Double thresholdByFDR(double fdr)

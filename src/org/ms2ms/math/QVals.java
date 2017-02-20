@@ -16,14 +16,15 @@ import java.util.*;
  */
 public class QVals
 {
-  private String mName;
+  private String        mName;
   private Double mRoot, mThreshold;
-  private Set<Integer> mScans = new HashSet<>();
-  private Map<Double, Collection<Boolean>> mCandidates=new TreeMap<>(Collections.reverseOrder());
-  private TreeBasedTable<Double, Double, Collection<Boolean>> mCandidates2D = TreeBasedTable.create(Ordering.natural().reverse(),Ordering.natural().reverse());
+  private Set<Integer>  mScans = new HashSet<>();
   private List<Point>   mPoints;
   private List<Point3D> mPoint2Ds;
-  private double[] mCoeffs=null;
+  private double[]      mCoeffs=null;
+
+  private Map<Double, Collection<Boolean>>                    mCandidates   = new TreeMap<>(Collections.reverseOrder());
+  private TreeBasedTable<Double, Double, Collection<Boolean>> mCandidates2D = TreeBasedTable.create(Ordering.natural().reverse(),Ordering.natural().reverse());
 
   public QVals()
   {

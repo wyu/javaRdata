@@ -344,7 +344,7 @@ public class Dataframe implements Disposable
   {
     try
     {
-      System.out.println("Writing the data frame to: " + out);
+      System.out.println("\nWriting the data frame to: " + out);
       FileWriter writer = null;
       try
       {

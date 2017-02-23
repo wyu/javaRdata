@@ -170,6 +170,14 @@ public class IOs
       for (T t : data) t.write(ds);
     }
   }
+  public static void writeInts(DataOutput ds, Collection<Integer> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.size() : 0);
+    if (Tools.isSet(data))
+    {
+      for (Integer t : data) ds.write(t);
+    }
+  }
   public static void write(DataOutput ds, double[] data) throws IOException
   {
     write(ds, data != null ? data.length : 0);
@@ -201,6 +209,19 @@ public class IOs
       }
     }
     return data;
+  }
+  public static Collection<Integer> readInts(DataInput ds) throws IOException
+  {
+    int n = read(ds, 0);
+
+    if (n > 0)
+    {
+      Collection<Integer> data = new ArrayList<Integer>();
+      for (int i = 0; i < n; i++) data.add(ds.readInt());
+
+      return data;
+    }
+    return null;
   }
   public static double[] read(DataInput ds, double[] data) throws IOException
   {
@@ -244,7 +265,7 @@ public class IOs
       for (Long t : data) write(ds, t);
     }
   }
-  public static void writeFloats(DataOutput ds, List<Float> data) throws IOException
+  public static void writeFloats(DataOutput ds, Collection<Float> data) throws IOException
   {
     write(ds, Tools.isSet(data) ? data.size() : 0);
     if (Tools.isSet(data))
@@ -628,6 +649,25 @@ public class IOs
       }
     }
   }
+  public static void writeCharFloats(DataOutput ds, Map<Character, Float> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.size() : 0);
+
+    if (Tools.isSet(data))
+      for (Character key : data.keySet())
+      {
+        ds.write(key);
+        write(ds, data.get(key));
+      }
+  }
+  public static void readCharFloats(DataInput ds, Map<Character, Float> data) throws IOException
+  {
+    int n=read(ds, 0);
+
+    if (n>0)
+      for (int i=0; i<n; i++)
+        data.put(read(ds, 'c'), read(ds, 1f));
+  }
   public static void write(DataOutput ds, IntSet data) throws IOException
   {
     write(ds, Tools.isSet(data) ? data.size() : 0);
@@ -966,6 +1006,30 @@ public class IOs
       }
     }
   }
+  public static void
+  writeStrInts(DataOutput ds, Multimap<String, Integer> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.keySet().size() : 0);
+
+    if (Tools.isSet(data))
+      for (String key : data.keySet())
+      {
+        write(ds, key);
+        writeInts(ds, data.get(key));
+      }
+  }
+  public static void
+  writeStrInt(DataOutput ds, Map<String, Integer> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.keySet().size() : 0);
+
+    if (Tools.isSet(data))
+      for (String key : data.keySet())
+      {
+        write(ds, key);
+        write(ds, data.get(key));
+      }
+  }
   public static <T extends Binary> Map<String, T>
   readStringMap(DataInput ds, Map<String, T> data, T template) throws Exception
   {
@@ -982,6 +1046,12 @@ public class IOs
       }
     }
     return data;
+  }
+  public static void readStrInts(DataInput ds, Map<String, Integer> data) throws IOException
+  {
+    int n = read(ds, 0);
+    if (n > 0)
+      for (int i=0; i<n; i++) data.put(read(ds, ""), read(ds, 0));
   }
   public static Map<String, String>
   readStringStringMap(DataInput ds, Map<String, String> data)  throws IOException
@@ -1471,4 +1541,26 @@ public class IOs
     if (line!=null) w.write(line+"\n");
     return w;
   }
+  public static void writeIntMultimap(DataOutput ds, Multimap<Integer, Integer> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.keySet().size() : 0);
+
+    if (Tools.isSet(data))
+      for (Integer key : data.keySet())
+      {
+        write(ds, key);
+        writeInts(ds, data.get(key));
+      }
+  }
+  public static void readIntMultimap(DataInput ds, Multimap<Integer, Integer> data) throws IOException
+  {
+    int n = read(ds, 0);
+
+    if (n>0)
+      for (int i=0; i<n; i++)
+      {
+        data.putAll(read(ds, 0), readInts(ds));
+      }
+  }
+
 }

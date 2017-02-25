@@ -1,5 +1,6 @@
 package org.ms2ms.data.collect;
 
+import com.google.common.collect.Range;
 import org.ms2ms.Disposable;
 
 import java.util.List;

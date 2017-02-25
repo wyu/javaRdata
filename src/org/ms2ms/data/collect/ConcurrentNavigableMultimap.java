@@ -80,6 +80,7 @@ public class ConcurrentNavigableMultimap<K extends Comparable, V> implements Nav
     }
     return 0;
   }
+  public List<V> subList(Range<K> range) { return range!=null?subList(range.lowerEndpoint(), range.upperEndpoint()):null; }
   public List<V> subList(K k1, K k2)
   {
     if (mData!=null)

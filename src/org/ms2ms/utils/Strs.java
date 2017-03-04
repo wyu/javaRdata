@@ -666,6 +666,10 @@ public class Strs
     }
     return out;
   }
+  public static char last(String s)
+  {
+    return isSet(s)?s.charAt(s.length()-1):0;
+  }
 //  public static String fromLast(List<String> s, int n)
 //  {
 //    return s!=null && s.size()>2 ? s.get(s.size()-n) : null;

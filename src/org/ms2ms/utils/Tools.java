@@ -176,6 +176,11 @@ public class Tools
     if (map!=null && in!=null) map.putAll(in);
     return map;
   }
+  public static Map<Float,String> put(Map<Float, String> map, Float key, String in, Float min)
+  {
+    if (map!=null && in!=null && (min==null || key>=min)) map.put(key, in);
+    return map;
+  }
   public static <K extends Enum<K>, V> EnumMap<K,V> put(EnumMap<K, V> map, K key, V in)
   {
     if (map!=null && in!=null) map.put(key, in);

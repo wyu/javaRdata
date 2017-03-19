@@ -1,5 +1,6 @@
 package org.ms2ms.data.collect;
 
+import com.google.common.collect.Range;
 import org.ms2ms.Disposable;
 import org.ms2ms.utils.Tools;
 
@@ -64,9 +65,11 @@ public class ImmutableNavigableMap<V> implements Disposable
     return this;
   }
   public int size() { return mKeys!=null?mKeys.length:0; }
-  public double[] fetchKeys(int[] pos) { return       Arrays.copyOfRange(mKeys,   pos[0], pos[1]); }
-  public      V[] fetchVals(int[] pos) { return (V[] )Arrays.copyOfRange(mValues, pos[0], pos[1]); }
+  public double[] fetchKeys(int[] pos) { return                 Arrays.copyOfRange(mKeys,   pos[0], pos[1]); }
+  public      V[] fetchVals(int[] pos) { return pos!=null?(V[] )Arrays.copyOfRange(mValues, pos[0], pos[1]):null; }
 
+  public int[] query(Range<Double> R) { return query(R.lowerEndpoint(), R.upperEndpoint()); }
+  public int[] query(double[] R) { return query(R[0], R[1]); }
   public int[] query(double k0, double k1)
   {
     int start=-1, i0=Math.max(0,index(k0));

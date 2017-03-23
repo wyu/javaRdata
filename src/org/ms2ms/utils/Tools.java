@@ -925,4 +925,13 @@ public class Tools
 
     return next;
   }
+  public static <V> TreeMap<Double, V> unique_put(TreeMap<Double, V> map, Double key, V val)
+  {
+    int trial=0; // no more than 100 trials
+    while (map.put(key, val)!=null || (++trial>100))
+    {
+      key+=Double.MIN_VALUE;
+    }
+    return map;
+  }
 }

@@ -3,6 +3,7 @@ package org.ms2ms.data.collect;
 import com.google.common.collect.Range;
 import org.ms2ms.Disposable;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -15,6 +16,9 @@ public interface NavigableMultimap<K, V> extends Disposable
   long keySize(K k1, K k2);
 
   long size();
+  Collection<V> get(K k);
+  Collection<K> keySet();
+
 
   List<V> subList(K k1, K k2);
 

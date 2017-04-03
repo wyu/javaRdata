@@ -1,5 +1,6 @@
 package org.ms2ms.data.collect;
 
+import java.util.Collection;
 import java.util.List;
 
 /** A more compact and efficient version of ConcurrentNavigableMultimap.
@@ -39,6 +40,18 @@ public class ImmutableNavigableMultimap<K extends Comparable, V> implements Navi
   public long size()
   {
     return 0;
+  }
+
+  @Override
+  public Collection<V> get(K k)
+  {
+    return null;
+  }
+
+  @Override
+  public Collection<K> keySet()
+  {
+    return null;
   }
 
   @Override

@@ -42,6 +42,9 @@ public class ConcurrentNavigableMultimap<K extends Comparable, V> implements Nav
     return mData!=null ? Tools.isSet(mData.subMap(k1, k2)) : false;
   }
   public long size(Range<K> r) { return size(r.lowerEndpoint(), r.upperEndpoint()); }
+  public Collection<V> get(K k) { return mData.get(k); }
+  public Collection<K> keySet() { return mData.keySet(); }
+
   //  public long keySize(Range<K> s) { return keySize(s.lowerEndpoint(), s.upperEndpoint()); }
   @Override
   public long keySize(K k1, K k2)

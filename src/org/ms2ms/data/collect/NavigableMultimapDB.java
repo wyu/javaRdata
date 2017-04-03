@@ -1,5 +1,6 @@
 package org.ms2ms.data.collect;
 
+import java.util.Collection;
 import java.util.List;
 
 /** A MapDB backed store to address the problem of excessively large heap and associated GC delay.
@@ -25,6 +26,18 @@ public class NavigableMultimapDB<K extends Comparable, V> implements NavigableMu
   public long size()
   {
     return 0;
+  }
+
+  @Override
+  public Collection<V> get(K k)
+  {
+    return null;
+  }
+
+  @Override
+  public Collection<K> keySet()
+  {
+    return null;
   }
 
   @Override

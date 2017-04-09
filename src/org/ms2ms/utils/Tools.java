@@ -171,6 +171,11 @@ public class Tools
       for (K key : in.keySet()) map.put(key, in.get(key));
     return map;
   }
+  public static <K, V> Multimap<K,V> putAll(Multimap<K,V> map, K key, Collection<V> vals)
+  {
+    if (map!=null && key!=null && isSet(vals)) map.putAll(key, vals);
+    return map;
+  }
   public static <K, V> Map<K,V> putAll(Map<K,V> map, Map<K,V> in)
   {
     if (map!=null && in!=null) map.putAll(in);
@@ -917,6 +922,13 @@ public class Tools
 
     return subs;
   }
+  public static Double width(Range<Double> s) { return s.upperEndpoint()-s.lowerEndpoint(); }
+  public static boolean isA4B(Range<Double> A, Range<Double> B, double pct)
+  {
+    if (A==null || B==null) return false;
+
+    return (A.encloses(B) || (B.isConnected(A) && width(A.intersection(B))/width(B)>=pct*0.01d));
+  }
   public static Integer nextInt(Random rnd, int bound, Collection<Integer> exclusion)
   {
     Integer next = null;
@@ -928,7 +940,25 @@ public class Tools
   public static <V> TreeMap<Double, V> unique_put(TreeMap<Double, V> map, Double key, V val)
   {
     int trial=0; // no more than 100 trials
-    while (map.put(key, val)!=null || (++trial>100))
+    while (map.containsKey(key) && (++trial<100))
+    {
+      key+=Double.MIN_VALUE;
+    }
+    return map;
+  }
+  public static Double unique(Collection<Double> keys, Double key)
+  {
+    int trial=0; // no more than 100 trials
+    while (keys.contains(key) && (++trial<100))
+    {
+      key+=Double.MIN_VALUE;
+    }
+    return key;
+  }
+  public static <V> TreeMultimap<Double, V> unique_put(TreeMultimap<Double, V> map, Double key, V val)
+  {
+    int trial=0; // no more than 100 trials
+    while (map.containsKey(key) && (++trial<100))
     {
       key+=Double.MIN_VALUE;
     }

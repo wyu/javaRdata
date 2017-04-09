@@ -30,6 +30,7 @@ public class ConcurrentNavigableMultimap<K extends Comparable, V> implements Nav
     super(); mData=s;
   }
 
+  public ConcurrentNavigableMap<K, ConcurrentLinkedQueue<V>> asMap() { return mData; }
   public                     V  put2(  K key, V data) { put(key,data); return data; }
   public ConcurrentNavigableMultimap<K, V> putAll(K key, Collection<V> data) { initByKey(key).addAll(data); return this; }
 

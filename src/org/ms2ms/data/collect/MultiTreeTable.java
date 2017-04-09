@@ -1,6 +1,7 @@
 package org.ms2ms.data.collect;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Range;
 import com.google.common.collect.TreeMultimap;
 import org.ms2ms.utils.Tools;
 
@@ -138,6 +139,7 @@ public class MultiTreeTable<K extends Comparable, L extends Comparable, T extend
 
     return false;
   }
+  public Collection<T> subset(Range<K> k, Range<L> l) { return subset(k.lowerEndpoint(), k.upperEndpoint(), l.lowerEndpoint(), l.upperEndpoint()); }
   public Collection<T> subset(K k0, K k1, L l0, L l1)
   {
     Collection<TreeMultimap<L, T>> slice = getData().subMap(k0, k1).values();

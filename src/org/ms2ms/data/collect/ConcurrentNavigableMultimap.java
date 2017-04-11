@@ -135,6 +135,13 @@ public class ConcurrentNavigableMultimap<K extends Comparable, V> implements Nav
   @Override
   public void dispose()
   {
-    Tools.dispose(mData);
+    if (mData!=null)
+    {
+      for (Map.Entry<K, ConcurrentLinkedQueue<V>> E : mData.entrySet())
+      {
+        E.getValue().clear();
+      }
+      mData.clear(); mData=null;
+    }
   }
 }

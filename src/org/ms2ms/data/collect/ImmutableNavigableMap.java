@@ -33,8 +33,9 @@ public class ImmutableNavigableMap<V> implements Disposable
     // setup the arrays
     mIndex = new int[   lens]; Arrays.fill(mIndex, -1);
   }
-  public double[] getKeys() { return mKeys; }
-  public      V[] getVals() { return mValues; }
+  public    int[] getIndex() { return mIndex; }
+  public double[] getKeys()  { return mKeys; }
+  public      V[] getVals()  { return mValues; }
 
   public ImmutableNavigableMap<V> of(SortedMap<Double, V> map, double precision)
   {
@@ -91,9 +92,37 @@ public class ImmutableNavigableMap<V> implements Disposable
 
     return null;
   }
+  public int query4counts(double k0, double k1)
+  {
+    int start=-1, i0=Math.max(0,index(k0));
 
-  private int index(double k) { return (int )((k-mKeyMin)*(mIndex.length-1)/mKeySpan); }
+    // look for the valid start
+    for (int i=i0; i<mIndex.length; i++)
+      if (mIndex[i]>=0) { start=mIndex[i]; break; }
 
+    if (start>=0)
+    {
+      int j0=-1, j1=-1;
+      for (int k=start; k<mKeys.length; k++)
+      {
+        if (j0==-1 && mKeys[k]>=k0)   j0=k;
+        if (          mKeys[k]> k1) { j1=k; break; }
+      }
+      if (j0>=0 && j1>j0) return j1-j0;
+    }
+
+    return 0;
+  }
+
+  public int index(double k) { return (int )((k-mKeyMin)*(mIndex.length-1)/mKeySpan); }
+  public int start(int i0)
+  {
+    // look for the valid start
+    for (int i=i0; i<mIndex.length; i++)
+      if (mIndex[i]>=0) return mIndex[i];
+
+    return -1;
+  }
   public static <V> ImmutableNavigableMap<V> build(SortedMap<Double, V> map, double precision)
   {
     if (!Tools.isSet(map)) return null;

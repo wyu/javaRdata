@@ -12,6 +12,7 @@ import com.tinkerpop.blueprints.TransactionalGraph;
 import com.tinkerpop.blueprints.Vertex;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultDirectedGraph;
 import org.ms2ms.utils.Strs;
 import org.ms2ms.utils.Tools;
 import psidev.psi.mi.xml.model.*;
@@ -547,5 +548,14 @@ public class Graphs
       node.setProperty("accession", "");
     }
     return tag_accession;
+  }
+  public static void dispose(DefaultDirectedGraph g)
+  {
+    if (g!=null)
+    {
+      g.removeAllVertices(g.vertexSet());
+      g.removeAllEdges(g.edgeSet());
+      g=null;
+    }
   }
 }

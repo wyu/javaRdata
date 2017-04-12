@@ -553,8 +553,8 @@ public class Graphs
   {
     if (g!=null)
     {
-      g.removeAllVertices(g.vertexSet());
-      g.removeAllEdges(g.edgeSet());
+//      g.vertexSet().clear();
+//      g.edgeSet(  ).clear();
       g=null;
     }
   }

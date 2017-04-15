@@ -36,17 +36,17 @@ public class Property  implements Cloneable
   public String              getProperty(String key) { return mProperties != null ? mProperties.get(key) : null; }
   public Integer             getProperty(String key, Integer _default)
   {
-    Double val = Double.valueOf(getProperty(key));
+    Double val  = Double.valueOf(getProperty(key, (Double )null));
     return val != null ? val.intValue() : _default;
   }
   public Long                getProperty(String key, Long _default)
   {
-    Double val = getProperty(key, (Double )null);
+    Double val  = getProperty(key, (Double )null);
     return val != null ? val.longValue() : _default;
   }
   public Float               getProperty(String key, Float _default)
   {
-    Double val = getProperty(key, (Double )null);
+    Double val  = getProperty(key, (Double )null);
     return val != null ? val.floatValue() : _default;
   }
   public Double              getProperty(String key, Double _default)
@@ -55,7 +55,7 @@ public class Property  implements Cloneable
     if (Strs.isSet(str) && str.indexOf(",") >= 0)
       str = str.replaceAll(",", "");
 
-    Double val = Double.valueOf(str);
+    Double val  = Double.valueOf(str);
     return val != null ? val : _default;
   }
   public Double[]            getProperty(String key, Double _default, String delimiter)

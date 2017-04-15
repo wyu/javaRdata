@@ -55,7 +55,7 @@ public class Property  implements Cloneable
     if (Strs.isSet(str) && str.indexOf(",") >= 0)
       str = str.replaceAll(",", "");
 
-    Double val  = Double.valueOf(str);
+    Double val  = (str!=null?Double.valueOf(str):null);
     return val != null ? val : _default;
   }
   public Double[]            getProperty(String key, Double _default, String delimiter)

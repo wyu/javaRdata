@@ -36,18 +36,15 @@ public class Property  implements Cloneable
   public String              getProperty(String key) { return mProperties != null ? mProperties.get(key) : null; }
   public Integer             getProperty(String key, Integer _default)
   {
-    Double val  = Double.valueOf(getProperty(key, (Double )null));
-    return val != null ? val.intValue() : _default;
+    try { return Integer.valueOf(getProperty(key)); } catch (Exception e) { return _default; }
   }
   public Long                getProperty(String key, Long _default)
   {
-    Double val  = getProperty(key, (Double )null);
-    return val != null ? val.longValue() : _default;
+    try { return Long.valueOf(getProperty(key)); } catch (Exception e) { return _default; }
   }
   public Float               getProperty(String key, Float _default)
   {
-    Double val  = getProperty(key, (Double )null);
-    return val != null ? val.floatValue() : _default;
+    try { return Float.valueOf(getProperty(key)); } catch (Exception e) { return _default; }
   }
   public Double              getProperty(String key, Double _default)
   {

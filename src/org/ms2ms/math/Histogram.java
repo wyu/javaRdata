@@ -679,6 +679,15 @@ public class Histogram implements Disposable
     for (Point pt : getHistogram()) if (pt.getY()!=0) System.out.println(pt.getX()+"\t"+(pt.getY()/base));
     System.out.println("\nTop="+mTop+", Center="+mCenter+", Sigma="+mSigma);
   }
+  public StringBuffer wikiHistogram(StringBuffer buf)
+  {
+    double base = (double )mData.size();
+    buf.append("Score\tOccurances-"+getTitle()+"\n");
+    for (Point pt : getHistogram()) if (pt.getY()!=0) buf.append(pt.getX()+"\t"+(pt.getY()/base)+"\n");
+    buf.append("\nTop="+mTop+", Center="+mCenter+", Sigma="+mSigma+"\n");
+
+    return buf;
+  }
   public void printCumulatives()
   {
     double base = (double )mData.size();

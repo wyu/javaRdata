@@ -407,6 +407,16 @@ public class Tools
 
     return shared;
   }
+  public static Collection<String> str_intersect(Collection<String> A, Collection<String> B)
+  {
+    if (A==null || B==null) return null;
+
+    Collection<String> shared = new ArrayList<>();
+    for (String t1 : A)
+      if (B.contains(t1)) shared.add(t1);
+
+    return shared;
+  }
   public static int intersect_counts(SortedSet<Double> A, SortedSet<Double> B, double ppm)
   {
     if (A==null || B==null) return 0;

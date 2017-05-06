@@ -108,6 +108,8 @@ public class Stats
   public static double ln_factorial(long n)
   {
     if (n>17) return 0.5d*Math.log(2d*(double )n*3.14) + (double )n*Math.log((double )n) - (double )n;
+//    if (n<=0)
+//      System.out.print("");
     return sLnFactorials.get(n);
   }
   public static double ln_factorial(double n)
@@ -136,6 +138,8 @@ public class Stats
   // calc the probability density
   public static double hypergeom(long success, long trials, long success_population, long population)
   {
+//    if (population-success_population<0 || trials-success<0)
+//      System.out.print("");
     // COMB(success_population,success) COMB(population-success_population,trials-success) / COMB(population,trials)
     return (ln_combination(success_population,success)+ln_combination(population-success_population,trials-success)-ln_combination(population,trials))/2.30258509;
   }

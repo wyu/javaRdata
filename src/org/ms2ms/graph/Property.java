@@ -1,5 +1,6 @@
 package org.ms2ms.graph;
 
+import com.google.common.collect.Range;
 import com.hfg.xml.XMLNode;
 import org.ms2ms.utils.IOs;
 import org.ms2ms.utils.Strs;
@@ -55,7 +56,7 @@ public class Property  implements Cloneable
     Double val  = (str!=null?Double.valueOf(str):null);
     return val != null ? val : _default;
   }
-  public Double[]            getProperty(String key, Double _default, String delimiter)
+  public Double[] getProperty(String key, Double _default, String delimiter)
   {
     if (getProperty(key) == null) return null;
 
@@ -71,6 +72,20 @@ public class Property  implements Cloneable
       vals[i] = (v != null ? v : _default);
     }
     return vals;
+  }
+  public Range<Double> getProperty(String key, String delimiter)
+  {
+    try
+    {
+      String[] strs = getProperty(key).split(delimiter);
+      if (strs.length>=1 && strs[0].equals("")) return Range.atMost( Double.valueOf(strs[1]));
+      if (strs.length>=1 && strs[1].equals("")) return Range.atLeast(Double.valueOf(strs[1]));
+
+      return Range.closed(Double.valueOf(strs[0]), Double.valueOf(strs[1]));
+    }
+    catch (Exception e) {}
+
+    return null;
   }
 
   public void setProperties(Map<String, String> s)

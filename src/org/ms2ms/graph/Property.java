@@ -73,15 +73,15 @@ public class Property  implements Cloneable
     }
     return vals;
   }
-  public Range<Double> getProperty(String key, String delimiter)
+  public Range<Float> getProperty(String key, String delimiter)
   {
     try
     {
       String[] strs = getProperty(key).split(delimiter);
-      if (strs.length>=1 && strs[0].equals("")) return Range.atMost( Double.valueOf(strs[1]));
-      if (strs.length>=1 && strs[1].equals("")) return Range.atLeast(Double.valueOf(strs[1]));
+      if (strs.length>=1 && strs[0].equals("")) return Range.atMost( Float.valueOf(strs[1]));
+      if (strs.length>=1 && strs[1].equals("")) return Range.atLeast(Float.valueOf(strs[1]));
 
-      return Range.closed(Double.valueOf(strs[0]), Double.valueOf(strs[1]));
+      return Range.closed(Float.valueOf(strs[0]), Float.valueOf(strs[1]));
     }
     catch (Exception e) {}
 

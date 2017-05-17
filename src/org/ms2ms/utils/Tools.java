@@ -227,7 +227,7 @@ public class Tools
     for (T b : B) if (A.equals(b)) return true;
     return false;
   }
-  public static boolean isA(int A, int... B)
+  public static boolean isAInt(int A, int... B)
   {
     for (int b : B) if (A==b) return true;
     return false;

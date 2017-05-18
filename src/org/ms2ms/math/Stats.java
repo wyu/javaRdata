@@ -311,6 +311,14 @@ public class Stats
     for (Double y : ys) sum+=y;
     return sum;
   }
+  public static Float sumFloats(Collection<Float> ys)
+  {
+    if (!Tools.isSet(ys)) return null;
+
+    Float sum=0f;
+    for (Float y : ys) sum+=y;
+    return sum;
+  }
   public static double sum(double[] ys)
   {
     if (!Tools.isSet(ys)) return 0;

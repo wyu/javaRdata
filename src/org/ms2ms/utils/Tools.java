@@ -984,4 +984,12 @@ public class Tools
     }
     return map;
   }
+  public static Double getDouble(Map<String, String> p, String key)
+  {
+    return p!=null && p.containsKey(key)?Double.valueOf(p.get(key)):null;
+  }
+  public static Integer getInt(Map<String, String> p, String key)
+  {
+    return p!=null && p.containsKey(key)?Integer.valueOf(p.get(key)):null;
+  }
 }

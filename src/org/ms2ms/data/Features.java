@@ -24,9 +24,10 @@ public class Features implements Comparable<Features>
 
     return this;
   }
-  public Object get(      String key) { return mProperties!=null?mProperties.get(key):null; }
-  public Double getDouble(String key) { return (Double )get(key); }
-  public Float  getFloat( String key) { return (Float )get(key); }
+  public Object  get(      String key) { return mProperties!=null?mProperties.get(key):null; }
+  public Double  getDouble(String key) { return (Double )get(key); }
+  public Float   getFloat( String key) { return (Float )get(key); }
+  public Integer getInt(   String key) { return (Integer )get(key); }
 
   public void invalidate() { if (mProperties!=null) mProperties.clear(); }
   public boolean isValid() { return Tools.isSet(mProperties); }

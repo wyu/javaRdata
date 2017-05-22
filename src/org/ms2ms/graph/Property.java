@@ -73,7 +73,7 @@ public class Property  implements Cloneable
     }
     return vals;
   }
-  public Range<Float> getProperty(String key, String delimiter)
+  public Range<Float> getRange(String key, String delimiter)
   {
     try
     {

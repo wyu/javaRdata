@@ -1,5 +1,6 @@
 package org.ms2ms.data;
 
+import org.ms2ms.math.Stats;
 import org.ms2ms.utils.Tools;
 
 import java.util.HashMap;
@@ -17,6 +18,15 @@ public class Features implements Comparable<Features>
   public Features() { super(); }
   public Features(Map<String, Object> s) { mProperties=s; }
 
+  public Features setProperties(Map<String, String> s)
+  {
+    mProperties = new HashMap<>();
+    if (Tools.isSet(s))
+      for (String key : s.keySet())
+        mProperties.put(key, Stats.toNumber(s.get(key)));
+
+    return this;
+  }
   public Features add(String key, Object val)
   {
     if (mProperties==null) mProperties = new HashMap<>();
@@ -26,8 +36,9 @@ public class Features implements Comparable<Features>
   }
   public Object  get(      String key) { return mProperties!=null?mProperties.get(key):null; }
   public Double  getDouble(String key) { return (Double )get(key); }
-  public Float   getFloat( String key) { return (Float )get(key); }
+  public Float   getFloat( String key) { return Stats.toFloat(get(key)); }
   public Integer getInt(   String key) { return (Integer )get(key); }
+  public Map<String, Object> getProperties() { return mProperties; }
 
   public void invalidate() { if (mProperties!=null) mProperties.clear(); }
   public boolean isValid() { return Tools.isSet(mProperties); }

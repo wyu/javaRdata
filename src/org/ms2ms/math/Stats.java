@@ -212,6 +212,26 @@ public class Stats
 
     return null;
   }
+  public static Long[] toLongArray(Object s, char delim)
+  {
+    if (s==null) return null;
+    if (s instanceof String) return Stats.toLongArray(Strs.split((String) s, ';'));
+
+    Long i = Stats.toLong(s);
+    return i!=null?new Long[] {i}:null;
+  }
+  public static Long[] toLongArray(Object[] s)
+  {
+    try
+    {
+      Long[] out = new Long[s.length];
+      for (int i=0; i<s.length; i++) out[i]=toLong(s[i]);
+      return out;
+    }
+    catch (NumberFormatException e) {}
+    return null;
+  }
+
   public static Long toLong(Object s)
   {
     if (s==null) return null;

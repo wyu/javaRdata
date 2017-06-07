@@ -4,6 +4,7 @@ import com.google.common.collect.*;
 import com.google.common.primitives.Booleans;
 import com.google.common.primitives.Doubles;
 import org.expasy.mzjava.core.ms.PpmTolerance;
+import org.expasy.mzjava.core.ms.Tolerance;
 import org.ms2ms.Disposable;
 import org.ms2ms.data.collect.MultiTreeTable;
 import toools.set.IntHashSet;
@@ -991,5 +992,9 @@ public class Tools
   public static Integer getInt(Map<String, String> p, String key)
   {
     return p!=null && p.containsKey(key)?Integer.valueOf(p.get(key)):null;
+  }
+  public static Range<Double> toBound(Tolerance tol, Double val)
+  {
+    return tol!=null && val!=null ? Range.closed(tol.getMin(val), tol.getMax(val)):null;
   }
 }

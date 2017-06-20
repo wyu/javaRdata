@@ -655,4 +655,16 @@ public class Stats
 
     return n;
   }
+  public static Double thresholdByFdr(SortedMap<Double, Boolean> scores, double maxFDR, int repeat)
+  {
+    double counts=0d, decoys=0d, last=0;
+    for (Double scr : scores.keySet())
+    {
+      counts++;
+      if (scores.get(scr)) decoys++;
+      if (decoys/counts>maxFDR) last=counts;
+      if (counts-last>=repeat) return scr;
+    }
+    return null;
+  }
 }

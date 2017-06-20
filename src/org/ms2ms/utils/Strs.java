@@ -679,6 +679,14 @@ public class Strs
   {
     return isSet(s)?s.charAt(s.length()-1):0;
   }
+  public static String addWiki(Object... val)
+  {
+    String wiki = "";
+    if (Tools.isSet(val))
+      for (Object v : val)
+        wiki+="|"+(v!=null?v.toString():" ");
+    return wiki;
+  }
 //  public static String fromLast(List<String> s, int n)
 //  {
 //    return s!=null && s.size()>2 ? s.get(s.size()-n) : null;

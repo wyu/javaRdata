@@ -362,6 +362,11 @@ public class Tools
 
     return true;
   }
+  public static boolean equals(Boolean A, Boolean B)
+  {
+    if (A==null && B==null) return true;
+    return A!=null&&B!=null?A.equals(B):false;
+  }
   public static boolean equals(Object A, Object B)
   {
     if (A==null && B==null) return true;

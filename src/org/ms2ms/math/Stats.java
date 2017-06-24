@@ -667,4 +667,15 @@ public class Stats
     }
     return null;
   }
+  public static Double thresholdByNorms(SortedMap<Double, Boolean> scores, int repeat)
+  {
+    double counts=0d, norms=0d;
+    for (Double scr : scores.keySet())
+    {
+      counts++;
+      if (!scores.get(scr)) norms++;
+      if (norms>repeat) return scr;
+    }
+    return null;
+  }
 }

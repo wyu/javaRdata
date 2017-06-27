@@ -356,6 +356,14 @@ public class Stats
     for (double y : ys) sum+=y;
     return sum;
   }
+  public static int sum(int[] ys)
+  {
+    if (!Tools.isSet(ys)) return 0;
+
+    int sum=0;
+    for (double y : ys) sum+=y;
+    return sum;
+  }
   public static Integer[] newIntArray(int start, int end)
   {
     Integer[] out = new Integer[end-start];

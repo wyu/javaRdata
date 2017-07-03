@@ -2,6 +2,8 @@ package org.ms2ms.math;
 
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
+import com.google.common.collect.SortedSetMultimap;
+import com.google.common.collect.TreeMultimap;
 import org.apache.commons.math.stat.descriptive.moment.Skewness;
 import org.apache.commons.math3.stat.descriptive.moment.Kurtosis;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
@@ -33,6 +35,8 @@ public class Histogram implements Disposable
   private List<Point>   mCumulative;
   private List<Point>   mHistogram;
   private List<Double>  mData = null;
+
+  private SortedSetMultimap<Double, Double> mPeaks;
 
   public Histogram() { super(); mData = new ArrayList<>(); }
   public Histogram(String title, Double step, Range<Double> range)
@@ -289,6 +293,43 @@ public class Histogram implements Disposable
     Range<Double> range = Range.closed(mData.get(0), mData.get(mData.size()-1));
 
     generate(step_num, range);
+    return this;
+  }
+  public Histogram peak_detection(double affinity, int clump)
+  {
+    if (!Tools.isSet(mData)) return this;
+
+    Collections.sort(mData);
+    // peak detection
+    mPeaks = TreeMultimap.create();
+    Collection<Double> pool = new ArrayList<>(); pool.add(mData.get(0));
+    for (int i=1; i<mData.size(); i++)
+    {
+      if (mData.get(i)-mData.get(i-1)>affinity)
+      {
+        // got a peak if we have enough points in the pool
+        if (pool.size()>=clump)
+          Tools.putAll(mPeaks, Stats.mean(pool), pool);
+        pool.clear();
+      }
+      pool.add(mData.get(i));
+    }
+    // trim away peaks with too few points
+    Iterator<Double> itr = mPeaks.keySet().iterator();
+    while (itr.hasNext())
+      if (mPeaks.get(itr.next()).size()<clump) itr.remove();
+
+    return this;
+  }
+
+  public Histogram generate(double step_size)
+  {
+    if (!Tools.isSet(mData) || step_size == 0) return this;
+
+    Collections.sort(mData);
+    Range<Double> range = Range.closed(mData.get(0), mData.get(mData.size()-1));
+
+    generate((int )((range.upperEndpoint()-range.lowerEndpoint())/step_size), range);
     return this;
   }
   public Histogram generateTruncated(int step_num, int skips)

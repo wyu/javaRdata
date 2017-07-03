@@ -172,9 +172,15 @@ public class Tools
       for (K key : in.keySet()) map.put(key, in.get(key));
     return map;
   }
+//  public static <K, V> Multimap<K,V> putAll(Multimap<K,V> map, K key, Collection<V> vals)
+//  {
+//    if (map!=null && key!=null && isSet(vals)) map.putAll(key, vals);
+//    return map;
+//  }
   public static <K, V> Multimap<K,V> putAll(Multimap<K,V> map, K key, Collection<V> vals)
   {
-    if (map!=null && key!=null && isSet(vals)) map.putAll(key, vals);
+    if (map!=null && key!=null && isSet(vals))
+      for (V val : vals) map.put(key, val);
     return map;
   }
   public static <K, V> Map<K,V> putAll(Map<K,V> map, Map<K,V> in)

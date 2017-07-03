@@ -684,7 +684,7 @@ public class Strs
     String wiki = "";
     if (Tools.isSet(val))
       for (Object v : val)
-        wiki+="|"+(v!=null?v.toString():" ");
+        wiki+="|"+(v!=null && v.toString().length()>0 ?v.toString():" ");
     return wiki;
   }
 //  public static String fromLast(List<String> s, int n)

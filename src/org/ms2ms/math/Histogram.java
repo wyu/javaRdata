@@ -1,10 +1,8 @@
 package org.ms2ms.math;
 
-import com.google.common.collect.BoundType;
-import com.google.common.collect.Range;
-import com.google.common.collect.SortedSetMultimap;
-import com.google.common.collect.TreeMultimap;
+import com.google.common.collect.*;
 import org.apache.commons.math.stat.descriptive.moment.Skewness;
+import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.stat.descriptive.moment.Kurtosis;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.ms2ms.Disposable;
@@ -36,7 +34,9 @@ public class Histogram implements Disposable
   private List<Point>   mHistogram;
   private List<Double>  mData = null;
 
-  private SortedSetMultimap<Double, Double> mPeaks;
+  private Fitted mSurvivalFitted;
+
+  private SortedMap<Double, List<Point>> mPeaks;
 
   public Histogram() { super(); mData = new ArrayList<>(); }
   public Histogram(String title, Double step, Range<Double> range)
@@ -173,6 +173,13 @@ public class Histogram implements Disposable
     else if (mData != null) for (int i = 0; i < counts; i++) mData.add(x);
   }
   public Histogram add(Double x) { add(x, 1d); return this; }
+  public Histogram add(Double x, boolean distinct)
+  {
+    if (distinct && mData.contains(x)) return this;
+
+    add(x, 1d);
+    return this;
+  }
   public void add(Histogram s)
   {
     if (Tools.isSet(s.getHistogram()))
@@ -279,6 +286,18 @@ public class Histogram implements Disposable
 //    Point xy = Point_Util.interpolate(getHistogram(), x, true); // ignore the nero
 //    return xy != null ? xy.getY() / mSumY : Double.NaN;
 //  }
+  public void clear()
+  {
+    if (mData!=null) mData.clear();
+    if (mHistogram!=null) mHistogram.clear();
+
+    eTransform = Transformer.processor.none;
+    mHistogramSize = 12;
+    mStep=mSumY=mMean=mMedian=mStdev=mKurtosisNormality=mSkewness=mCorr=mCenter=mTop=mSigma=mFWHH=mUpperModal = null;
+    mRange=null;
+    if (mCumulative!=null) mCumulative.clear();
+    if (mPeaks!=null) mPeaks.clear();
+  }
   public void reset()
   {
     if (Tools.isSet(getHistogram()))
@@ -301,7 +320,7 @@ public class Histogram implements Disposable
 
     Collections.sort(mData);
     // peak detection
-    mPeaks = TreeMultimap.create();
+    SortedSetMultimap<Double, Double> peaks = TreeMultimap.create();
     Collection<Double> pool = new ArrayList<>(); pool.add(mData.get(0));
     for (int i=1; i<mData.size(); i++)
     {
@@ -309,17 +328,30 @@ public class Histogram implements Disposable
       {
         // got a peak if we have enough points in the pool
         if (pool.size()>=clump)
-          Tools.putAll(mPeaks, Stats.mean(pool), pool);
+          Tools.putAll(peaks, Stats.mean(pool), pool);
         pool.clear();
       }
       pool.add(mData.get(i));
     }
-    // trim away peaks with too few points
-    Iterator<Double> itr = mPeaks.keySet().iterator();
-    while (itr.hasNext())
-      if (mPeaks.get(itr.next()).size()<clump) itr.remove();
+    // perform the peak detection
+    mPeaks = new TreeMap<>();
+    for (Double pk : peaks.keySet())
+      mPeaks.put(pk, peak_detect(peaks.get(pk), Stats.d2d(pk,3), 0.001, 0.01));
 
+    Tools.dispose(peaks);
     return this;
+  }
+  private List<Point> peak_detect(Collection<Double> data, double pivot, double step, double half_base)
+  {
+    SortedSet<Double> pts = new TreeSet<>(data);
+    List<Point>     trace = new ArrayList<>();
+    for (double p=0; p<half_base; p+=step)
+    {
+      trace.add(new Point(pivot+p+step*0.5, pts.subSet(pivot+p, pivot+p+step).size()));
+      trace.add(new Point(pivot-p-step*0.5, pts.subSet(pivot-p-step, pivot-p).size()));
+    }
+    Collections.sort(trace); Tools.dispose(pts);
+    return trace;
   }
 
   public Histogram generate(double step_size)
@@ -447,6 +479,44 @@ public class Histogram implements Disposable
     Collection<Histogram> gs = new ArrayList<Histogram>();
     gs.add(A); gs.add(B);
     generate(gs, step_num);
+  }
+  // compute the evals and S/N ratios
+  public Histogram calcSNR()
+  {
+    if (getData()==null || getData().size()<3) return this;
+
+    // no more than 15, up to the size-2
+    List<WeightedObservedPoint> Rs = new ArrayList<>();
+    double                  decoys = getData().size(), survived=0, end=(int )Math.min(15, decoys);
+    Collections.sort(mData, Ordering.natural().reverse());
+
+    for (Double d : getData())
+    {
+      Rs.add(new WeightedObservedPoint(d, d, Math.log10(++survived/decoys)));
+      if (Rs.size()>end) break;
+    }
+
+    // get the expect-value per ProteinProspector. http://prospector.ucsf.edu/prospector/html/misc/publications/2006_ASMS_1.pdf
+    // use the log(survival) vs score from the top 10%
+    try
+    {
+      // quadratic fit is not suitable because of the possibility of curving back up at higher score. Even though the fit is often better.
+      mSurvivalFitted = new Fitted().shrink_fit(1, Rs, 7,0.1);
+//      if (fitted!=null && fitted.getN()>3)
+//      {
+//        setScore(Ms2Hit.N_DECOYS, (double) scrambled).setScore(Ms2Hit.N_DECOY_E, (double )fitted_decoy.getN());
+//        setScore(Ms2Hit.R2_DECOY_E, fitted_decoy.getR2());
+//
+//        for (Ms2Hit F : getCandidates().values())
+//          F.setScore(Ms2Hit.SCR_SNR_F,  Math.pow(10d, (Math.log10(1d/decoys)-fitted_decoy.polynomial(F.getScore()))));
+//      }
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+
+    return this;
   }
   public Histogram calcProb(Histogram positives, Histogram negatives)
   {

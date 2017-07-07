@@ -494,6 +494,14 @@ public class Stats
     double y=Math.round(x*Math.pow(10d,n))/Math.pow(10d,n);
     return y;
   }
+  public static Double max(Double A, Double B)
+  {
+    if (A==null && B!=null) return B;
+    if (A!=null && B==null) return A;
+    if (A==null && B==null) return null;
+
+    return Math.max(A,B);
+  }
   public static Double percentile(Collection<Double> data, double pct)
   {
     if (data==null) return null;

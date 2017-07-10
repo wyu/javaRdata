@@ -48,20 +48,20 @@ public class Histogram implements Disposable
     setTitle("unTitled");
     mHistogramSize=size;
     mHistogram = null;
-    mData      = new ArrayList<Double>();
+    mData      = new ArrayList<>();
   }
   public Histogram(String title)
   {
     setTitle(title);
     mHistogram = null;
-    mData      = new ArrayList<Double>();
+    mData      = new ArrayList<>();
   }
   public Histogram(int size, double[] data)
   {
     setTitle("unTitled");
     mHistogramSize=size;
     mHistogram = null;
-    mData      = new ArrayList<Double>();
+    mData      = new ArrayList<>();
 
     for (double d : data) add(d);
     survey();
@@ -481,18 +481,27 @@ public class Histogram implements Disposable
     generate(gs, step_num);
   }
   // compute the evals and S/N ratios
-  public Histogram calcSNR()
+  public Histogram fitEval(int samples, int shave)
   {
-    if (getData()==null || getData().size()<3) return this;
+    if (mData==null) return this;
+
+    Collections.sort(mData, Ordering.natural().reverse());
+
+    List<Double> data = new ArrayList<>(getData());
+    if (shave>0)
+      for (int i=0; i<shave; i++) data.remove(0);
+
+    if (data==null || data.size()<3) return this;
 
     // no more than 15, up to the size-2
     List<WeightedObservedPoint> Rs = new ArrayList<>();
-    double                  decoys = getData().size(), survived=0, end=(int )Math.min(15, decoys);
-    Collections.sort(mData, Ordering.natural().reverse());
+    double                  decoys = data.size(), survived=0, end=(int )Math.min(samples, decoys);
 
-    for (Double d : getData())
+//    System.out.println(getTitle()+"\nX\tY");
+    for (Double d : data)
     {
       Rs.add(new WeightedObservedPoint(d, d, Math.log10(++survived/decoys)));
+//      System.out.println(d+"\t"+Math.log10(survived/decoys));
       if (Rs.size()>end) break;
     }
 
@@ -501,7 +510,8 @@ public class Histogram implements Disposable
     try
     {
       // quadratic fit is not suitable because of the possibility of curving back up at higher score. Even though the fit is often better.
-      mSurvivalFitted = new Fitted().shrink_fit(1, Rs, 7,0.1);
+      mSurvivalFitted = new Fitted().fit(1, Rs);
+      Tools.dispose(data); Tools.dispose(Rs);
 //      if (fitted!=null && fitted.getN()>3)
 //      {
 //        setScore(Ms2Hit.N_DECOYS, (double) scrambled).setScore(Ms2Hit.N_DECOY_E, (double )fitted_decoy.getN());
@@ -517,6 +527,10 @@ public class Histogram implements Disposable
     }
 
     return this;
+  }
+  public Double calcEval(Double score, double N)
+  {
+    return mSurvivalFitted!=null?-10d*Math.log10(N*Math.pow(10d, mSurvivalFitted.polynomial(score))):null;
   }
   public Histogram calcProb(Histogram positives, Histogram negatives)
   {

@@ -138,9 +138,6 @@ public class Stats
   // calc the probability density
   public static double hypergeom(long success, long trials, long success_population, long population)
   {
-//    if (population-success_population<0 || trials-success<0)
-//      System.out.print("");
-    // COMB(success_population,success) COMB(population-success_population,trials-success) / COMB(population,trials)
     return (ln_combination(success_population,success)+ln_combination(population-success_population,trials-success)-ln_combination(population,trials))/2.30258509;
   }
   public static Number aggregate(Collection data, Aggregator func)

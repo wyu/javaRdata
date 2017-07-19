@@ -480,16 +480,14 @@ public class Histogram implements Disposable
     gs.add(A); gs.add(B);
     generate(gs, step_num);
   }
-  // compute the evals and S/N ratios
-  public Histogram fitEval(int samples, int shave)
+  // compute the evals and S/N ratios. Will ignore the top 'shave' most points until r2 meets the min requirement
+  public Histogram fitEval(int samples, int shave, double min_r2)
   {
     if (mData==null) return this;
 
     Collections.sort(mData, Ordering.natural().reverse());
 
     List<Double> data = new ArrayList<>(getData());
-    if (shave>0)
-      for (int i=0; i<shave; i++) data.remove(0);
 
     if (data==null || data.size()<3) return this;
 
@@ -497,11 +495,9 @@ public class Histogram implements Disposable
     List<WeightedObservedPoint> Rs = new ArrayList<>();
     double                  decoys = data.size(), survived=0, end=(int )Math.min(samples, decoys);
 
-//    System.out.println(getTitle()+"\nX\tY");
     for (Double d : data)
     {
       Rs.add(new WeightedObservedPoint(d, d, Math.log10(++survived/decoys)));
-//      System.out.println(d+"\t"+Math.log10(survived/decoys));
       if (Rs.size()>end) break;
     }
 
@@ -511,15 +507,17 @@ public class Histogram implements Disposable
     {
       // quadratic fit is not suitable because of the possibility of curving back up at higher score. Even though the fit is often better.
       mSurvivalFitted = new Fitted().fit(1, Rs);
+      if (mSurvivalFitted.getR2()<min_r2 && shave>0)
+        for (int i=0; i<shave; i++)
+        {
+          Rs.remove(0);
+          Fitted fit = new Fitted().fit(1, Rs);
+
+          if (fit!=null && fit.getR2()<mSurvivalFitted.getR2()) break;
+          if (fit!=null && fit.getR2()>mSurvivalFitted.getR2()) mSurvivalFitted=fit;
+          if (mSurvivalFitted.getR2()>=min_r2) break;
+        }
       Tools.dispose(data); Tools.dispose(Rs);
-//      if (fitted!=null && fitted.getN()>3)
-//      {
-//        setScore(Ms2Hit.N_DECOYS, (double) scrambled).setScore(Ms2Hit.N_DECOY_E, (double )fitted_decoy.getN());
-//        setScore(Ms2Hit.R2_DECOY_E, fitted_decoy.getR2());
-//
-//        for (Ms2Hit F : getCandidates().values())
-//          F.setScore(Ms2Hit.SCR_SNR_F,  Math.pow(10d, (Math.log10(1d/decoys)-fitted_decoy.polynomial(F.getScore()))));
-//      }
     }
     catch (Exception e)
     {

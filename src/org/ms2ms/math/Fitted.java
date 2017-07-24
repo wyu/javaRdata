@@ -5,6 +5,7 @@ import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.SimpleCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.stat.inference.TestUtils;
+import org.ms2ms.Disposable;
 
 import java.util.List;
 import java.util.Random;
@@ -12,7 +13,7 @@ import java.util.Random;
 /**
  * Created by yuw on 11/29/16.
  */
-public class Fitted
+public class Fitted implements Disposable
 {
   private int N;
   private double r2, kai2, ftest;
@@ -149,5 +150,12 @@ public class Fitted
       return setR2(1-sumRES/sumTOT).setN(data.size()).setKai2(kai2/(double )data.size()).setFtest((sumTOT/(getParams().length-1))/(sumRES/(data.size()-getParams().length)));
     }
     return null;
+  }
+
+  @Override
+  public void dispose()
+  {
+    fitter = null;
+    params = null;
   }
 }

@@ -835,6 +835,20 @@ public class Histogram implements Disposable
   @Override
   public void dispose()
   {
-    Tools.dispose(mCumulative,mHistogram,mData);
+    dispose_data();
+
+    mTitle=null;
+    eTransform = null;
+    mStep=mSumY=mMean=mMedian=mStdev=mKurtosisNormality=mSkewness=mCorr=mCenter=mTop=mSigma=mFWHH=mUpperModal=null;
+    mRange=null;
+
+    Tools.dispose(mHistogram);
+    Tools.dispose(mSurvivalFitted);
+    Tools.dispose(mPeaks);
+
+  }
+  public void dispose_data()
+  {
+    Tools.dispose(mCumulative,mData);
   }
 }

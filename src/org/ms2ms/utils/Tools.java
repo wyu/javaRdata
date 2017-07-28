@@ -1008,4 +1008,8 @@ public class Tools
   {
     return tol!=null && val!=null ? Range.closed(tol.getMin(val), tol.getMax(val)):null;
   }
+//  public static <K,V> TreeMultimap<K,V> clone(TreeMultimap s)
+//  {
+//    return s!=null?TreeMultimap.create(s):null;
+//  }
 }

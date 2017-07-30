@@ -1,6 +1,7 @@
 package org.ms2ms.graph;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
+import org.ms2ms.utils.Tools;
 
 import java.util.Map;
 
@@ -40,6 +41,6 @@ public class DenovoEdge extends DefaultWeightedEdge
     return mTarget;
   }
 
-  @Override public String toString() { return "(" + mSource + " : " + mTarget + ")"+mLabel; }
+  @Override public String toString() { return "(" + Tools.d2s(mSource, 3) + " : " + Tools.d2s(mTarget,3) + ")"+mLabel; }
 
 }

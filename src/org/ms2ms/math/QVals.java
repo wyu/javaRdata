@@ -88,7 +88,7 @@ public class QVals
 
 //    if (verbose) System.out.println("\t\tfdr\tscore\tanchor0\tdecoy\tN\tqualified");
 
-    double D=0d, N=0, Q=0, N0=0; Double score0=null;
+    double D=0d, N=0, Q=0, N0=0, D1=0; Double score0=null;
     for (Double score : mCandidates2D.rowKeySet())
     {
       if ((min_main!=null && score<min_main) || Double.isInfinite(score)||Double.isNaN(score)) continue;
@@ -101,8 +101,9 @@ public class QVals
           if (aux>=min_anchor)      N++;
         }
       // use the (D+1)/N formula for a recent paper
-      double f=((decoy_multiple+1)/decoy_multiple)*(D+1d)/N;
-      if (f<=fdr && (score0==null || score<score0))
+//      double f=((decoy_multiple+1)/decoy_multiple)*(D+1d)/N;
+      double f=((decoy_multiple+1)/decoy_multiple)*D/N;
+      if (D>0 && f<=fdr && (score0==null || score<score0))
       {
 //        if (verbose) System.out.println("\t\t"+Tools.d2s(f,2)+"\t"+score+"\t"+min_anchor+"\t"+Tools.d2s(D,0)+"\t"+Tools.d2s(N,0)+"\t"+Tools.d2s(Q,0));
         score0=score;
@@ -111,10 +112,17 @@ public class QVals
       for (Double aux : mCandidates2D.row(score).keySet())
       {
 //        mPoint2Ds.add(new Point3D(score, aux, f));
-        if (aux>=min_anchor && f<=fdr) Q+=mCandidates2D.get(score, aux).size();
+        if (aux>=min_anchor && f<=fdr)
+        {
+          Q+=mCandidates2D.get(score, aux).size();
+          for (Boolean val : mCandidates2D.get(score, aux))
+          {
+            if (val) D1+=1d;
+          }
+        }
       }
     }
-    return score0!=null ? new Double[] {score0, min_anchor, D, N, Q, N0} : null;
+    return score0!=null ? new Double[] {score0, min_anchor, D1, N, Q, N0} : null;
   }
   public Double[] thresholdByAnchoredFDR(double fdr, Double min_main, List<Double> anchors, double decoy_multiple)
   {
@@ -138,7 +146,7 @@ public class QVals
         if (s0!=null && (best_Q==null || s0[4]>best_Q))
         {
           best_Q=s0[4];
-          best = new Double[] {s0[0], a0, s0[3], best_Q, s0[5]};
+          best = new Double[] {s0[0], a0, s0[3], best_Q, s0[5], s0[2]};
 //          if (fdr==0.01) System.out.println("***");
         }
 //        else if (a0!=null && s0!=null && fdr==0.01) System.out.println();

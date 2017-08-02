@@ -207,12 +207,12 @@ public class Strs
     // return the concatenated string
     return made;
   }
-  public static String toString(double[] ss, String dl) {
+  public static String toString(double[] ss, String dl, int deci) {
     // no point to go further
     if (ss == null) return null;
     String made = new String();
     for (int i = 0; i != ss.length; i++)
-      made = extend(made, ss[i] + "", dl);
+      made = extend(made, Tools.d2s(ss[i],deci), dl);
     // return the concatenated string
     return made;
   }

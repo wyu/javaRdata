@@ -687,6 +687,14 @@ public class Strs
         wiki+="|"+(v!=null && v.toString().length()>0 ?v.toString():" ");
     return wiki;
   }
+  public static String addWiki(LinkedHashMap<String,String> val)
+  {
+    String wiki = "";
+    if (Tools.isSet(val))
+      for (String v : val.keySet())
+        wiki+="|"+(val.get(v)!=null && val.get(v).length()>0 ?val.get(v):" ");
+    return wiki;
+  }
 //  public static String fromLast(List<String> s, int n)
 //  {
 //    return s!=null && s.size()>2 ? s.get(s.size()-n) : null;

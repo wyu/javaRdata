@@ -1562,5 +1562,21 @@ public class IOs
         data.putAll(read(ds, 0), readInts(ds));
       }
   }
+  public static void save(String file, StringBuffer buf)
+  {
+    try
+    {
+      if (buf!=null)
+      {
+        FileWriter w = new FileWriter(file);
+        w.write(buf.toString());
+        w.close();
+      }
+    }
+    catch (IOException io)
+    {
+      io.printStackTrace();
+    }
+  }
 
 }

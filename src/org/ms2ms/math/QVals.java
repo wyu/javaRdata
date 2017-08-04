@@ -7,7 +7,6 @@ import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.ms2ms.data.Point;
 import org.ms2ms.data.Point3D;
-import org.ms2ms.utils.Strs;
 import org.ms2ms.utils.Tools;
 
 import java.util.*;
@@ -82,13 +81,9 @@ public class QVals
     vals.add(decoy);
     return this;
   }
-  private Double[] thresholdByAnchoredFDR(double fdr, Double min_main, double min_anchor, double decoy_multiple, boolean verbose)
+  private Double[] thresholdByAnchoredFDR(double fdr, Double min_main, double min_anchor, double decoy_multiple, Integer d0, Integer n0)
   {
-//    mPoint2Ds=new ArrayList<>();
-
-//    if (verbose) System.out.println("\t\tfdr\tscore\tanchor0\tdecoy\tN\tqualified");
-
-    double D=0d, N=0, Q=0, N0=0, D1=0; Double score0=null;
+    double D=(d0!=null?d0:0d), N=(n0!=null?n0:0), Q=0, N0=0, D1=0; Double score0=null;
     for (Double score : mCandidates2D.rowKeySet())
     {
       if ((min_main!=null && score<min_main) || Double.isInfinite(score)||Double.isNaN(score)) continue;
@@ -105,13 +100,11 @@ public class QVals
       double f=((decoy_multiple+1)/decoy_multiple)*D/N;
       if (D>0 && f<=fdr && (score0==null || score<score0))
       {
-//        if (verbose) System.out.println("\t\t"+Tools.d2s(f,2)+"\t"+score+"\t"+min_anchor+"\t"+Tools.d2s(D,0)+"\t"+Tools.d2s(N,0)+"\t"+Tools.d2s(Q,0));
         score0=score;
       }
 
       for (Double aux : mCandidates2D.row(score).keySet())
       {
-//        mPoint2Ds.add(new Point3D(score, aux, f));
         if (aux>=min_anchor && f<=fdr)
         {
           Q+=mCandidates2D.get(score, aux).size();
@@ -124,35 +117,24 @@ public class QVals
     }
     return score0!=null ? new Double[] {score0, min_anchor, D1, N, Q, N0} : null;
   }
-  public Double[] thresholdByAnchoredFDR(double fdr, Double min_main, List<Double> anchors, double decoy_multiple)
+  public Double[] thresholdByAnchoredFDR(double fdr, Double min_main, List<Double> anchors, double decoy_multiple, Integer d0, Integer n0)
   {
     Double[] best = null; Double best_Q=null;
 
-//    if (fdr==0.01)
-//      System.out.println("Threshold for "+getName()+" to meet the fdr="+fdr+", min_main="+min_main+" @decoy multiple="+decoy_multiple);
-
-//    if (fdr==0.01)
-//      System.out.println("score\tanchor\tdecoy\tqualified\tinput\tqval");
     if (Tools.isSet(mCandidates2D))
       // anchored by the B first
       for (Double a0 : anchors)
       {
         // {score0, min_anchor, D, N, Q, N0};
-        Double[] s0 = thresholdByAnchoredFDR(fdr, min_main, a0, decoy_multiple, best==null && fdr==0.01);
-//        if (fdr==0.01 && a0!=null && s0!=null)
-//          System.out.print(Tools.d2s(s0[0], 2)+"\t"+Tools.d2s(a0, 2)+"\t"+Tools.d2s(s0[2],0)+"\t"+Tools.d2s(s0[4],0)+"\t"+
-//              Tools.d2s(s0[3],0)+"\t"+Tools.d2s(100d*(((decoy_multiple+1)/decoy_multiple)*(s0[2]+1d)/s0[4]),2)+"\t");
+        Double[] s0 = thresholdByAnchoredFDR(fdr, min_main, a0, decoy_multiple, d0,n0);
         // is this better
         if (s0!=null && (best_Q==null || s0[4]>best_Q))
         {
           best_Q=s0[4];
           best = new Double[] {s0[0], a0, s0[3], best_Q, s0[5], s0[2]};
-//          if (fdr==0.01) System.out.println("***");
         }
-//        else if (a0!=null && s0!=null && fdr==0.01) System.out.println();
       }
 
-//    if (fdr==0.01) System.out.println("Best: " +Strs.toString(best, ";"));
     return best;
   }
 

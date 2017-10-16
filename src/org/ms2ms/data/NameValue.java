@@ -1,6 +1,8 @@
 package org.ms2ms.data;
 
+import com.google.common.collect.Range;
 import org.ms2ms.math.Stats;
+import org.ms2ms.utils.Strs;
 import org.ms2ms.utils.Tools;
 
 /**
@@ -51,6 +53,94 @@ public class NameValue
     }
     return number;
   }
+  public Integer getInt()
+  {
+    if (number == null)
+    {
+      try
+      {
+        return Integer.parseInt(val);
+      }
+      catch (Exception e) { }
+    }
+    return null;
+  }
+  public Boolean getBoolean(String... s)
+  {
+    if (number == null)
+    {
+      try
+      {
+        return Tools.isA(val, s);
+      }
+      catch (Exception e) { }
+    }
+    return null;
+  }
+  public Range<Integer> getIntRange()
+  {
+    if (number == null)
+    {
+      try
+      {
+        if      (val.indexOf('~')>0)
+        {
+          String[] strs =Strs.split(val, '~', true);
+          return Range.closed(Integer.parseInt(strs[0]), Integer.parseInt(strs[1]));
+        }
+        else if (val.indexOf(">=")==0)
+        {
+          return Range.atLeast(Integer.parseInt(val.substring(1)));
+        }
+        else if (val.indexOf("<=")==0)
+        {
+          return Range.atMost(Integer.parseInt(val.substring(1)));
+        }
+        else if (val.indexOf('<')==0)
+        {
+          return Range.atMost(Integer.parseInt(val.substring(1))-1);
+        }
+        else if (val.indexOf(">")==0)
+        {
+          return Range.atLeast(Integer.parseInt(val.substring(1))+1);
+        }
+      }
+      catch (Exception e) { }
+    }
+    return null;
+  }
+  public Range<Double> getDoubleRange()
+  {
+    if (number == null)
+    {
+      try
+      {
+        if      (val.indexOf('~')>0)
+        {
+          String[] strs =Strs.split(val, '~', true);
+          return Range.closed(Double.parseDouble(strs[0]), Double.parseDouble(strs[1]));
+        }
+        else if (val.indexOf(">=")==0)
+        {
+          return Range.atLeast(Double.parseDouble(val.substring(1)));
+        }
+        else if (val.indexOf("<=")==0)
+        {
+          return Range.atMost(Double.parseDouble(val.substring(1)));
+        }
+        else if (val.indexOf('<')==0)
+        {
+          return Range.atMost(Double.parseDouble(val.substring(1))-1);
+        }
+        else if (val.indexOf(">")==0)
+        {
+          return Range.atLeast(Double.parseDouble(val.substring(1))+1);
+        }
+      }
+      catch (Exception e) { }
+    }
+    return null;
+  }
   public void clear() { name=null; val=null; number=null; }
   public boolean parse(String line, String... tokens)
   {
@@ -71,5 +161,12 @@ public class NameValue
       }
     }
     return false;
+  }
+  public static NameValue create(String line, String... tokens)
+  {
+    NameValue nv = new NameValue();
+    nv.parse(line, tokens);
+
+    return nv;
   }
 }

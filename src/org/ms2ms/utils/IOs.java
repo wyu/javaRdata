@@ -3,6 +3,7 @@ package org.ms2ms.utils;
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
 import org.ms2ms.data.Binary;
+import org.ms2ms.data.Point;
 import org.ms2ms.math.Stats;
 import toools.set.IntHashSet;
 import toools.set.IntSet;
@@ -162,6 +163,17 @@ public class IOs
         write(ds, data.get(key));
       }
   }
+  public static void writeIntDoubleMap(DataOutput ds, Map<Integer, Double> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.size() : 0);
+
+    if (Tools.isSet(data))
+      for (Integer key : data.keySet())
+      {
+        write(ds, key);
+        write(ds, data.get(key));
+      }
+  }
   public static <T extends Binary> void write(DataOutput ds, Collection<T> data) throws IOException
   {
     write(ds, Tools.isSet(data) ? data.size() : 0);
@@ -223,6 +235,19 @@ public class IOs
     }
     return null;
   }
+  public static List<Double> readDoubles(DataInput ds) throws IOException
+  {
+    int n = read(ds, 0);
+
+    if (n > 0)
+    {
+      List<Double> data = new ArrayList<>();
+      for (int i = 0; i < n; i++) data.add(ds.readDouble());
+
+      return data;
+    }
+    return null;
+  }
   public static double[] read(DataInput ds, double[] data) throws IOException
   {
     int n = read(ds, 0);
@@ -265,6 +290,20 @@ public class IOs
       for (Long t : data) write(ds, t);
     }
   }
+  public static void writeDoubles(DataOutput ds, Double... data) throws IOException
+  {
+    if (Tools.isSet(data))
+      for (Double t : data) write(ds, t);
+  }
+
+  public static void writeDoubles(DataOutput ds, Collection<Double> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.size() : 0);
+    if (Tools.isSet(data))
+    {
+      for (Double t : data) write(ds, t);
+    }
+  }
   public static void writeFloats(DataOutput ds, Collection<Float> data) throws IOException
   {
     write(ds, Tools.isSet(data) ? data.size() : 0);
@@ -273,23 +312,91 @@ public class IOs
       for (Float t : data) write(ds, t);
     }
   }
-  public static <T extends Binary> List<T> read(DataInput ds, List<T> data, T template) throws Exception
+  public static <T extends Binary> List<T> read(DataInput ds, List<T> data, T template) throws IOException
   {
     int n = read(ds, 0);
 
     if (n > 0)
     {
-      //if (data == null) data = new ArrayList<T>();
-      if      (data == null) data = new ArrayList<T>(n);
-      else if (data instanceof ArrayList) ((ArrayList )data).ensureCapacity(n);
-      for (int i = 0; i < n; i++)
+      try
       {
-        T new_t = (T )template.getClass().newInstance();
-        new_t.read(ds);
-        data.add(new_t);
+        //if (data == null) data = new ArrayList<T>();
+        if      (data == null) data = new ArrayList<T>(n);
+        else if (data instanceof ArrayList) ((ArrayList )data).ensureCapacity(n);
+        for (int i = 0; i < n; i++)
+        {
+          T new_t = (T )template.getClass().newInstance();
+          new_t.read(ds);
+          data.add(new_t);
+        }
+      }
+      catch (IllegalAccessException e)
+      {
+        throw new RuntimeException(e);
+      }
+      catch (InstantiationException e)
+      {
+        throw new RuntimeException(e);
       }
     }
     return data;
+  }
+  public static <T extends Binary> List<T> readList(DataInput ds, T template) throws IOException
+  {
+    int n = read(ds, 0);
+
+    if (n > 0)
+    {
+      try
+      {
+        //if (data == null) data = new ArrayList<T>();
+        List<T> data = new ArrayList<T>(n);
+        for (int i = 0; i < n; i++)
+        {
+          T new_t = (T )template.getClass().newInstance();
+          new_t.read(ds);
+          data.add(new_t);
+        }
+        return data;
+      }
+      catch (IllegalAccessException e)
+      {
+        throw new RuntimeException(e);
+      }
+      catch (InstantiationException e)
+      {
+        throw new RuntimeException(e);
+      }
+    }
+    return null;
+  }
+
+  public static <T extends Binary> ImmutableList<T> readImmutableList(DataInput ds, Class template) throws IOException
+  {
+    int n = read(ds, 0);
+
+    if (n > 0)
+    {
+      try
+      {
+        ImmutableList.Builder<T> builder=ImmutableList.builder();
+        for (int i=0; i<n; i++) {
+          T new_t=(T) template.newInstance();
+          new_t.read(ds);
+          builder.add(new_t);
+        }
+        return builder.build();
+      }
+      catch (IllegalAccessException e)
+      {
+        throw new RuntimeException(e);
+      }
+      catch (InstantiationException e)
+      {
+        throw new RuntimeException(e);
+      }
+    }
+    return null;
   }
   public static <T extends Binary> List<T> skip(DataInput ds, List<T> data, T template) throws Exception
   {
@@ -487,6 +594,20 @@ public class IOs
     }
     return data;
   }
+  public static TreeMap<Integer, Double>
+  readIntDoubleMap(DataInput ds) throws IOException
+  {
+    int n = read(ds, 0);
+    if (n > 0)
+    {
+      TreeMap<Integer, Double> data = new TreeMap<>();
+      for (int i = 0; i < n; i++)
+        data.put(read(ds, 0), read(ds, 0d));
+
+      return data;
+    }
+    return null;
+  }
   public static <T extends Binary> Map<Long, T>
   readLongMap(DataInput ds, Map<Long, T> data, T template, Collection<Long> ids) throws Exception
   {
@@ -552,6 +673,21 @@ public class IOs
     }
     return data;
   }
+  public static Map<Double, Double>
+  readDoubleDouble(DataInput ds) throws IOException
+  {
+    int n = read(ds, 0);
+    if (n > 0)
+    {
+      Map<Double, Double> data = new TreeMap<>();
+      for (int i = 0; i < n; i++)
+      {
+        data.put(read(ds, 0d),read(ds, 0d));
+      }
+      return data;
+    }
+    return null;
+  }
 //  public static MapOfMap<Double, Long, Long>
 //  readDoubleLongLong(DataInput ds, MapOfMap<Double, Long, Long> data, Range<Double> key_range) throws IOException
 //  {
@@ -569,6 +705,33 @@ public class IOs
 //    }
 //    return data;
 //  }
+  public static void writeObject(DataOutput ds, Object obj) throws IOException
+  {
+    if (obj instanceof Binary) write(ds, Binary.class.getName());
+    else                       write(ds, obj.getClass().getName());
+
+    if      (obj instanceof String)   write(ds, (String   )obj);
+    else if (obj instanceof Integer)  write(ds, (Integer  )obj);
+    else if (obj instanceof Long)     write(ds, (Long     )obj);
+    else if (obj instanceof Boolean)  write(ds, (Boolean  )obj);
+    else if (obj instanceof Float)    write(ds, (Float    )obj);
+    else if (obj instanceof Double)   write(ds, (Double   )obj);
+    else if (obj instanceof Binary) write(ds, (Binary )obj);
+    else throw new RuntimeException("Unsupported type for binary property, " + obj.getClass().getName());
+  }
+  public static Object readObject(DataInput ds) throws IOException
+  {
+    String name = read(ds, Strs.NULL);
+    //if      (name.equals(""))                       data.put(new_k, "");
+    if      (name.equals(  String.class.getName())) return (Object )read(ds, "");
+    else if (name.equals( Integer.class.getName())) return (Object )read(ds, 0);
+    else if (name.equals(    Long.class.getName())) return (Object )read(ds, 0L);
+    else if (name.equals( Boolean.class.getName())) return (Object )read(ds, (Boolean )null);
+    else if (name.equals(   Float.class.getName())) return (Object )read(ds, 0f);
+    else if (name.equals(  Double.class.getName())) return (Object )read(ds, 0d);
+    else if (name.equals(Binary.class.getName()))   return (Object )read(ds, (Binary )null);
+    else throw new RuntimeException("Unsupported type for binary property, " + name);
+  }
   public static void
   writeProperties(DataOutput ds, Map<String, Object> data) throws IOException
   {
@@ -583,17 +746,18 @@ public class IOs
       isnull(ds, data.get(key));
       if (data.get(key) != null)
       {
-        if (data.get(key) instanceof Binary) write(ds, Binary.class.getName());
-        else                                   write(ds, data.get(key).getClass().getName());
-
-        if      (data.get(key) instanceof String)   write(ds, (String   )data.get(key));
-        else if (data.get(key) instanceof Integer)  write(ds, (Integer  )data.get(key));
-        else if (data.get(key) instanceof Long)     write(ds, (Long     )data.get(key));
-        else if (data.get(key) instanceof Boolean)  write(ds, (Boolean  )data.get(key));
-        else if (data.get(key) instanceof Float)    write(ds, (Float    )data.get(key));
-        else if (data.get(key) instanceof Double)   write(ds, (Double   )data.get(key));
-        else if (data.get(key) instanceof Binary) write(ds, (Binary )data.get(key));
-        else throw new RuntimeException("Unsupported type for binary property, " + data.get(key).getClass().getName());
+        writeObject(ds, data.get(key));
+//        if (data.get(key) instanceof Binary) write(ds, Binary.class.getName());
+//        else                                   write(ds, data.get(key).getClass().getName());
+//
+//        if      (data.get(key) instanceof String)   write(ds, (String   )data.get(key));
+//        else if (data.get(key) instanceof Integer)  write(ds, (Integer  )data.get(key));
+//        else if (data.get(key) instanceof Long)     write(ds, (Long     )data.get(key));
+//        else if (data.get(key) instanceof Boolean)  write(ds, (Boolean  )data.get(key));
+//        else if (data.get(key) instanceof Float)    write(ds, (Float    )data.get(key));
+//        else if (data.get(key) instanceof Double)   write(ds, (Double   )data.get(key));
+//        else if (data.get(key) instanceof Binary) write(ds, (Binary )data.get(key));
+//        else throw new RuntimeException("Unsupported type for binary property, " + data.get(key).getClass().getName());
       }
     }
   }
@@ -603,22 +767,24 @@ public class IOs
     int n = read(ds, 0);
     if (n > 0)
     {
-      if (data == null) data = new HashMap<String, Object>();
+      if (data == null) data = new HashMap<>();
       for (int i = 0; i < n; i++)
       {
         String new_k = read(ds, "");
         if (isnull(ds)) continue;
-        String name = read(ds, Strs.NULL);
-        //if      (name.equals(""))                       data.put(new_k, "");
-        if      (name.equals(  String.class.getName())) data.put(new_k, (Object )read(ds, ""));
-        else if (name.equals( Integer.class.getName())) data.put(new_k, (Object )read(ds, 0));
-        else if (name.equals(    Long.class.getName())) data.put(new_k, (Object )read(ds, 0L));
-        else if (name.equals( Boolean.class.getName())) data.put(new_k, (Object )read(ds, (Boolean )null));
-        else if (name.equals(   Float.class.getName())) data.put(new_k, (Object )read(ds, 0f));
-        else if (name.equals(  Double.class.getName())) data.put(new_k, (Object )read(ds, 0d));
-        else if (name.equals(Binary.class.getName())) data.put(new_k, (Object )read(ds, (Binary )null));
-        else throw new RuntimeException("Unsupported type for binary property, " + name);
-        name = null;
+
+        data.put(new_k, readObject(ds));
+//        String name = read(ds, Strs.NULL);
+//        //if      (name.equals(""))                       data.put(new_k, "");
+//        if      (name.equals(  String.class.getName())) data.put(new_k, (Object )read(ds, ""));
+//        else if (name.equals( Integer.class.getName())) data.put(new_k, (Object )read(ds, 0));
+//        else if (name.equals(    Long.class.getName())) data.put(new_k, (Object )read(ds, 0L));
+//        else if (name.equals( Boolean.class.getName())) data.put(new_k, (Object )read(ds, (Boolean )null));
+//        else if (name.equals(   Float.class.getName())) data.put(new_k, (Object )read(ds, 0f));
+//        else if (name.equals(  Double.class.getName())) data.put(new_k, (Object )read(ds, 0d));
+//        else if (name.equals(Binary.class.getName())) data.put(new_k, (Object )read(ds, (Binary )null));
+//        else throw new RuntimeException("Unsupported type for binary property, " + name);
+//        name = null;
       }
     }
     return data;
@@ -700,6 +866,20 @@ public class IOs
         }
   }
   public static <T extends Binary> void
+  writeIntMap(DataOutput ds, Map<Integer, T> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.size() : 0);
+
+    if (Tools.isSet(data))
+    {
+      for (Integer key : data.keySet())
+      {
+        write(ds, key);
+        data.get(key).write(ds);
+      }
+    }
+  }
+  public static <T extends Binary> void
   writeLongMap(DataOutput ds, Map<Long, T> data) throws IOException
   {
     write(ds, Tools.isSet(data) ? data.size() : 0);
@@ -752,6 +932,34 @@ public class IOs
       {
         write(ds, key);
         write(ds, data.get(key));
+      }
+    }
+  }
+  public static void
+  writeDoubleDouble(DataOutput ds, Map<Double, Double> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.size() : 0);
+
+    if (Tools.isSet(data))
+    {
+      for (Double key : data.keySet())
+      {
+        write(ds, key);
+        write(ds, data.get(key));
+      }
+    }
+  }
+  public static void
+  writeDoubleObject(DataOutput ds, Map<Double, Object> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.size() : 0);
+
+    if (Tools.isSet(data))
+    {
+      for (Double key : data.keySet())
+      {
+        write(ds, key);
+        writeObject(ds, data.get(key));
       }
     }
   }
@@ -949,7 +1157,7 @@ public class IOs
     return data;
   }
   public static Range<String>
-  readStringRange(DataInput ds, Range<String> data) throws IOException
+  readStrRange(DataInput ds, Range<String> data) throws IOException
   {
     int n = read(ds, 0);
 
@@ -965,7 +1173,7 @@ public class IOs
     return data;
   }
   public static <T extends Binary> void
-  writeStringMap(DataOutput ds, Multimap<String, T> data) throws IOException
+  writeStrMaps(DataOutput ds, Multimap<String, T> data) throws IOException
   {
     write(ds, Tools.isSet(data) ? data.keySet().size() : 0);
 
@@ -979,13 +1187,40 @@ public class IOs
     }
   }
   public static <T extends Binary> void
-  writeIntegerMap(DataOutput ds, Multimap<Integer, T> data) throws IOException
+  writeIntMaps(DataOutput ds, Multimap<Integer, T> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.keySet().size() : 0);
+    if (Tools.isSet(data))
+    {
+      for (Integer key : data.keySet())
+      {
+        write(ds, key);
+        write(ds, data.get(key));
+      }
+    }
+  }
+  public static <T extends Binary> void
+  writeDoubleMultimap(DataOutput ds, Multimap<Double, T> data) throws IOException
   {
     write(ds, Tools.isSet(data) ? data.keySet().size() : 0);
 
     if (Tools.isSet(data))
     {
-      for (Integer key : data.keySet())
+      for (Double key : data.keySet())
+      {
+        write(ds, key);
+        write(ds, data.get(key));
+      }
+    }
+  }
+  public static <T extends Binary> void
+  writeDoubleListMap(DataOutput ds, Map<Double, List<T>> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.keySet().size() : 0);
+
+    if (Tools.isSet(data))
+    {
+      for (Double key : data.keySet())
       {
         write(ds, key);
         write(ds, data.get(key));
@@ -1007,6 +1242,20 @@ public class IOs
     }
   }
   public static void
+  writeStringDoubles(DataOutput ds, Multimap<String, Double> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.keySet().size() : 0);
+
+    if (Tools.isSet(data))
+    {
+      for (String key : data.keySet())
+      {
+        write(ds, key);
+        writeDoubles(ds, data.get(key));
+      }
+    }
+  }
+  public static void
   writeStrInts(DataOutput ds, Multimap<String, Integer> data) throws IOException
   {
     write(ds, Tools.isSet(data) ? data.keySet().size() : 0);
@@ -1016,6 +1265,18 @@ public class IOs
       {
         write(ds, key);
         writeInts(ds, data.get(key));
+      }
+  }
+  public static void
+  writeStrDouble(DataOutput ds, Map<String, Double> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.keySet().size() : 0);
+
+    if (Tools.isSet(data))
+      for (String key : data.keySet())
+      {
+        write(ds, key);
+        write(ds, data.get(key));
       }
   }
   public static void
@@ -1031,18 +1292,53 @@ public class IOs
       }
   }
   public static <T extends Binary> Map<String, T>
-  readStringMap(DataInput ds, Map<String, T> data, T template) throws Exception
+  readStrMap(DataInput ds, Map<String, T> data, T template) throws IOException
   {
     int n = read(ds, 0);
 
     if (n > 0)
     {
-      if (data == null) data = new TreeMap<String, T>();
+      if (data == null) data = new TreeMap<>();
+      for (int i = 0; i < n; i++)
+        data.put(read(ds, ""), read(ds, template));
+    }
+    return data;
+  }
+  public static <T extends Binary> Multimap<String, T>
+  readStrMaps(DataInput ds, Multimap<String, T> data, T template) throws Exception
+  {
+    int n = read(ds, 0);
+    if (n > 0)
+    {
       for (int i = 0; i < n; i++)
       {
-        String new_k = read(ds, "");
-        T      new_t = read(ds, template);
-        data.put(new_k, new_t);
+        data.putAll(read(ds, ""), readList(ds, template));
+      }
+    }
+    return data;
+  }
+  public static <T extends Binary> Multimap<Integer, T>
+  readIntMaps(DataInput ds, Multimap<Integer, T> data, T template) throws IOException
+  {
+    int n = read(ds, 0);
+    if (n > 0)
+    {
+      for (int i = 0; i < n; i++)
+      {
+        data.putAll(read(ds, 0), readList(ds, template));
+      }
+    }
+    return data;
+  }
+  public static <T extends Binary> Multimap<Double, T>
+  readDoubleMaps(DataInput ds, Multimap<Double, T> data, T template) throws IOException
+  {
+    int n = read(ds, 0);
+    if (n > 0)
+    {
+      for (int i = 0; i < n; i++)
+      {
+        data.putAll(read(ds, 0d), readList(ds, template));
       }
     }
     return data;
@@ -1069,6 +1365,38 @@ public class IOs
       }
     }
     return data;
+  }
+  public static TreeMap<String, Double>
+  readStrDouble(DataInput ds)  throws IOException
+  {
+    int n = read(ds, 0);
+
+    if (n > 0)
+    {
+      TreeMap<String, Double> data = new TreeMap<>();
+      for (int i = 0; i < n; i++)
+      {
+        String new_k = read(ds, "");
+        Double new_t = read(ds, 0d);
+        data.put(new_k, new_t);
+      }
+      return data;
+    }
+    return null;
+  }
+  public static Multimap<String, Double>
+  readStringDoubles(DataInput ds, Multimap<String, Double> data) throws IOException
+  {
+    int n = read(ds, 0);
+    if (n > 0)
+    {
+      for (int i = 0; i < n; i++)
+      {
+        data.putAll(read(ds, ""), readDoubles(ds));
+      }
+      return data;
+    }
+    return null;
   }
   public static <T extends Binary> void
   writeStringMap(DataOutput ds, Map<String, T> data) throws IOException
@@ -1562,6 +1890,32 @@ public class IOs
         data.putAll(read(ds, 0), readInts(ds));
       }
   }
+  public static <T extends Binary> SortedMap<Double, List<T>> readDoubleListMap(DataInput ds, T template) throws IOException
+  {
+    int n = read(ds, 0);
+    if (n > 0)
+    {
+      SortedMap<Double, List<T>> data = new TreeMap<>();
+      for (int i=0; i<n; i++)
+      {
+        data.put(read(ds, 0d),readList(ds, template));
+      }
+      return data;
+    }
+    return null;
+  }
+
+  public static void readDoubleListMap(DataInput ds, Multimap<Integer, Integer> data) throws IOException
+  {
+    int n = read(ds, 0);
+
+    if (n>0)
+      for (int i=0; i<n; i++)
+      {
+        data.putAll(read(ds, 0), readInts(ds));
+      }
+  }
+
   public static void save(String file, StringBuffer buf)
   {
     try

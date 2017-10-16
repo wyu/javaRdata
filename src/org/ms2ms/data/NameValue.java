@@ -154,9 +154,9 @@ public class NameValue
       {
         name=line.substring(0, idx);
         val =idx+t.length()<line.length()?line.substring(idx+t.length()):null;
-        Object v = Stats.toNumber(val);
-        if (v!=null && v instanceof Double) number=(Double )v; else val=(String )v;
-
+        number = Stats.toDouble(val);
+//        if      (v!=null)  number=v;
+//        else if (v!=null && v instanceof Integer) number=(Integer )v; else val=(String )v;
         token=t; return true;
       }
     }

@@ -705,7 +705,7 @@ public class IOs
 //    }
 //    return data;
 //  }
-  public static void writeObject(DataOutput ds, Object obj) throws IOException
+  public static void writeObject(DataOutput ds, Object obj, boolean ignoreUnknown) throws IOException
   {
     if (obj instanceof Binary) write(ds, Binary.class.getName());
     else                       write(ds, obj.getClass().getName());
@@ -717,9 +717,9 @@ public class IOs
     else if (obj instanceof Float)    write(ds, (Float    )obj);
     else if (obj instanceof Double)   write(ds, (Double   )obj);
     else if (obj instanceof Binary) write(ds, (Binary )obj);
-    else throw new RuntimeException("Unsupported type for binary property, " + obj.getClass().getName());
+    else if (!ignoreUnknown) throw new RuntimeException("Unsupported type for binary property, " + obj.getClass().getName());
   }
-  public static Object readObject(DataInput ds) throws IOException
+  public static Object readObject(DataInput ds, boolean ignoreUnknown) throws IOException
   {
     String name = read(ds, Strs.NULL);
     //if      (name.equals(""))                       data.put(new_k, "");
@@ -730,10 +730,12 @@ public class IOs
     else if (name.equals(   Float.class.getName())) return (Object )read(ds, 0f);
     else if (name.equals(  Double.class.getName())) return (Object )read(ds, 0d);
     else if (name.equals(Binary.class.getName()))   return (Object )read(ds, (Binary )null);
-    else throw new RuntimeException("Unsupported type for binary property, " + name);
+    else if (!ignoreUnknown) throw new RuntimeException("Unsupported type for binary property, " + name);
+
+    return null;
   }
   public static void
-  writeProperties(DataOutput ds, Map<String, Object> data) throws IOException
+  writeProperties(DataOutput ds, Map<String, Object> data, boolean ignoreUnknown) throws IOException
   {
     write(ds, Tools.isSet(data) ? data.size() : 0);
     // abort if there is nothing to do
@@ -746,7 +748,7 @@ public class IOs
       isnull(ds, data.get(key));
       if (data.get(key) != null)
       {
-        writeObject(ds, data.get(key));
+        writeObject(ds, data.get(key), ignoreUnknown);
 //        if (data.get(key) instanceof Binary) write(ds, Binary.class.getName());
 //        else                                   write(ds, data.get(key).getClass().getName());
 //
@@ -762,7 +764,7 @@ public class IOs
     }
   }
   public static Map<String, Object>
-  readProperties(DataInput ds, Map<String, Object> data) throws IOException
+  readProperties(DataInput ds, Map<String, Object> data, boolean ignoreUnknown) throws IOException
   {
     int n = read(ds, 0);
     if (n > 0)
@@ -773,7 +775,7 @@ public class IOs
         String new_k = read(ds, "");
         if (isnull(ds)) continue;
 
-        data.put(new_k, readObject(ds));
+        data.put(new_k, readObject(ds, ignoreUnknown));
 //        String name = read(ds, Strs.NULL);
 //        //if      (name.equals(""))                       data.put(new_k, "");
 //        if      (name.equals(  String.class.getName())) data.put(new_k, (Object )read(ds, ""));
@@ -950,7 +952,7 @@ public class IOs
     }
   }
   public static void
-  writeDoubleObject(DataOutput ds, Map<Double, Object> data) throws IOException
+  writeDoubleObject(DataOutput ds, Map<Double, Object> data, boolean ignoreUnknown) throws IOException
   {
     write(ds, Tools.isSet(data) ? data.size() : 0);
 
@@ -959,7 +961,7 @@ public class IOs
       for (Double key : data.keySet())
       {
         write(ds, key);
-        writeObject(ds, data.get(key));
+        writeObject(ds, data.get(key), ignoreUnknown);
       }
     }
   }

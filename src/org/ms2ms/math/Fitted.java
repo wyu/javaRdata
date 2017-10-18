@@ -6,14 +6,19 @@ import org.apache.commons.math3.fitting.SimpleCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.stat.inference.TestUtils;
 import org.ms2ms.Disposable;
+import org.ms2ms.data.Binary;
+import org.ms2ms.utils.IOs;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
 /**
  * Created by yuw on 11/29/16.
  */
-public class Fitted implements Disposable
+public class Fitted implements Disposable, Binary
 {
   private int N;
   private double r2, kai2, ftest;
@@ -157,5 +162,25 @@ public class Fitted implements Disposable
   {
     fitter = null;
     params = null;
+  }
+
+  @Override
+  public void write(DataOutput ds) throws IOException
+  {
+    IOs.write(ds, N);
+    IOs.write(ds, r2);
+    IOs.write(ds, kai2);
+    IOs.write(ds, ftest);
+    IOs.write(ds, params);
+  }
+
+  @Override
+  public void read(DataInput ds) throws IOException
+  {
+    N      = IOs.read(ds, N);
+    r2     = IOs.read(ds, r2);
+    kai2   = IOs.read(ds, kai2);
+    ftest  = IOs.read(ds, ftest);
+    params = IOs.read(ds, params);
   }
 }

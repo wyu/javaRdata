@@ -1,6 +1,11 @@
 package org.ms2ms.data;
 
+import org.ms2ms.utils.IOs;
 import org.ms2ms.utils.Tools;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
 /**
  * ** Copyright 2014-2015 ms2ms.org
@@ -10,7 +15,7 @@ import org.ms2ms.utils.Tools;
  * Author: wyu
  * Date:   1/23/15
  */
-public class Point implements Comparable<Point>
+public class Point implements Comparable<Point>, Binary
 {
   private double mX, mY;
 
@@ -31,5 +36,18 @@ public class Point implements Comparable<Point>
   public String toString()
   {
     return Tools.d2s(getX(), 2) + "\t" + Tools.d2s(getY(), 2);
+  }
+
+  @Override
+  public void write(DataOutput ds) throws IOException
+  {
+    IOs.write(ds, mX); IOs.write(ds, mY);
+  }
+
+  @Override
+  public void read(DataInput ds) throws IOException
+  {
+    mX = IOs.read(ds, mX);
+    mY = IOs.read(ds, mY);
   }
 }

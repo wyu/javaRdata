@@ -1008,6 +1008,10 @@ public class Tools
   {
     return tol!=null && val!=null ? Range.closed(tol.getMin(val), tol.getMax(val)):null;
   }
+  public static Range clone(Range s)
+  {
+    return Range.range(s.lowerEndpoint(), s.lowerBoundType(), s.upperEndpoint(), s.upperBoundType());
+  }
 //  public static <K,V> TreeMultimap<K,V> clone(TreeMultimap s)
 //  {
 //    return s!=null?TreeMultimap.create(s):null;

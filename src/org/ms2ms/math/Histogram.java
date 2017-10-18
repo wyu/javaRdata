@@ -6,13 +6,13 @@ import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.stat.descriptive.moment.Kurtosis;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.ms2ms.Disposable;
+import org.ms2ms.data.Binary;
 import org.ms2ms.data.Point;
+import org.ms2ms.utils.IOs;
 import org.ms2ms.utils.Strs;
 import org.ms2ms.utils.Tools;
 
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.Writer;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -23,7 +23,7 @@ import java.util.*;
  * Author: wyu
  * Date:   1/23/15
  */
-public class Histogram implements Disposable
+public class Histogram implements Disposable, Binary
 {
   private String        mTitle;
   private Transformer.processor eTransform = Transformer.processor.none;
@@ -850,5 +850,52 @@ public class Histogram implements Disposable
   public void dispose_data()
   {
     Tools.dispose(mCumulative,mData);
+  }
+
+  @Override
+  public void write(DataOutput ds) throws IOException
+  {
+    IOs.write(ds, mTitle);
+    IOs.write(ds, eTransform.toString());
+    IOs.write(ds, mHistogramSize);
+    IOs.writeDoubles(ds, mStep, mSumY, mMean, mMedian, mStdev, mKurtosisNormality, mSkewness, mCorr, mCenter, mTop, mSigma, mFWHH, mUpperModal);
+    IOs.write(ds, mRange);
+    IOs.write(ds, mCumulative);
+    IOs.write(ds, mHistogram);
+    IOs.writeDoubles(ds, mData);
+
+    IOs.write(ds, mSurvivalFitted);
+
+    IOs.writeDoubleListMap(ds, mPeaks);
+  }
+
+  @Override
+  public void read(DataInput ds) throws IOException
+  {
+    mTitle = IOs.read(ds, mTitle);
+    eTransform = eTransform.valueOf(IOs.read(ds, ""));
+    mHistogramSize = IOs.read(ds, mHistogramSize);
+    mStep      = IOs.read(ds, mStep);
+    mSumY      = IOs.read(ds, mSumY);
+    mMean      = IOs.read(ds, mMean);
+    mMedian    = IOs.read(ds, mMedian);
+    mStdev     = IOs.read(ds, mStdev);
+    mKurtosisNormality = IOs.read(ds, mKurtosisNormality);
+    mSkewness  = IOs.read(ds, mSkewness);
+    mCorr      = IOs.read(ds, mCorr);
+    mCenter    = IOs.read(ds, mCenter);
+    mTop       = IOs.read(ds, mTop);
+    mSigma     = IOs.read(ds, mSigma);
+    mFWHH      = IOs.read(ds, mFWHH);
+    mUpperModal= IOs.read(ds, mUpperModal);
+
+    mRange     = IOs.readDoubleRange(ds, mRange);
+    mCumulative= IOs.read(ds, mCumulative,new Point(0,0));
+    mHistogram = IOs.read(ds, mHistogram, new Point(0,0));
+    mData      = IOs.readDoubles(ds);
+
+    mSurvivalFitted = IOs.read(ds, mSurvivalFitted);
+
+    mPeaks = IOs.readDoubleListMap(ds, new Point(0,0));
   }
 }

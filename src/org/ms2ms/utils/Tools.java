@@ -25,7 +25,7 @@ public class Tools
   public static <T> boolean isSet(Collection<T>  s) { return s!=null && s.size()>0; }
   public static <T> boolean isSet(Map            s) { return s!=null && !s.isEmpty(); }
   public static <T> boolean isSet(MultiTreeTable s) { return s!=null && s.keySet().size()>0; }
-  public static <T> boolean isSet(Multimap       s) { return s!=null && !s.isEmpty(); }
+  public static     boolean isSet(Multimap       s) { return s!=null && !s.isEmpty(); }
   public static <T> boolean isSet(T[]            s) { return s!=null && s.length>0; }
   public static <T> boolean isSet(double[]       s) { return s!=null && s.length>0; }
   public static     boolean isSet(int[]          s) { return s!=null && s.length>0; }
@@ -37,6 +37,8 @@ public class Tools
   public static     boolean isSet(Double         s) { return s!=null && !Double.isInfinite(s) && !Double.isNaN(s); }
   public static     boolean isTrue( Boolean      s) { return s!=null &&  s; }
   public static     boolean isFalse(Boolean      s) { return s!=null && !s; }
+  public static     boolean isNoneZero(Double    s) { return isSet(s) && s!=0; }
+  public static     boolean isNoneZero(Integer   s) { return s!=null && s!=0; }
 
   public static double[] cloneDoubleArray(double[] x)
   {
@@ -289,6 +291,16 @@ public class Tools
       for (Object k : keys) m.put(k, v);
     return m;
   }
+  public static <T> ImmutableList.Builder<T> addNotNull(ImmutableList.Builder<T> m, T v)
+  {
+    if (m!=null && v!=null) m.add(v);
+    return m;
+  }
+  public static Collection addNotNull(Collection m, Object v)
+  {
+    if (m!=null && v!=null) m.add(v);
+    return m;
+  }
   public static Map putNotNull(Map m, Object k, Object v)
   {
     if (m!=null && k!=null && v!=null) m.put(k, v);
@@ -382,6 +394,10 @@ public class Tools
   {
     if (A==null && B==null) return true;
     return A!=null&&B!=null?A.equalsIgnoreCase(B):false;
+  }
+  public static <T extends Comparable> boolean contains(Range<T> range, T d)
+  {
+    return (range==null || range.contains(d));
   }
   public static <T> boolean contains(Collection<T> vals, T s)
   {
@@ -612,6 +628,32 @@ public class Tools
     if (s==null)
     {
       s=new IntHashSet();
+      s.add(n);
+      tbl.put(lbl, val, s);
+    }
+    else s.add(n);
+    return tbl;
+  }
+  public static TreeBasedTable<Double, Double, Collection<double[]>> put(
+      TreeBasedTable<Double, Double, Collection<double[]>> tbl, Double lbl, Double val, double[] n)
+  {
+    Collection<double[]> s = tbl.get(lbl, val);
+    if (s==null)
+    {
+      s=new ArrayList<double[]>();
+      s.add(n);
+      tbl.put(lbl, val, s);
+    }
+    else s.add(n);
+    return tbl;
+  }
+  public static <T> TreeBasedTable<Double, Double, Collection<T>> put(
+      TreeBasedTable<Double, Double, Collection<T>> tbl, Double lbl, Double val, T n)
+  {
+    Collection<T> s = tbl.get(lbl, val);
+    if (s==null)
+    {
+      s=new ArrayList<T>();
       s.add(n);
       tbl.put(lbl, val, s);
     }
@@ -1010,10 +1052,14 @@ public class Tools
   }
   public static Range clone(Range s)
   {
-    return Range.range(s.lowerEndpoint(), s.lowerBoundType(), s.upperEndpoint(), s.upperBoundType());
+    if (s==null) return null;
+    return s.intersection(Range.all());
   }
-//  public static <K,V> TreeMultimap<K,V> clone(TreeMultimap s)
-//  {
-//    return s!=null?TreeMultimap.create(s):null;
-//  }
+  public static Double[] toOrderedArray(Collection<Double> scores, double chunk)
+  {
+    Set<Double> vals = new TreeSet<>();
+    for (Double val : scores) vals.add(Math.round(val*chunk)/chunk);
+
+    return vals.toArray(new Double[] {});
+  }
 }

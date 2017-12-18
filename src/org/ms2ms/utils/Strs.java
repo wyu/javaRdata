@@ -531,6 +531,22 @@ public class Strs
 
     return false;
   }
+  public static int left_overlap(String A, String B)
+  {
+    if (isSet(A) && isSet(B))
+      for (int i=Math.min(A.length(), B.length()); i>0; i--)
+        if (equals(A.substring(0,i), B.substring(0,i))) return i;
+
+    return 0;
+  }
+  public static int right_overlap(String A, String B)
+  {
+    if (isSet(A) && isSet(B))
+      for (int i=Math.min(A.length(), B.length()); i>0; i--)
+        if (equals(A.substring(A.length()-i, A.length()), B.substring(B.length()-i,B.length()))) return i;
+
+    return 0;
+  }
 
   /** create a new string map from an array of strings
    *

@@ -890,12 +890,12 @@ public class Histogram implements Disposable, Binary
     mUpperModal= IOs.read(ds, mUpperModal);
 
     mRange     = IOs.readDoubleRange(ds, mRange);
-    mCumulative= IOs.read(ds, mCumulative,new Point(0,0));
-    mHistogram = IOs.read(ds, mHistogram, new Point(0,0));
+    mCumulative= IOs.read(ds, mCumulative,Point.class);
+    mHistogram = IOs.read(ds, mHistogram, Point.class);
     mData      = IOs.readDoubles(ds);
 
     mSurvivalFitted = IOs.read(ds, mSurvivalFitted);
 
-    mPeaks = IOs.readDoubleListMap(ds, new Point(0,0));
+    mPeaks = IOs.readDoubleListMap(ds, Point.class);
   }
 }

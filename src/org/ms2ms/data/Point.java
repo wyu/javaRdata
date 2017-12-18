@@ -19,6 +19,7 @@ public class Point implements Comparable<Point>, Binary
 {
   private double mX, mY;
 
+  public Point() { set(0d,0d); }
   public Point(double x, double y) { set(x,y); }
 
   public double getX() { return mX; }

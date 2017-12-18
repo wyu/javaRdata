@@ -63,7 +63,7 @@ public class NameValue
       }
       catch (Exception e) { }
     }
-    return null;
+    return number.intValue();
   }
   public Boolean getBoolean(String... s)
   {
@@ -75,7 +75,7 @@ public class NameValue
       }
       catch (Exception e) { }
     }
-    return null;
+    return number!=0;
   }
   public Range<Integer> getIntRange()
   {

@@ -9,6 +9,7 @@ import toools.set.IntHashSet;
 import toools.set.IntSet;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
@@ -53,7 +54,7 @@ public class IOs
     // indicating null
     if (isnull(ds)) return null;
 
-    try { if (t == null) t = (T )t.getClass().newInstance(); } catch (Exception e) {}
+    try { if (t == null) t = (T )t.getClass().newInstance(); } catch (Exception e) { e.printStackTrace(); }
 
     t.read(ds);
 
@@ -64,26 +65,6 @@ public class IOs
     isnull(ds, t);
     if (t != null) t.write(ds);
   }
-//  public static void write(DataOutput ds, Subject.eStatus t) throws IOException
-//  {
-//    write(ds, t != null ? t.toString() : (String )null);
-////    isnull(ds, t);
-////    if (t != null) write(ds, t.toString());
-//  }
-
-//  public static Subject.eStatus read(DataInput ds, Subject.eStatus t) throws IOException
-//  {
-//    return Hit.sNameStatus.get(read(ds, ""));
-//    //String s = read(ds, "");
-//    //try { t = Subject.eStatus.valueOf(s); } catch (Exception e) {}
-//    //return t;
-//  }
-//  public static void write(DataOutput ds, Candidate.eVerdict t) throws IOException
-//  {
-//    write(ds, t != null ? t.toString() : (String )null);
-////    isnull(ds, t);
-////    if (t != null) write(ds, t.toString());
-//  }
   public static void writeOpStr(DataOutput ds, Optional<String> t) throws IOException
   {
     write(ds, t.isPresent());
@@ -134,13 +115,6 @@ public class IOs
     }
     return data;
   }
-//  public static Candidate.eVerdict read(DataInput ds, Candidate.eVerdict t) throws IOException
-//  {
-//    return Hit.sNameVerdict.get(read(ds, "")); // not handling the exception here, wyu 20111230
-//    //String s = read(ds, "");
-//    //try { t = Candidate.eVerdict.valueOf(s); } catch (Exception e) {}
-//    //return t;
-//  }
   public static void writeLongIntMap(DataOutput ds, Map<Long, Integer> data) throws IOException
   {
     write(ds, Tools.isSet(data) ? data.size() : 0);
@@ -179,7 +153,7 @@ public class IOs
     write(ds, Tools.isSet(data) ? data.size() : 0);
     if (Tools.isSet(data))
     {
-      for (T t : data) t.write(ds);
+      for (T t : data) write(ds,t);
     }
   }
   public static void writeInts(DataOutput ds, Collection<Integer> data) throws IOException
@@ -187,7 +161,7 @@ public class IOs
     write(ds, Tools.isSet(data) ? data.size() : 0);
     if (Tools.isSet(data))
     {
-      for (Integer t : data) ds.write(t);
+      for (Integer t : data) write(ds,t);
     }
   }
   public static void write(DataOutput ds, double[] data) throws IOException
@@ -203,7 +177,7 @@ public class IOs
     write(ds, data != null ? data.length : 0);
     if (data != null && data.length > 0)
     {
-      ds.write(data);
+      write(ds,data);
     }
   }
   public static <T extends Binary> Collection<T> read(DataInput ds, Collection<T> data, T template) throws Exception
@@ -214,11 +188,7 @@ public class IOs
     {
       if (data == null) data = new ArrayList<T>();
       for (int i = 0; i < n; i++)
-      {
-        T new_t = (T )template.getClass().newInstance();
-        new_t.read(ds);
-        data.add(new_t);
-      }
+        data.add(read(ds,(T )template.getClass().newInstance()));
     }
     return data;
   }
@@ -241,7 +211,7 @@ public class IOs
 
     if (n > 0)
     {
-      List<Double> data = new ArrayList<>();
+      List<Double> data = new ArrayList<>(n);
       for (int i = 0; i < n; i++) data.add(ds.readDouble());
 
       return data;
@@ -279,7 +249,7 @@ public class IOs
     write(ds, Tools.isSet(data) ? data.size() : 0);
     if (Tools.isSet(data))
     {
-      for (T t : data) t.write(ds);
+      for (T t : data) write(ds, t);
     }
   }
   public static void writeLongs(DataOutput ds, Collection<Long> data) throws IOException
@@ -301,7 +271,7 @@ public class IOs
     write(ds, Tools.isSet(data) ? data.size() : 0);
     if (Tools.isSet(data))
     {
-      for (Double t : data) write(ds, t);
+      for (Double t : data) ds.writeDouble(t);
     }
   }
   public static void writeFloats(DataOutput ds, Collection<Float> data) throws IOException
@@ -312,7 +282,7 @@ public class IOs
       for (Float t : data) write(ds, t);
     }
   }
-  public static <T extends Binary> List<T> read(DataInput ds, List<T> data, T template) throws IOException
+  public static <T extends Binary> List<T> read(DataInput ds, List<T> data, Class<T> template) throws IOException
   {
     int n = read(ds, 0);
 
@@ -324,24 +294,16 @@ public class IOs
         if      (data == null) data = new ArrayList<T>(n);
         else if (data instanceof ArrayList) ((ArrayList )data).ensureCapacity(n);
         for (int i = 0; i < n; i++)
-        {
-          T new_t = (T )template.getClass().newInstance();
-          new_t.read(ds);
-          data.add(new_t);
-        }
+          data = (List )Tools.addNotNull(data, read(ds, (T )template.newInstance()));
       }
-      catch (IllegalAccessException e)
-      {
-        throw new RuntimeException(e);
-      }
-      catch (InstantiationException e)
+      catch (IllegalAccessException|InstantiationException e)
       {
         throw new RuntimeException(e);
       }
     }
     return data;
   }
-  public static <T extends Binary> List<T> readList(DataInput ds, T template) throws IOException
+  public static <T extends Binary> List<T> readList(DataInput ds, Class<T> template) throws IOException
   {
     int n = read(ds, 0);
 
@@ -349,21 +311,13 @@ public class IOs
     {
       try
       {
-        //if (data == null) data = new ArrayList<T>();
-        List<T> data = new ArrayList<T>(n);
+        List<T> data = new ArrayList<>(n);
         for (int i = 0; i < n; i++)
-        {
-          T new_t = (T )template.getClass().newInstance();
-          new_t.read(ds);
-          data.add(new_t);
-        }
+          data = (List )Tools.addNotNull(data, read(ds, (T )template.getDeclaredConstructor().newInstance()));
+
         return data;
       }
-      catch (IllegalAccessException e)
-      {
-        throw new RuntimeException(e);
-      }
-      catch (InstantiationException e)
+      catch (IllegalAccessException|NoSuchMethodException|InstantiationException|InvocationTargetException e)
       {
         throw new RuntimeException(e);
       }
@@ -371,7 +325,7 @@ public class IOs
     return null;
   }
 
-  public static <T extends Binary> ImmutableList<T> readImmutableList(DataInput ds, Class template) throws IOException
+  public static <T extends Binary> ImmutableList<T> readImmutableList(DataInput ds, Class<T> template) throws IOException
   {
     int n = read(ds, 0);
 
@@ -380,18 +334,12 @@ public class IOs
       try
       {
         ImmutableList.Builder<T> builder=ImmutableList.builder();
-        for (int i=0; i<n; i++) {
-          T new_t=(T) template.newInstance();
-          new_t.read(ds);
-          builder.add(new_t);
-        }
+        for (int i=0; i<n; i++)
+          builder = Tools.addNotNull(builder, read(ds, (T) template.getDeclaredConstructor().newInstance()));
+
         return builder.build();
       }
-      catch (IllegalAccessException e)
-      {
-        throw new RuntimeException(e);
-      }
-      catch (InstantiationException e)
+      catch (IllegalAccessException|NoSuchMethodException|InstantiationException|InvocationTargetException e)
       {
         throw new RuntimeException(e);
       }
@@ -403,10 +351,7 @@ public class IOs
     int n = read(ds, 0);
     if (n > 0)
       for (int i = 0; i < n; i++)
-      {
-        T new_t = (T )template.getClass().newInstance();
-        new_t.read(ds);
-      }
+        read(ds, (T )template.getClass().newInstance());
 
     return data;
   }
@@ -564,19 +509,17 @@ public class IOs
     return null;
   }
   public static <T extends Binary> Map<Long, T>
-  readLongMap(DataInput ds, Map<Long, T> data, T template) throws Exception
+  readLongMap(DataInput ds, Map<Long, T> data, Class<T> template) throws Exception
   {
     int n = read(ds, 0);
 
     if (n > 0)
     {
-      if (data == null) data = new TreeMap<Long, T>();
+      if (data == null) data = new TreeMap<>();
       for (int i = 0; i < n; i++)
       {
-        T new_t = (T )template.getClass().newInstance();
-        Long new_k = read(ds, 0L);
-        new_t.read(ds);
-        data.put(new_k, new_t);
+        Long K = read(ds, 0L);
+        data.put(K, (T )read(ds, template.newInstance()));
       }
     }
     return data;
@@ -588,9 +531,12 @@ public class IOs
 
     if (n > 0)
     {
-      if (data == null) data = new TreeMap<Long, Integer>();
+      if (data == null) data = new TreeMap<>();
       for (int i = 0; i < n; i++)
-        data.put(read(ds, 0L), read(ds, 0));
+      {
+        Long     K =read(ds, 0L);
+        data.put(K, read(ds, 0));
+      }
     }
     return data;
   }
@@ -602,14 +548,17 @@ public class IOs
     {
       TreeMap<Integer, Double> data = new TreeMap<>();
       for (int i = 0; i < n; i++)
-        data.put(read(ds, 0), read(ds, 0d));
+      {
+        Integer  K =read(ds, 0);
+        data.put(K, read(ds, 0d));
+      }
 
       return data;
     }
     return null;
   }
   public static <T extends Binary> Map<Long, T>
-  readLongMap(DataInput ds, Map<Long, T> data, T template, Collection<Long> ids) throws Exception
+  readLongMap(DataInput ds, Map<Long, T> data, Class<T> template, Collection<Long> ids) throws Exception
   {
     int n = read(ds, 0);
 
@@ -618,7 +567,7 @@ public class IOs
       if (data == null) data = new TreeMap<Long, T>();
       for (int i = 0; i < n; i++)
       {
-        T new_t = (T )template.getClass().newInstance();
+        T new_t = (T )template.newInstance();
         Long new_k = read(ds, 0L);
         new_t.read(ds);
         if (ids == null || ids.contains(new_k)) data.put(new_k, new_t);
@@ -633,7 +582,7 @@ public class IOs
 
     if (n > 0)
     {
-      if (data == null) data = new TreeMap<Long, Float>();
+      if (data == null) data = new TreeMap<>();
       for (int i = 0; i < n; i++)
       {
         data.put(read(ds, 0L), read(ds, 0F));
@@ -648,7 +597,7 @@ public class IOs
 
     if (n > 0)
     {
-      if (data == null) data = new TreeMap<Long, Long>();
+      if (data == null) data = new TreeMap<>();
       for (int i = 0; i < n; i++)
       {
         data.put(read(ds, 0L), read(ds, 0L));
@@ -824,7 +773,7 @@ public class IOs
     if (Tools.isSet(data))
       for (Character key : data.keySet())
       {
-        ds.write(key);
+        write(ds,key);
         write(ds, data.get(key));
       }
   }
@@ -877,7 +826,7 @@ public class IOs
       for (Integer key : data.keySet())
       {
         write(ds, key);
-        data.get(key).write(ds);
+        write(ds, data.get(key));
       }
     }
   }
@@ -891,7 +840,7 @@ public class IOs
       for (Long key : data.keySet())
       {
         write(ds, key);
-        data.get(key).write(ds);
+        write(ds, data.get(key));
       }
     }
   }
@@ -1294,53 +1243,91 @@ public class IOs
       }
   }
   public static <T extends Binary> Map<String, T>
-  readStrMap(DataInput ds, Map<String, T> data, T template) throws IOException
+  readStrMap(DataInput ds, Map<String, T> data, Class<T> template) throws IOException
   {
     int n = read(ds, 0);
 
     if (n > 0)
     {
-      if (data == null) data = new TreeMap<>();
-      for (int i = 0; i < n; i++)
-        data.put(read(ds, ""), read(ds, template));
+      try
+      {
+        if (data == null) data = new TreeMap<>();
+        for (int i = 0; i < n; i++)
+        {
+          String   K =read(ds, "");
+          data.put(K, read(ds, (T )template.getDeclaredConstructor().newInstance()));
+        }
+      }
+      catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e2)
+      {
+        e2.printStackTrace();
+      }
     }
     return data;
   }
   public static <T extends Binary> Multimap<String, T>
-  readStrMaps(DataInput ds, Multimap<String, T> data, T template) throws Exception
+  readStrMaps(DataInput ds, Multimap<String, T> data, Class<T> template) throws Exception
   {
     int n = read(ds, 0);
     if (n > 0)
     {
       for (int i = 0; i < n; i++)
       {
-        data.putAll(read(ds, ""), readList(ds, template));
+        String      K =read(ds, "");
+        data.putAll(K, readList(ds, template));
       }
     }
     return data;
   }
   public static <T extends Binary> Multimap<Integer, T>
-  readIntMaps(DataInput ds, Multimap<Integer, T> data, T template) throws IOException
+  readIntMaps(DataInput ds, Multimap<Integer, T> data, Class<T> template) throws IOException
   {
     int n = read(ds, 0);
     if (n > 0)
     {
       for (int i = 0; i < n; i++)
       {
-        data.putAll(read(ds, 0), readList(ds, template));
+        Integer     K =read(ds, 0);
+        data.putAll(K, readList(ds, template));
       }
     }
     return data;
   }
+  public static <T extends Binary> Map<Integer, T>
+  readIntMap(DataInput ds, Map<Integer, T> data, Class<T> template) throws IOException
+  {
+    int n = read(ds, 0);
+    if (n > 0)
+    {
+      try
+      {
+        for (int i = 0; i < n; i++)
+        {
+          if ((i+1)%1000 ==0) System.out.print(".");
+          if ((i+1)%50001==0) System.out.println(i);
+          Integer  K =read(ds, 0);
+          T V = read(ds, (T )template.getDeclaredConstructor().newInstance());
+          data.put(K, V);
+        }
+      }
+      catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e2)
+      {
+        e2.printStackTrace();
+      }
+      System.out.println();
+    }
+    return data;
+  }
   public static <T extends Binary> Multimap<Double, T>
-  readDoubleMaps(DataInput ds, Multimap<Double, T> data, T template) throws IOException
+  readDoubleMaps(DataInput ds, Multimap<Double, T> data, Class<T> template) throws IOException
   {
     int n = read(ds, 0);
     if (n > 0)
     {
       for (int i = 0; i < n; i++)
       {
-        data.putAll(read(ds, 0d), readList(ds, template));
+        Double      K =read(ds, 0d);
+        data.putAll(K, readList(ds, template));
       }
     }
     return data;
@@ -1358,7 +1345,7 @@ public class IOs
 
     if (n > 0)
     {
-      if (data == null) data = new TreeMap<String, String>();
+      if (data == null) data = new TreeMap<>();
       for (int i = 0; i < n; i++)
       {
         String new_k = read(ds, "");
@@ -1394,7 +1381,8 @@ public class IOs
     {
       for (int i = 0; i < n; i++)
       {
-        data.putAll(read(ds, ""), readDoubles(ds));
+        String      K = read(ds, "");
+        data.putAll(K, readDoubles(ds));
       }
       return data;
     }
@@ -1433,16 +1421,6 @@ public class IOs
   {
     isnull(ds, value);
     if (value != null) ds.writeBoolean(value);
-    //write(ds, (value != null ? (value ? "Y" : "N") : (String )null));
-/*    if (value == null)
-    {
-      writer.writeInt(0);
-    }
-    else
-    {
-      writer.writeInt(1);
-      writer.writeUTF(value ? "Y" : "N");
-    } */
   }
   public static void write(DataOutput writer,
                            String     value) throws IOException {
@@ -1453,15 +1431,7 @@ public class IOs
     else
     {
       writer.writeInt(value.length());
-      //if (writer instanceof BufferedRandomAccessFile)
-      //{
-      //  ((BufferedRandomAccessFile )writer).writeUTFx(value);
-      //}
-      //else
-      //{
       writer.writeUTF(value);
-      //}
-      //writer.writeUTF(value);
     }
   }
   public static void write(DataOutput writer,
@@ -1557,21 +1527,37 @@ public class IOs
     // indicating null
     return (isnull == 0);
   }
+//  public static Integer read(DataInput is, Integer value) throws IOException
+//  {
+//    if (is.readInt() == 0)
+//    {
+//      return value;
+//    }
+//    return (value = is.readInt());
+//  }
+//  public static Integer read(DataInput is, Integer value) throws IOException
+//  {
+//    if (is.readInt() == 0)
+//    {
+//      return value;
+//    }
+//    return (value = is.readInt());
+//  }
   public static Integer read(DataInput is, Integer value) throws IOException
   {
     if (is.readInt() == 0)
     {
       return value;
     }
-    return (value = is.readInt());
+    return is.readInt();
   }
-  public static Integer read(DataInput is, int value) throws IOException
+  public static int read(DataInput is, int value) throws IOException
   {
     if (is.readInt() == 0)
     {
       return value;
     }
-    return (value = is.readInt());
+    return is.readInt();
   }
   public static char read(DataInput is, char value) throws IOException
   {
@@ -1579,7 +1565,7 @@ public class IOs
     {
       return value;
     }
-    return (value = is.readChar());
+    return is.readChar();
   }
   public static Boolean read(DataInput is, Boolean value) throws IOException
   {
@@ -1625,13 +1611,12 @@ public class IOs
   public static double read(DataInput is,
                             double    value) throws IOException
   {
-    if (is.readInt() == 0)
+    int n=is.readInt();
+    if (n==0)
     {
       return value;
     }
     return is.readDouble();
-    //double val = is.readDouble();
-    //return (val != null ? val : value);
   }
   public static float read(DataInput is,
                            float     value) throws IOException
@@ -1892,7 +1877,8 @@ public class IOs
         data.putAll(read(ds, 0), readInts(ds));
       }
   }
-  public static <T extends Binary> SortedMap<Double, List<T>> readDoubleListMap(DataInput ds, T template) throws IOException
+  public static <T extends Binary> SortedMap<Double, List<T>>
+  readDoubleListMap(DataInput ds, Class<T> template) throws IOException
   {
     int n = read(ds, 0);
     if (n > 0)

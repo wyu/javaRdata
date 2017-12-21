@@ -523,6 +523,14 @@ public class Strs
 
     return false;
   }
+  public static boolean hasApart(String s, Collection<String> vals)
+  {
+    if (!Tools.isSet(vals)) return false;
+    for (String val : vals)
+      if (indexOf(s,val)>=0 || indexOf(val,s)>=0) return true;
+
+    return false;
+  }
   public static boolean isA(String s, String... vals)
   {
     if (Tools.isSet(vals))

@@ -478,6 +478,11 @@ public class Stats
     return s;
   }
   public static boolean isSet(double s) { return !Double.isNaN(s) && !Double.isInfinite(s); }
+  public static int compareTo(Object A, Object B)
+  {
+    if (A instanceof Comparable  && B instanceof Comparable)  return  compareTo((Comparable )A, (Comparable )B);
+    return A.toString().compareTo(B.toString());
+  }
   public static int compareTo(Comparable A, Comparable B)
   {
     if (A==null && B==null) return 0;

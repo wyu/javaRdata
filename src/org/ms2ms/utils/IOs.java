@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.*;
 import org.ms2ms.data.Binary;
 import org.ms2ms.data.Point;
+import org.ms2ms.data.collect.MultiTreeTable;
 import org.ms2ms.math.Stats;
 import toools.set.IntHashSet;
 import toools.set.IntSet;
@@ -806,7 +807,31 @@ public class IOs
   }
   public static void writeIntStr2(DataOutput ds, Table<Integer, String,  String> data) throws IOException
   {
-    write(ds, Tools.isSet(data) ? data.values().size() : 0);
+    write(ds, Tools.isSet(data) ? data.rowKeySet().size() : 0);
+    if (Tools.isSet(data))
+      for (Integer row : data.rowKeySet())
+        for (String col : data.row(row).keySet())
+        {
+          write(ds, row);
+          write(ds, col);
+          write(ds, data.get(row, col));
+        }
+  }
+  public static <T extends Binary> void writeDoubleDoubleBin(DataOutput ds, Table<Double, Double, T> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.rowKeySet().size() : 0);
+    if (Tools.isSet(data))
+      for (Double row : data.rowKeySet())
+        for (Double col : data.row(row).keySet())
+        {
+          write(ds, row);
+          write(ds, col);
+          write(ds, data.get(row, col));
+        }
+  }
+  public static void writeIntStrDouble(DataOutput ds, Table<Integer, String,  Double> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.rowKeySet().size() : 0);
     if (Tools.isSet(data))
       for (Integer row : data.rowKeySet())
         for (String col : data.row(row).keySet())
@@ -914,7 +939,22 @@ public class IOs
       }
     }
   }
-//  public static void
+  public static void
+  writeStrObject(DataOutput ds, Map<String, Object> data, boolean ignoreUnknown) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.size() : 0);
+
+    if (Tools.isSet(data))
+    {
+      for (String key : data.keySet())
+      {
+        write(ds, key);
+        writeObject(ds, data.get(key), ignoreUnknown);
+      }
+    }
+  }
+
+  //  public static void
 //  writeDoubleLongLong(DataOutput ds, MapOfMap<Double, Long, Long> data) throws IOException
 //  {
 //    write(ds, Tools.isSet(data) ? data.getData().keySet().size() : 0);
@@ -1265,6 +1305,30 @@ public class IOs
     }
     return data;
   }
+  public static Map<String, Object>
+  readStrObject(DataInput ds, Map<String, Object> data, boolean ignoreUnknown) throws IOException
+  {
+    int n = read(ds, 0);
+
+    if (n > 0)
+    {
+      try
+      {
+        if (data == null) data = new TreeMap<>();
+        for (int i = 0; i < n; i++)
+        {
+          String   K =read(ds, "");
+          data.put(K, readObject(ds,ignoreUnknown));
+        }
+      }
+      catch (IOException e2)
+      {
+        e2.printStackTrace();
+      }
+    }
+    return data;
+  }
+
   public static <T extends Binary> Multimap<String, T>
   readStrMaps(DataInput ds, Multimap<String, T> data, Class<T> template) throws Exception
   {
@@ -1293,6 +1357,42 @@ public class IOs
     }
     return data;
   }
+  // only read a random samples of the objects
+  public static <T extends Binary> Map<Integer, T>
+  sampleIntMap(DataInput ds, Map<Integer, T> data, Class<T> template, int samples) throws IOException
+  {
+    int n = read(ds, 0);
+    if (n > 0)
+    {
+      // figure out the sampling mechanism
+      List<Integer> sampled = new ArrayList<>();
+      if (samples<=0 || samples>n) samples=0;
+      else
+      {
+        Random RND = new Random(System.nanoTime());
+        for (int k=0; k<samples; k++) sampled.add(RND.nextInt(samples));
+        Collections.sort(sampled);
+      }
+      try
+      {
+        for (int i = 0; i < n; i++)
+        {
+//          if ((i+1)%1000 ==0) System.out.print(".");
+//          if ((i+1)%50001==0) System.out.println(i);
+          Integer  K =read(ds, 0);
+          T V = read(ds, (T )template.getDeclaredConstructor().newInstance());
+          if (samples==0 || sampled.contains(K)) data.put(K, V);
+        }
+      }
+      catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e2)
+      {
+        e2.printStackTrace();
+      }
+      Tools.dispose(sampled);
+    }
+    return data;
+  }
+
   public static <T extends Binary> Map<Integer, T>
   readIntMap(DataInput ds, Map<Integer, T> data, Class<T> template) throws IOException
   {
@@ -1742,41 +1842,11 @@ public class IOs
     return output.toString();
   }
   // not recursive. Having lots of trouble reproducing the behavious of "ls" using the other calls
-  public static List<String> listFiles(String tsv)
-  {
-    // TODO still not working
-    String listing = executeCommand("ls "+tsv);
-//    try
-//    {
-////      String tmp = "/tmp/temp.list";
-////      Process proc = Runtime.getRuntime().exec("ls "+tsv+" > "+tmp);
-////
-////      // wait for the result
-////      proc.waitFor();
-////
-////      List<String> lines = readLines(tmp);
-////
-////      FileUtils.deleteFile(new File(tmp));
-//
-//      return null;
-////      System.out.println(proc.toString());
-//    }
-//    catch (IOException|InterruptedException e)
-//    {
-//      e.printStackTrace();
-//    }
-//    File[] files = tsv.getParentFile().listFiles();
-//    List<String> filenames = new ArrayList<>();
-//    for (File file : files)
-//    {
-//      if (file.getName().matches(tsv.getName()))
-//      {
-//        filenames.add(file.getAbsolutePath());
-//      }
-//    }
-
-    return null;
-  }
+//  public static List<String> listFiles(String tsv)
+//  {
+//    File dir = new File(tsv);
+//    return listFiles(dir.getPath(), new WildcardFWildcardFileFilter("sample*.java"));
+//  }
   public static Multimap<String, String> listDirFiles(String root, FileFilter filter)
   {
     FileVisitor<Path> fileProcessor = new ProcessFile(filter);

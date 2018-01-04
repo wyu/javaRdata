@@ -1,8 +1,12 @@
 package org.ms2ms.data;
 
 import org.ms2ms.math.Stats;
+import org.ms2ms.utils.IOs;
 import org.ms2ms.utils.Tools;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,12 +15,16 @@ import java.util.Map;
  * User: wyu
  * Date: 7/13/14
  */
-public class Features implements Comparable<Features>
+public class Features implements Comparable<Features>, Binary
 {
+  public static String[] sOrderBy;
+
   private Map<String, Object> mProperties;
 
   public Features() { super(); }
   public Features(Map<String, Object> s) { mProperties=s; }
+
+  public static void setOrderBy(String... s) { sOrderBy=s; }
 
   public Features setProperties(Map<String, String> s)
   {
@@ -83,12 +91,33 @@ public class Features implements Comparable<Features>
   @Override
   public int compareTo(Features o)
   {
-    return 0;
+    if (Tools.isSet(sOrderBy))
+      for (String orderby : sOrderBy)
+      {
+        int c = Stats.compareTo(get(orderby), o.get(orderby));
+        if (c!=0) return c;
+      }
+
+    if (Tools.equals(mProperties, o.getProperties())) return 0;
+
+    return Integer.compare(mProperties.size(), o.getProperties().size());
   }
   @Override
   public Features clone()
   {
     return new Features(new HashMap<>(mProperties));
+  }
+
+  @Override
+  public void write(DataOutput ds) throws IOException
+  {
+    IOs.writeStrObject(ds, mProperties, true);
+  }
+
+  @Override
+  public void read(DataInput ds) throws IOException
+  {
+    mProperties = IOs.readStrObject(ds, null,true);
   }
 //  @Override
 //  public String toString()

@@ -241,50 +241,80 @@ public class Tools
     for (int b : B) if (A==b) return true;
     return false;
   }
-  public static void dispose(Collection... ss)
+  public static Collection dispose(Collection s)
   {
-    if (isSet(ss))
-      for (Collection s : ss)
-        if (s!=null) { s.clear(); s=null; }
+    if (s!=null) s.clear();
+    return null;
   }
-  public static void dispose(StringBuffer s)
+  //  public static void dispose(Collection... ss)
+//  {
+//    if (isSet(ss))
+//      for (Collection s : ss)
+//        if (s!=null) { s.clear(); s=null; }
+//  }
+  public static StringBuffer dispose(StringBuffer s)
   {
-    if (s!=null)
-    {
-      s.delete(0, s.length()); s=null;
-    }
+    if (s!=null) { s.delete(0, s.length()); }
+    return null;
   }
-  public static void dispose(Map... ss)
+  public static Map dispose(Map s)
   {
-    if (isSet(ss))
-      for (Map s : ss)
-        if (s!=null) { s.clear(); s=null; }
+    if (s!=null) s.clear();
+    return null;
   }
 
-  public static void dispose(MultiTreeTable... ss)
+  public static MultiTreeTable dispose(MultiTreeTable s)
   {
-    if (isSet(ss))
-      for (MultiTreeTable s : ss)
-        if (s!=null) { s.clear(); s=null; }
+    if (s!=null) s.clear();
+    return null;
   }
-  public static void dispose(Multimap... ss)
+  public static Multimap dispose(Multimap s)
   {
-    if (isSet(ss))
-      for (Multimap s : ss)
-        if (s!=null) { s.clear(); s=null; }
+    if (s!=null) s.clear();
+    return null;
   }
-  public static void dispose(Table... ss)
+  public static Table dispose(Table s)
   {
-    if (isSet(ss))
-      for (Table s : ss)
-        if (s!=null) { s.clear(); s=null; }
+    if (s!=null) s.clear();
+    return null;
   }
-  public static void dispose(Disposable... ss)
+  public static Disposable dispose(Disposable s)
   {
-    if (isSet(ss))
-      for (Disposable s : ss)
-        if (s!=null) { s.dispose(); s=null; }
+    if (s!=null) s.dispose();
+    return null;
   }
+
+  //  public static void dispose(Map... ss)
+//  {
+//    if (isSet(ss))
+//      for (Map s : ss)
+//        if (s!=null) { s.clear(); s=null; }
+//  }
+//
+//  public static void dispose(MultiTreeTable... ss)
+//  {
+//    if (isSet(ss))
+//      for (MultiTreeTable s : ss)
+//        if (s!=null) { s.clear(); s=null; }
+//  }
+//  public static void dispose(Multimap... ss)
+//  {
+//    if (isSet(ss))
+//      for (Multimap s : ss)
+//        if (s!=null) { s.clear(); s=null; }
+//  }
+//  public static void dispose(Table... ss)
+//  {
+//    if (isSet(ss))
+//      for (Table s : ss)
+//        if (s!=null) { s.clear(); s=null; }
+//  }
+//  public static void dispose(Disposable... ss)
+//  {
+//    if (isSet(ss))
+//      for (Disposable s : ss)
+//        if (s!=null) { s.dispose(); s=null; }
+//  }
   public static Map putKeysVal(Object v, Map m, Object... keys)
   {
     if (m!=null && keys!=null && v!=null)

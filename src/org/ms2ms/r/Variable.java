@@ -98,7 +98,7 @@ public class Variable implements Var
     mName      = null;
     eType      = VarType.UNKNOWN;
     mDist      = null;
-    Tools.dispose(mFactors);
+    mFactors=Tools.dispose(mFactors);
 
     return this;
   }

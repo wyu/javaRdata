@@ -285,7 +285,7 @@ public class Stats
       for (int i=0; i<xs.length; i++) xy.put(xs[i], ys[i]);
       int i=0; xs=new double[xy.keySet().size()]; ys=new double[xy.keySet().size()];
       for (Double x : xy.keySet()) { xs[i]=x; ys[i]= mean(xy.get(x)); i++; }
-      Tools.dispose(xy);
+      xy=Tools.dispose(xy);
 
       double[]                   Ys = new double[Xs.length];
       Range<Double>           bound = closed(xs);

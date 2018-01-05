@@ -121,6 +121,6 @@ public class TreeListMultimap<K extends Comparable, V> implements NavigableMulti
   @Override
   public void dispose()
   {
-    Tools.dispose(mData);
+    mData=(SortedMap )Tools.dispose(mData);
   }
 }

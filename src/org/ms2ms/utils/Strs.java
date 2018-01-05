@@ -142,6 +142,13 @@ public class Strs
 
     return split(s, t, false);
   }
+  public static String split2front(String s, char t)
+  {
+    if (s == null || t == 0) return "";
+
+    return split(s, t, false)[0];
+  }
+
   // Perl style split which retains the delimiter
   // http://stackoverflow.com/questions/2206378/how-to-split-a-string-but-also-keep-the-delimiters
   public static List<String> splits(String s, String pattern) {

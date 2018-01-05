@@ -1388,7 +1388,7 @@ public class IOs
       {
         e2.printStackTrace();
       }
-      Tools.dispose(sampled);
+      sampled=(List )Tools.dispose(sampled);
     }
     return data;
   }

@@ -928,7 +928,8 @@ public class Dataframe implements Disposable
       }
       out.put(id, keys.key[0].toString(), Stats.aggregate(body.get(keys), func));
     }
-    out.init(true); Tools.dispose(body);
+    out.init(true);
+    body=(ListMultimap )Tools.dispose(body);
     out.reorder(ObjectArrays.concat(rows, Strs.toStringArray(asVar(col).getFactors()), String.class));
 
     return out;
@@ -1286,18 +1287,15 @@ public class Dataframe implements Disposable
   public void dispose()
   {
     mTitle=null;
-    Tools.dispose(mRowIDs, mColIDs);
-    Tools.dispose(mNameVar);
-    Tools.dispose(mData);
+    mRowIDs=(List )Tools.dispose(mRowIDs);
+    mColIDs=(List )Tools.dispose(mColIDs);
+    mNameVar=Tools.dispose(mNameVar);
+    mData=Tools.dispose(mData);
   }
   public void clear()
   {
-    mTitle    = null;
+    dispose();
     mKeepData = true;
-    Tools.dispose(mRowIDs);
-    Tools.dispose(mColIDs);
-    Tools.dispose(mNameVar);
-    Tools.dispose(mData);
   }
 }
 

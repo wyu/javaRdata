@@ -338,7 +338,7 @@ public class Histogram implements Disposable, Binary
     for (Double pk : peaks.keySet())
       mPeaks.put(pk, peak_detect(peaks.get(pk), Stats.d2d(pk,3), 0.001, 0.01));
 
-    Tools.dispose(peaks);
+    peaks=(SortedSetMultimap )Tools.dispose(peaks);
     return this;
   }
   private List<Point> peak_detect(Collection<Double> data, double pivot, double step, double half_base)
@@ -350,7 +350,8 @@ public class Histogram implements Disposable, Binary
       trace.add(new Point(pivot+p+step*0.5, pts.subSet(pivot+p, pivot+p+step).size()));
       trace.add(new Point(pivot-p-step*0.5, pts.subSet(pivot-p-step, pivot-p).size()));
     }
-    Collections.sort(trace); Tools.dispose(pts);
+    Collections.sort(trace);
+    pts=(SortedSet )Tools.dispose(pts);
     return trace;
   }
 
@@ -517,7 +518,8 @@ public class Histogram implements Disposable, Binary
           if (fit!=null && fit.getR2()>mSurvivalFitted.getR2()) mSurvivalFitted=fit;
           if (mSurvivalFitted.getR2()>=min_r2) break;
         }
-      Tools.dispose(data); Tools.dispose(Rs);
+      data=(List )Tools.dispose(data);
+      Rs  =(List )Tools.dispose(Rs);
     }
     catch (Exception e)
     {
@@ -842,14 +844,15 @@ public class Histogram implements Disposable, Binary
     mStep=mSumY=mMean=mMedian=mStdev=mKurtosisNormality=mSkewness=mCorr=mCenter=mTop=mSigma=mFWHH=mUpperModal=null;
     mRange=null;
 
-    Tools.dispose(mHistogram);
-    Tools.dispose(mSurvivalFitted);
-    Tools.dispose(mPeaks);
+    mHistogram=(List )Tools.dispose(mHistogram);
+    mSurvivalFitted=(Fitted )Tools.dispose(mSurvivalFitted);
+    mPeaks=(SortedMap )Tools.dispose(mPeaks);
 
   }
   public void dispose_data()
   {
-    Tools.dispose(mCumulative,mData);
+    mCumulative=(List )Tools.dispose(mCumulative);
+    mData      =(List )Tools.dispose(mData);
   }
 
   @Override

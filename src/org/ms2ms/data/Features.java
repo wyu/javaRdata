@@ -38,7 +38,7 @@ public class Features implements Comparable<Features>, Binary
   public Features add(String key, Object val)
   {
     if (mProperties==null) mProperties = new HashMap<>();
-    mProperties.put(key, val);
+    if (val!=null)         mProperties.put(key, val);
 
     return this;
   }
@@ -46,6 +46,8 @@ public class Features implements Comparable<Features>, Binary
   public Double  getDouble(String key) { return (Double )get(key); }
   public Float   getFloat( String key) { return Stats.toFloat(get(key)); }
   public Integer getInt(   String key) { return (Integer )get(key); }
+  public String  getStr(   String key) { return (String )get(key); }
+  public Long    getLong(  String key) { return (Long )get(key); }
   public Map<String, Object> getProperties() { return mProperties; }
 
   public void invalidate() { if (mProperties!=null) mProperties.clear(); }

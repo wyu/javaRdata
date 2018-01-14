@@ -217,7 +217,7 @@ public class TabFile
   {
     if (Tools.isSet(keys))
       for (String key : keys)
-        if (get(key)!=null) return Stats.toDouble(get(key));
+        if (get(key)!=null && !"NaN".equals(get(key))) return Stats.toDouble(get(key));
     return null;
   }
   public Long  getLong(String... keys)

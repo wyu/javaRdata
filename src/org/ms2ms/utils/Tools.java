@@ -168,6 +168,16 @@ public class Tools
 
     return pool;
   }
+  public static <K, V> Map<K,V> put(Map<K,V> map, K key, V val)
+  {
+    if (map!=null && key!=null && val!=null) map.put(key, val);
+    return map;
+  }
+  public static <K, V> Multimap<K,V> put(Multimap<K,V> map, K key, V val)
+  {
+    if (map!=null && key!=null && val!=null) map.put(key, val);
+    return map;
+  }
   public static <K, V> Multimap<K,V> putAll(Multimap<K,V> map, Map<K,V> in)
   {
     if (map!=null && in!=null)

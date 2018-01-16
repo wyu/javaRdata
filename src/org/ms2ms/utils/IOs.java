@@ -1365,13 +1365,12 @@ public class IOs
     if (n > 0)
     {
       // figure out the sampling mechanism
-      List<Integer> sampled = new ArrayList<>();
+      Set<Integer> sampled = new TreeSet<>();
       if (samples<=0 || samples>n) samples=0;
       else
       {
         Random RND = new Random(System.nanoTime());
-        for (int k=0; k<samples; k++) sampled.add(RND.nextInt(samples));
-        Collections.sort(sampled);
+        while (sampled.size()<samples) sampled.add(RND.nextInt(n));
       }
       try
       {
@@ -1381,14 +1380,14 @@ public class IOs
 //          if ((i+1)%50001==0) System.out.println(i);
           Integer  K =read(ds, 0);
           T V = read(ds, (T )template.getDeclaredConstructor().newInstance());
-          if (samples==0 || sampled.contains(K)) data.put(K, V);
+          if (samples==0 || sampled.contains(i)) data.put(K, V);
         }
       }
       catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e2)
       {
         e2.printStackTrace();
       }
-      sampled=(List )Tools.dispose(sampled);
+      sampled=(Set )Tools.dispose(sampled);
     }
     return data;
   }

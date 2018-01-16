@@ -9,6 +9,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 /** A generic class to model rows of data in a data table. Used in an alignment routine
  *
@@ -37,7 +38,7 @@ public class Features implements Comparable<Features>, Binary
   }
   public Features add(String key, Object val)
   {
-    if (mProperties==null) mProperties = new HashMap<>();
+    if (mProperties==null) mProperties = new TreeMap<>();
     if (val!=null)         mProperties.put(key, val);
 
     return this;

@@ -7,6 +7,7 @@ import org.apache.commons.math.analysis.interpolation.LoessInterpolator;
 import org.apache.commons.math.analysis.polynomials.PolynomialSplineFunction;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
+import org.ms2ms.data.AnnotatedPoint;
 import org.ms2ms.data.Point;
 import org.ms2ms.utils.Strs;
 import org.ms2ms.utils.Tools;
@@ -693,6 +694,18 @@ public class Stats
       counts++;
       if (!scores.get(scr)) norms++;
       if (norms>repeat) return scr;
+    }
+    return null;
+  }
+  public static AnnotatedPoint aggregate(Collection<Double> pts)
+  {
+    if (Tools.isSet(pts))
+    {
+      AnnotatedPoint p = new AnnotatedPoint();
+      p.setX(mean(pts)).setY(stdev(pts));
+      p.addAnnotation("Data", pts);
+
+      return p;
     }
     return null;
   }

@@ -6,6 +6,7 @@ import com.google.common.primitives.Doubles;
 import org.expasy.mzjava.core.ms.PpmTolerance;
 import org.expasy.mzjava.core.ms.Tolerance;
 import org.ms2ms.Disposable;
+import org.ms2ms.data.Point;
 import org.ms2ms.data.collect.MultiTreeTable;
 import toools.set.IntHashSet;
 import toools.set.IntSet;
@@ -39,6 +40,7 @@ public class Tools
   public static     boolean isFalse(Boolean      s) { return s!=null && !s; }
   public static     boolean isNoneZero(Double    s) { return isSet(s) && s!=0; }
   public static     boolean isNoneZero(Integer   s) { return s!=null && s!=0; }
+  public static     boolean isNoneZero(Point     s) { return s!=null && (isSet(s.getX()) || isSet(s.getY())); }
 
   public static double[] cloneDoubleArray(double[] x)
   {
@@ -346,6 +348,11 @@ public class Tools
     if (m!=null && k!=null && v!=null) m.put(k, v);
     return m;
   }
+  public static Table putNotNull(Table m, Object R, Object C, Object v)
+  {
+    if (m!=null && R!=null && C!=null && v!=null) m.put(R,C, v);
+    return m;
+  }
   public static double[][] sort(double[]... xs)
   {
     // bubble sort from
@@ -602,6 +609,12 @@ public class Tools
       }
     }
     return bits;
+  }
+  public static <T> Collection<T> addUnique(List<T> s, T... x)
+  {
+    if (s!=null && x!=null)
+      for (T t : x) if (!s.contains(t)) s.add(t);
+    return s;
   }
   public static <T> Collection<T> add(Collection<T> s, T... x)
   {

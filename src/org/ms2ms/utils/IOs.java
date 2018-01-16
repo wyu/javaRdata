@@ -2,6 +2,7 @@ package org.ms2ms.utils;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
+import org.ms2ms.Disposable;
 import org.ms2ms.data.Binary;
 import org.ms2ms.data.Point;
 import org.ms2ms.data.collect.MultiTreeTable;
@@ -1381,6 +1382,7 @@ public class IOs
           Integer  K =read(ds, 0);
           T V = read(ds, (T )template.getDeclaredConstructor().newInstance());
           if (samples==0 || sampled.contains(i)) data.put(K, V);
+          else if (V instanceof Disposable) V = (T )Tools.dispose((Disposable )V);
         }
       }
       catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e2)

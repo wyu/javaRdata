@@ -323,7 +323,7 @@ public class Stats
   }
   public static Double sum(Collection<Double> ys)
   {
-    if (!Tools.isSet(ys)) return null;
+    if (ys==null) return null;
 
     Double sum=0d;
     for (Double y : ys) sum+=y;

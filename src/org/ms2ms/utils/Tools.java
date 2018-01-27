@@ -126,6 +126,13 @@ public class Tools
 
     return format( s, w );
   }
+  // no decimal if s is an integer
+  public static String d2i(Double s, int i)
+  {
+    if (s==null) return "";
+    return d2s(s, s.longValue()==Math.round(s)?0:i);
+  }
+
   public static String d2x(Double s, int i, double max)
   {
     return s!=null?(s>max?">"+d2s(max,i):d2s(s,i)):"NUL";

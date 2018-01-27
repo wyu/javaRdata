@@ -1377,8 +1377,6 @@ public class IOs
       {
         for (int i = 0; i < n; i++)
         {
-//          if ((i+1)%1000 ==0) System.out.print(".");
-//          if ((i+1)%50001==0) System.out.println(i);
           Integer  K =read(ds, 0);
           T V = read(ds, (T )template.getDeclaredConstructor().newInstance());
           if (samples==0 || sampled.contains(i)) data.put(K, V);

@@ -102,7 +102,7 @@ public class MultiTreeTable<K extends Comparable, L extends Comparable, T extend
 
   public TreeMultimap<L,T> row(K key)
   {
-    return mData == null ? null : mData.get(key);
+    return mData==null && key!=null ? null : mData.get(key);
   }
   public SortedMap<K, TreeMultimap<L, T>> column(L s)
   {

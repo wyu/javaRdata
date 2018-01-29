@@ -720,6 +720,12 @@ public class Tools
     else s.add(n);
     return tbl;
   }
+  public static <K extends Comparable, L extends Comparable, T extends Comparable> MultiTreeTable<K,L,T>
+  put(MultiTreeTable<K,L,T> tbl, K row, L col, T val)
+  {
+    if (tbl!=null && row!=null && col!=null && val!=null) tbl.put(row, col, val);
+    return tbl;
+  }
   public static IntSet intersect(IntSet A, IntSet B)
   {
     if (A==null && B==null) return null;
@@ -1122,4 +1128,5 @@ public class Tools
 
     return vals.toArray(new Double[] {});
   }
+  public static int size(Collection s) { return s!=null?s.size():0; }
 }

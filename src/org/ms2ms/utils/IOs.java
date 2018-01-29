@@ -4,8 +4,6 @@ import com.google.common.base.Optional;
 import com.google.common.collect.*;
 import org.ms2ms.Disposable;
 import org.ms2ms.data.Binary;
-import org.ms2ms.data.Point;
-import org.ms2ms.data.collect.MultiTreeTable;
 import org.ms2ms.math.Stats;
 import toools.set.IntHashSet;
 import toools.set.IntSet;
@@ -1799,15 +1797,16 @@ public class IOs
 
     return w;
   }
-  public static List<String> listFiles(String root, FileFilter filter)
+  public static List<String> listFiles(String root, FileFilter filter, int depth)
   {
     FileVisitor<Path> fileProcessor = new ProcessFile(filter);
     try
     {
       ProcessFile.files.clear(); ProcessFile.dir_file.clear();
 
-      Files.walkFileTree(Paths.get(root), fileProcessor);
-      return ProcessFile.files;
+      Files.walkFileTree(Paths.get(root), EnumSet.noneOf(FileVisitOption.class), depth,fileProcessor);
+      // clone it so will not change on next call
+      return new ArrayList<>(ProcessFile.files);
     }
     catch (IOException io)
     {

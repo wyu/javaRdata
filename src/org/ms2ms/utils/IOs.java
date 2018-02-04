@@ -1,5 +1,6 @@
 package org.ms2ms.utils;
 
+import com.compomics.util.io.FilenameExtensionFilter;
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
 import org.ms2ms.Disposable;
@@ -1796,6 +1797,14 @@ public class IOs
       }
 
     return w;
+  }
+  public static String[] listFilesByExt(String root, String ext, boolean full)
+  {
+    String[] files = new File(root).list(new FilenameExtensionFilter(ext));
+    if (full)
+      for (int i=0; i<files.length; i++) files[i] = root+"/"+files[i];
+
+    return files;
   }
   public static List<String> listFiles(String root, FileFilter filter, int depth)
   {

@@ -600,6 +600,17 @@ public class Tools
     }
     return data;
   }
+  public static float[] toFloatArray(Collection<Float> s)
+  {
+    if (s==null) return null;
+    float[] data = new float[s.size()];
+    int order=0;
+    for (Float d : s)
+    {
+      data[order++] = d;
+    }
+    return data;
+  }
   public static int[] toIntArray(Collection<Integer> s)
   {
     if (s==null) return null;

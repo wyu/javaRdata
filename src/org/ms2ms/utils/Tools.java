@@ -29,6 +29,7 @@ public class Tools
   public static     boolean isSet(Multimap       s) { return s!=null && !s.isEmpty(); }
   public static <T> boolean isSet(T[]            s) { return s!=null && s.length>0; }
   public static <T> boolean isSet(double[]       s) { return s!=null && s.length>0; }
+  public static <T> boolean isSet(float[]        s) { return s!=null && s.length>0; }
   public static     boolean isSet(int[]          s) { return s!=null && s.length>0; }
   public static     boolean isSet(char[]         s) { return s!=null && s.length>0; }
   public static     boolean isSet(Table          s) { return s!=null && s.size()>0; }

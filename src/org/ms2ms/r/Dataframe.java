@@ -177,6 +177,14 @@ public class Dataframe implements Disposable
 
     return this;
   }
+  public Dataframe put(int row, TabFile tabs, String... cols)
+  {
+    if (Tools.isSet(cols))
+      for (String col : cols)
+        put(row, col, tabs.get(col));
+
+    return this;
+  }
   public Dataframe put(String row, String col, Double val, int decimal)
   {
     if (val!=null && !val.isNaN() && !val.isInfinite() && Strs.isSet(col)) put(row, col, Tools.d2s(val, decimal));

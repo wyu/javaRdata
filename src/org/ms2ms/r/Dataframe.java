@@ -13,7 +13,6 @@ import org.ms2ms.data.NameValue;
 import org.ms2ms.data.collect.MapOfMultimap;
 import org.ms2ms.data.collect.MultiTreeTable;
 import org.ms2ms.math.Stats;
-import org.ms2ms.math.clustering.Clusters;
 import org.ms2ms.math.clustering.ParCoodsClusterable;
 import org.ms2ms.math.clustering.SlopeConvergenceDistance;
 import org.ms2ms.utils.*;
@@ -211,6 +210,15 @@ public class Dataframe implements Disposable
 
     return this;
   }
+  public Dataframe addRowWithAttr(String id, Map<String, String> row)
+  {
+    if (mData==null) mData = HashBasedTable.create();
+    for (String v : row.keySet())
+      mData.put(id, v, row.get(v));
+
+    return this;
+  }
+
   public Dataframe addRow(String id, Map<String, Object> row)
   {
     if (mData==null) mData = HashBasedTable.create();
@@ -277,6 +285,10 @@ public class Dataframe implements Disposable
 
     return lead;
   }
+  public Boolean getBool(   String rowid, String s) { return mData!=null && mData.get(rowid,s)!=null?(Boolean )mData.get(rowid,s):null; }
+  public Double  getDouble( String rowid, String s) { return mData!=null && mData.get(rowid,s)!=null?(Double  )mData.get(rowid,s):null; }
+  public Integer getInteger(String rowid, String s) { return mData!=null && mData.get(rowid,s)!=null?(Integer )mData.get(rowid,s):null; }
+
   public Object cell(String rowid, String s) { return mData!=null?mData.get(rowid,s):null; }
   public List<String> cols() { return mColIDs; }
   public List<String> rows() { return mRowIDs; }
@@ -370,23 +382,23 @@ public class Dataframe implements Disposable
   {
     return getTitle();
   }
-  public void write(Writer writer, String delim)
+  public void write(Writer writer, String delim, boolean rowid, String blank)
   {
     try
     {
       try
       {
-        writer.write("rowid" + delim + Strs.toString(cols(), delim) + "\n");
+        if (rowid) writer.write("rowid" + delim);
+        writer.write(Strs.toString(cols(), delim) + "\n");
         for (String id : rows())
         {
-          writer.write(id);
-          for (String v : cols())
+          if (rowid) writer.write(id+delim);
+          for (int i=0; i<cols().size(); i++)
             // not worry about the vector in the cell!
-            writer.write(delim + (cell(id, v)!=null ? cell(id, v) : ""));
+            writer.write((cell(id, cols().get(i))!=null ? cell(id, cols().get(i)) : blank)+(i<cols().size()-1?delim:""));
 
           writer.write("\n"); // terminate the line
         }
-//        writer.write(display(delim, "") + "\n\r");
       }
       finally { writer.close(); }
     }
@@ -978,6 +990,16 @@ public class Dataframe implements Disposable
 
     return indice;
   }
+  // construct a sorted index by two cols of the data frame. For example, mz vs RT
+  public Table<String, String, Double> IndexAB(String k1, String k2, String val)
+  {
+    Table<String, String, Double> indice = HashBasedTable.create();
+    for (String rowid : rows())
+      indice.put(cell(rowid, k1).toString(), cell(rowid, k2).toString(), getDouble(rowid, val));
+
+    return indice;
+  }
+
   public SortedSetMultimap<Double, String> index(String row)
   {
     if (!hasVar(row,false)) return null;

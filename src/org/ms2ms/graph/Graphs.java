@@ -12,7 +12,10 @@ import com.tinkerpop.blueprints.TransactionalGraph;
 import com.tinkerpop.blueprints.Vertex;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.Graph;
+import org.jgrapht.UndirectedGraph;
+import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.Subgraph;
 import org.ms2ms.data.Binary;
 import org.ms2ms.utils.IOs;
 import org.ms2ms.utils.Strs;
@@ -554,6 +557,17 @@ public class Graphs
       node.setProperty("accession", "");
     }
     return tag_accession;
+  }
+  public static <V, E, G extends UndirectedGraph<V, E>> Collection<Subgraph<V,E,G>> decompose(G graph, int min)
+  {
+    ConnectivityInspector<V, E> inspector = new ConnectivityInspector<V, E>(graph);
+    List<Set<V>>                connected = inspector.connectedSets();
+
+    Collection<Subgraph<V,E,G>> components = new ArrayList<>();
+    for (Set<V> set : connected)
+      if (set.size()>=min) components.add(new Subgraph(graph, set));
+
+    return components;
   }
   public static void dispose(DefaultDirectedGraph g)
   {

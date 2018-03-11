@@ -109,8 +109,8 @@ public class Stats
   public static double ln_factorial(long n)
   {
     if (n>17) return 0.5d*Math.log(2d*(double )n*3.14) + (double )n*Math.log((double )n) - (double )n;
-    if (n<0)
-      System.out.print("");
+//    if (n<0)
+//      System.out.print("");
     return sLnFactorials.get(n);
   }
   public static double ln_factorial(double n)

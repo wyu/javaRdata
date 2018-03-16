@@ -421,6 +421,7 @@ public class Strs
     }
     return buf.toString();
   }
+  public static String toupper(String s) { return s!=null?s.toUpperCase():s; }
   // retain the last n chars of the string
   public static String rtruncate(String s, int n)
   {

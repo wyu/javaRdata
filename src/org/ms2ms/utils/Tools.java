@@ -753,6 +753,13 @@ public class Tools
 
     return out;
   }
+  public static int[] intersect(int a1, int a2, int b1, int b2)
+  {
+    if (a2>a1 && b2>b1)
+      return new int[] {(a1> b1 ? a1 : b1),(a2>b2 ? a1 : b2)};
+
+    return null;
+  }
   public static String[] toCols(Map<String, String> row, List<String> cols)
   {
     String[] outs = new String[cols.size()];
@@ -1144,4 +1151,35 @@ public class Tools
     return vals.toArray(new Double[] {});
   }
   public static int size(Collection s) { return s!=null?s.size():0; }
+
+  public static StringBuffer printParam(StringBuffer buf, String name, String  v, String    desc) { return buf.append("|"+name+"|"+v+"|"+desc+"|\n"); }
+  public static StringBuffer printParam(StringBuffer buf, String name, String  v)                { return buf.append("|"+name+"|"+v+"| |\n"); }
+  public static StringBuffer printParam(StringBuffer buf, String name, Long    v, String... desc){ return buf.append("|"+name+"|"+v+"|"+Strs.toString(desc, ";")+" |\n"); }
+  public static StringBuffer printParam(StringBuffer buf, String name, Integer v, String... desc){ return buf.append("|"+name+"|"+v+"|"+Strs.toString(desc, ";")+" |\n"); }
+  public static StringBuffer printParam(StringBuffer buf, String name, Double v, int d, String... desc)
+  {
+    return buf.append("|"+name+"|"+Tools.d2s(v, d)+"|"+Strs.toString(desc, ";")+" |\n");
+  }
+  public static StringBuffer printParam(StringBuffer buf, String name, Map v, String... desc)
+  {
+    if (Tools.isSet(v))
+    {
+      buf.append("||"+name+"||"+Strs.toString(desc, ";")+"||\n");
+      for (Map.Entry E : (Set<Map.Entry> )v.entrySet())
+        buf.append("|"+E.getKey()+"|"+E.getValue()+"|\n");
+    }
+    return buf;
+  }
+  public static StringBuffer printParam(StringBuffer buf, String name, Multimap v, String... desc)
+  {
+    if (Tools.isSet(v))
+    {
+      buf.append("||"+name+"||"+Strs.toString(desc, ";")+"||\n");
+      for (Map.Entry E : (Set<Map.Entry> )v.entries())
+        buf.append("|"+E.getKey()+"|"+E.getValue()+"|\n");
+    }
+    return buf;
+  }
+
+
 }

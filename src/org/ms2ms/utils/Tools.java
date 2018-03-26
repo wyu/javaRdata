@@ -755,7 +755,7 @@ public class Tools
   }
   public static int[] intersect(int a1, int a2, int b1, int b2)
   {
-    if (a2>a1 && b2>b1)
+    if (a2>=a1 && b2>=b1)
       return new int[] {Math.max(a1,b1),Math.min(a2,b2)};
 
     return null;

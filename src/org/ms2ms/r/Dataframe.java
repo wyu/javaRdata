@@ -285,6 +285,7 @@ public class Dataframe implements Disposable
 
     return lead;
   }
+  public String  getStr(    String rowid, String s) { return mData!=null && mData.get(rowid,s)!=null?mData.get(rowid,s).toString():null; }
   public Boolean getBool(   String rowid, String s) { return mData!=null && mData.get(rowid,s)!=null?(Boolean )mData.get(rowid,s):null; }
   public Double  getDouble( String rowid, String s) { return mData!=null && mData.get(rowid,s)!=null?Stats.toDouble(mData.get(rowid,s)):null; }
   public Integer getInteger(String rowid, String s) { return mData!=null && mData.get(rowid,s)!=null?Stats.toInt(mData.get(rowid,s)):null; }

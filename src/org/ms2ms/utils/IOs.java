@@ -7,6 +7,7 @@ import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.ms2ms.Disposable;
 import org.ms2ms.data.Binary;
 import org.ms2ms.math.Stats;
+import org.ms2ms.r.Dataframe;
 import toools.set.IntHashSet;
 import toools.set.IntSet;
 
@@ -1569,6 +1570,39 @@ public class IOs
     writer.writeInt(1);
     writer.writeChar(value);
   }
+  public static void write(Writer writer, Integer value) throws IOException
+  {
+    if (value == null) writer.write(value);
+  }
+  public static void write(Writer writer, Double value) throws IOException
+  {
+    if (value == null) writer.write(value.toString());
+  }
+  public static void write(Writer writer, String value) throws IOException
+  {
+    if (value == null) writer.write(value);
+  }
+  public static void write(Writer writer, String blank, char t, Object... values) throws IOException
+  {
+    int counts=0;
+    if (Tools.isSet(values))
+      for (Object val : values)
+      {
+        if (++counts>1) writer.write(t);
+        writer.write(val!=null?val.toString():blank);
+      }
+  }
+  public static void write(Writer writer, String blank, char t, Map<String, Object> data, String... keys) throws IOException
+  {
+    int counts=0;
+    if (data!=null && Tools.isSet(keys))
+      for (Object key : keys)
+      {
+        if (++counts>1) writer.write(t);
+        writer.write(key!=null&&data.containsKey(key)?data.get(key).toString():blank);
+      }
+  }
+
   public static void write(DataOutput writer,
                            Integer    value) throws IOException
   {

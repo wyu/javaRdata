@@ -5,6 +5,7 @@ import com.google.common.primitives.Booleans;
 import com.google.common.primitives.Doubles;
 import org.expasy.mzjava.core.ms.PpmTolerance;
 import org.expasy.mzjava.core.ms.Tolerance;
+import org.expasy.mzjava.core.ms.peaklist.Peak;
 import org.ms2ms.Disposable;
 import org.ms2ms.data.Point;
 import org.ms2ms.data.collect.MultiTreeTable;
@@ -65,6 +66,10 @@ public class Tools
       for (T t : s) last=t;
 
     return last;
+  }
+  public static <T> T back(List<T> s)
+  {
+    return isSet(s)?s.get(s.size()-1):null;
   }
   public static <T> T  front(     T... s) { return s!=null?s[0]:null; }
   public static <T> T  back(      T... s) { return s!=null?s[s.length-1]:null; }
@@ -382,6 +387,15 @@ public class Tools
           }
 
     return xs;
+  }
+  public static <T extends Object> SortedMap<Double, T> slice(SortedMap<Double, T> s, Tolerance tol, Double v)
+  {
+    return s!=null && tol!=null ? s.subMap(tol.getMin(v), tol.getMax(v)):null;
+  }
+  public static <T extends Object> Map<Double, TreeMultimap<Double, String>> sliceRows(
+      MultiTreeTable<Double, Double, String> s, Tolerance tol, Double v)
+  {
+    return s!=null && tol!=null ? s.getData().subMap(tol.getMin(v), tol.getMax(v)):null;
   }
   public static <T extends Object> Collection<T> slice(TreeBasedTable<Double, Double, T> data, Double r1, Double r2, Double c1, Double c2)
   {

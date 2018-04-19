@@ -6,6 +6,7 @@ import com.google.common.collect.*;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.ms2ms.Disposable;
 import org.ms2ms.data.Binary;
+import org.ms2ms.data.collect.MultiTreeTable;
 import org.ms2ms.math.Stats;
 import org.ms2ms.r.Dataframe;
 import toools.set.IntHashSet;
@@ -388,7 +389,7 @@ public class IOs
     }
     return data;
   }
-  public static void writeStrs(DataOutput ds, List<String> data) throws IOException
+  public static void writeStrs(DataOutput ds, Collection<String> data) throws IOException
   {
     write(ds, Tools.isSet(data) ? data.size() : 0);
     if (Tools.isSet(data))
@@ -1332,7 +1333,7 @@ public class IOs
   }
 
   public static <T extends Binary> Multimap<String, T>
-  readStrMaps(DataInput ds, Multimap<String, T> data, Class<T> template) throws Exception
+  readStrMaps(DataInput ds, Multimap<String, T> data, Class<T> template) throws IOException
   {
     int n = read(ds, 0);
     if (n > 0)
@@ -2023,6 +2024,60 @@ public class IOs
         data.putAll(read(ds, 0), readInts(ds));
       }
   }
+  public static <T extends Binary & Comparable> void writeStr2StrMultiTable(DataOutput ds, MultiTreeTable<String, String, T> data) throws IOException
+  {
+    write(ds, data.keySet().size());
+    for (String row : data.keySet())
+      writeStrMaps(ds, data.getData().get(row));
+  }
+  public static <T extends Binary & Comparable> MultiTreeTable<String, String, T>
+    readStr2StrMultiTable(DataInput ds, Class<T> template) throws IOException
+  {
+    int R = read(ds,0);
+    // create the local table
+    MultiTreeTable<String, String, T> D = MultiTreeTable.create();
+    // read the rows and cols
+    for (int r=0; r<R; r++)
+      D.put(read(ds, ""), readStrMaps(ds, TreeMultimap.create(), template));
+
+    return D;
+  }
+
+  public static <T extends Binary & Comparable> void
+    writeStr3MultiTable(DataOutput ds, Map<String, MultiTreeTable<String, String, T>> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.keySet().size() : 0);
+    if (Tools.isSet(data))
+      for (String key : data.keySet())
+      {
+        write(ds, key);
+        // the value
+        writeStr2StrMultiTable(ds, data.get(key));
+//        // write the rows and cols
+//        write(ds, V.keySet().size());
+//        write(ds, V.columnSet().size());
+//        for (String row : data.get(key).keySet())
+//          for (String col : data.get(key).columnSet())
+//          {
+//            write(ds, row);
+//            write(ds, col);
+//            write(ds, data.get(key).get(row, col));
+//          }
+      }
+  }
+  public static <T extends Binary & Comparable> Map<String, MultiTreeTable<String, String, T>>
+    readStr3MultiTable(DataInput ds, Class<T> template) throws IOException
+  {
+    Map<String, MultiTreeTable<String, String, T>> data = new HashMap<>();
+
+    int n = read(ds, 0);
+    if (n>0)
+      for (int i=0; i<n; i++)
+        data.put(read(ds,""), readStr2StrMultiTable(ds, template));
+
+    return data;
+  }
+
 
   public static void save(String file, StringBuffer buf)
   {
@@ -2039,6 +2094,38 @@ public class IOs
     {
       io.printStackTrace();
     }
+  }
+  public static <T extends Binary> void persist(String file, T data)
+  {
+    try
+    {
+      // parse the run title from the file name
+      BufferedRandomAccessFile mm = new BufferedRandomAccessFile(file, 2);
+
+      write(mm, data);
+      mm.flush(); mm.close(); mm=null;
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+    }
+  }
+  public static <T extends Binary> T retrieve(String file, T data)
+  {
+    try
+    {
+      // parse the run title from the file name
+      BufferedRandomAccessFile mm = new BufferedRandomAccessFile(file, 1);
+
+      data.read(mm);
+      mm.flush(); mm.close(); mm=null;
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+    }
+
+    return data;
   }
 
 }

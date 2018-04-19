@@ -586,8 +586,12 @@ public class Strs
     Map<String, String> pairs = new LinkedHashMap<>();
     for (String item : items)
     {
-      String[] ss = split(item, t);
-      if (ss!=null && ss.length>1) pairs.put(ss[0], ss[1]);
+      if (t=='0') pairs.put(item,item);
+      else
+      {
+        String[] ss = split(item, t);
+        if (ss!=null && ss.length>1) pairs.put(ss[0], ss[1]);
+      }
     }
     return pairs;
   }

@@ -49,6 +49,14 @@ public class TabFile
 
     init();
   }
+  public TabFile(InputStream         is,
+                 String              delimiter) throws IOException
+  {
+    // no need to trap the exceptions since they are
+    // delegated to the calling party
+    setDelimiter(delimiter);
+    init(is);
+  }
   public TabFile(String              infile,
                  char                delimiter) throws IOException
   {
@@ -99,13 +107,16 @@ public class TabFile
   }
   protected void init() throws IOException
   {
-    mCol           = new TreeMap<String, String>();
     InputStream is = new FileInputStream(mFilename);
     // Gracefully handle gzipped files.
-    if (mFilename.endsWith(".gz"))
-    {
+    if (mFilename.endsWith(".gz")) {
       is = new GZIPInputStream(is);
     }
+    init(is);
+  }
+  protected void init(InputStream is) throws IOException
+  {
+    mCol        = new TreeMap<>();
     mFileReader = new BufferedReader(new InputStreamReader(is));
 
     // skip as many lines as indicated

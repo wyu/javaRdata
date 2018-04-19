@@ -1,6 +1,7 @@
 package org.ms2ms.data.collect;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 import com.google.common.collect.TreeMultimap;
 import org.ms2ms.utils.Tools;
@@ -38,7 +39,17 @@ public class MultiTreeTable<K extends Comparable, L extends Comparable, T extend
       mData.put(key, D);
     }
     D.put(lable, data);
-//    System.out.println(D.size());
+  }
+  public void putAll(K key, L lable, Collection<T> data)
+  {
+    if (mData == null) mData = new TreeMap<>();
+    TreeMultimap<L, T> D = mData.get(key);
+    if (D == null)
+    {
+      D = TreeMultimap.create();
+      mData.put(key, D);
+    }
+    D.putAll(lable, data);
   }
 
   /** Overwrite the existing entry
@@ -58,7 +69,7 @@ public class MultiTreeTable<K extends Comparable, L extends Comparable, T extend
     else D.clear();
     D.put(lable, data);
   }
-  public void put(K key, TreeMultimap<L, T> data)
+  public void put(K key, Multimap<L, T> data)
   {
     if (mData == null) mData = new TreeMap<K, TreeMultimap<L, T>>();
     TreeMultimap<L, T> D = mData.get(key);

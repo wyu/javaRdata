@@ -729,17 +729,6 @@ public class IOs
         if (isnull(ds)) continue;
 
         data.put(new_k, readObject(ds, ignoreUnknown));
-//        String name = read(ds, Strs.NULL);
-//        //if      (name.equals(""))                       data.put(new_k, "");
-//        if      (name.equals(  String.class.getName())) data.put(new_k, (Object )read(ds, ""));
-//        else if (name.equals( Integer.class.getName())) data.put(new_k, (Object )read(ds, 0));
-//        else if (name.equals(    Long.class.getName())) data.put(new_k, (Object )read(ds, 0L));
-//        else if (name.equals( Boolean.class.getName())) data.put(new_k, (Object )read(ds, (Boolean )null));
-//        else if (name.equals(   Float.class.getName())) data.put(new_k, (Object )read(ds, 0f));
-//        else if (name.equals(  Double.class.getName())) data.put(new_k, (Object )read(ds, 0d));
-//        else if (name.equals(Binary.class.getName())) data.put(new_k, (Object )read(ds, (Binary )null));
-//        else throw new RuntimeException("Unsupported type for binary property, " + name);
-//        name = null;
       }
     }
     return data;
@@ -1172,13 +1161,11 @@ public class IOs
     write(ds, Tools.isSet(data) ? data.keySet().size() : 0);
 
     if (Tools.isSet(data))
-    {
       for (String key : data.keySet())
       {
         write(ds, key);
         write(ds, data.get(key));
       }
-    }
   }
   public static <T extends Binary> void
   writeIntMaps(DataOutput ds, Multimap<Integer, T> data) throws IOException
@@ -1303,7 +1290,7 @@ public class IOs
       }
       catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e2)
       {
-        e2.printStackTrace();
+        throw new RuntimeException(e2);
       }
     }
     return data;
@@ -1387,7 +1374,7 @@ public class IOs
       }
       catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e2)
       {
-        e2.printStackTrace();
+        throw new RuntimeException("Error during the sampling of the matches.", e2);
       }
       sampled=(Set )Tools.dispose(sampled);
     }
@@ -1769,8 +1756,6 @@ public class IOs
     {
       return value;
     }
-    //value = is.readUTF();
-
     //return value;
     return is.readUTF();
   }
@@ -2028,7 +2013,10 @@ public class IOs
   {
     write(ds, data.keySet().size());
     for (String row : data.keySet())
+    {
+      write(ds, row);
       writeStrMaps(ds, data.getData().get(row));
+    }
   }
   public static <T extends Binary & Comparable> MultiTreeTable<String, String, T>
     readStr2StrMultiTable(DataInput ds, Class<T> template) throws IOException
@@ -2038,7 +2026,12 @@ public class IOs
     MultiTreeTable<String, String, T> D = MultiTreeTable.create();
     // read the rows and cols
     for (int r=0; r<R; r++)
+    {
+//      String key=read(ds, "");
+//      Multimap<String, T> mmap = readStrMaps(ds, TreeMultimap.create(), template);
+//      D.put(key, mmap);
       D.put(read(ds, ""), readStrMaps(ds, TreeMultimap.create(), template));
+    }
 
     return D;
   }
@@ -2051,18 +2044,7 @@ public class IOs
       for (String key : data.keySet())
       {
         write(ds, key);
-        // the value
         writeStr2StrMultiTable(ds, data.get(key));
-//        // write the rows and cols
-//        write(ds, V.keySet().size());
-//        write(ds, V.columnSet().size());
-//        for (String row : data.get(key).keySet())
-//          for (String col : data.get(key).columnSet())
-//          {
-//            write(ds, row);
-//            write(ds, col);
-//            write(ds, data.get(key).get(row, col));
-//          }
       }
   }
   public static <T extends Binary & Comparable> Map<String, MultiTreeTable<String, String, T>>
@@ -2073,11 +2055,12 @@ public class IOs
     int n = read(ds, 0);
     if (n>0)
       for (int i=0; i<n; i++)
+      {
         data.put(read(ds,""), readStr2StrMultiTable(ds, template));
+      }
 
     return data;
   }
-
 
   public static void save(String file, StringBuffer buf)
   {
@@ -2099,11 +2082,17 @@ public class IOs
   {
     try
     {
-      // parse the run title from the file name
-      BufferedRandomAccessFile mm = new BufferedRandomAccessFile(file, 2);
-
-      write(mm, data);
-      mm.flush(); mm.close(); mm=null;
+      BufferedRandomAccessFile mm=null;
+      try
+      {
+        // parse the run title from the file name
+        mm = new BufferedRandomAccessFile(file, BufferedRandomAccessFile.WRITE);
+        write(mm, data);
+      }
+      finally
+      {
+        if (mm!=null) { mm.flush(); mm.close(); mm=null; }
+      }
     }
     catch (IOException e)
     {
@@ -2114,11 +2103,19 @@ public class IOs
   {
     try
     {
-      // parse the run title from the file name
-      BufferedRandomAccessFile mm = new BufferedRandomAccessFile(file, 1);
+      BufferedRandomAccessFile mm=null;
+      try
+      {
+        System.out.println("Retrieving "+file);
+        // parse the run title from the file name
+        mm = new BufferedRandomAccessFile(file, BufferedRandomAccessFile.READ);
 
-      data.read(mm);
-      mm.flush(); mm.close(); mm=null;
+        data = read(mm, data);
+      }
+      finally
+      {
+        if (mm!=null) { mm.close(); mm=null; }
+      }
     }
     catch (IOException e)
     {

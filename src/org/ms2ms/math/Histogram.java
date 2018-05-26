@@ -427,20 +427,20 @@ public class Histogram implements Disposable, Binary
 
     for (Histogram H : histos) H.generate(step_num, range);
   }
-/*
-  public void generate()
+  public Histogram compact(int span)
   {
-    if (!Tools.isSet(mData)) return;
+    if (mHistogram==null || mHistogram.size()<span) return this;
 
-    TreeMultimap<Double, Double> slot_val = TreeMultimap.create();
-    for (Double v : getData()) slot_val.put(v, v);
+    List<Point> hist = new ArrayList<>(mHistogram);
+    mHistogram.clear();
 
-    if (mHistogram == null) mHistogram = new ArrayList<>(); else getHistogram().clear();
-    for (Double slot : slot_val.keySet())
-      mHistogram.add(new Point(slot, slot_val.get(slot).size()));
+    for (int i=0; i<span-1; i++) mHistogram.add(hist.get(i));
+    for (int i=span-1; i<hist.size(); i++)
+      for (int k=0; k<span; k++)
+        if (hist.get(i-k).getY()!=0) { mHistogram.add(hist.get(i)); break; }
 
+    return this;
   }
-*/
   public void generate(int step_num, Range<Double> initial_range)
   {
     if (!Tools.isSet(mData)) return;
@@ -627,97 +627,6 @@ public class Histogram implements Disposable, Binary
     }
     return orig;
   }
-//  public Map<String, Double> fitNormDist()
-//  {
-//    double A=0; // the amplitude of the dist
-//    SimpleRegression R = new SimpleRegression(true);
-//    for (Point xy : getHistogram())
-//      if (xy.getY()>0)
-//      {
-//        R.addData(Math.log(xy.getY()), xy.getX());
-//        if (xy.getY()>A) A=xy.getY();
-//      }
-//
-//    // compute the definition of a norm dist
-//    Map<String, Double> params = new HashMap<>();
-//    params.put("amplitude",A);
-//    params.put("sigma",    R.getSlope()/-2d);
-//    params.put("mean",     R.getIntercept()+2*Math.log(A)*(params.get("sigma")+1d));
-//
-//    return params;
-//  }
-//  public SimpleRegression getRegression(boolean logT)
-//  {
-//    if (!Tools.isSet(getHistogram())) return null;
-//
-//    double A=0, sum=0; int apex=0; // the amplitude of the dist
-//    for (int i=0; i<getHistogram().size(); i++)
-//    {
-//      sum+=getHistogram().get(i).getY();
-//      if (getHistogram().get(i).getY() > A) { A = getHistogram().get(i).getY(); apex = i; }
-//    }
-//
-//    SimpleRegression R = new SimpleRegression(true); int i=apex; double counts=0d, steps=0;
-//    while (i<getHistogram().size())
-//    {
-//      Point xy = getHistogram().get(i);
-//      counts+=xy.getY(); steps+=mStep;
-//      if (counts>1)
-//      {
-////        System.out.println(Tools.d2s(xy.getX(), 2) + "\t" + Math.log(counts/(steps*sum)) + "\t" + steps);
-//        R.addData(xy.getX(), logT?Math.log(counts/(steps*sum)):counts/(steps*sum));
-//        counts=steps=0d;
-//      }
-//      i++;
-//    }
-////    System.out.println("r2="+R.getRSquare());
-//
-//    return R;
-//  }
-//  public Histogram fitGaussian(boolean upper)
-//  {
-//    if (Tools.isSet(getHistogram()))
-//    {
-//      WeightedObservedPoints obs = new WeightedObservedPoints();
-//      // watch out for truncation
-//      int start=0;
-//      if (upper)
-//      {
-//        int totals=getData().size(), remainder=(int )(totals*0.9);
-//        // let's find out where the start is to avoid truncation
-//        for (int i=getHistogram().size()-1; i>=0; i--)
-//          if (totals>remainder) totals-=getHistogram().get(i).getY(); else break;
-//      }
-//      for (int i=start; i<getHistogram().size(); i++)
-//        if (getHistogram().get(i).getY()>0)
-//          obs.add(getHistogram().get(i).getX(), getHistogram().get(i).getY());
-//
-//      Point top = Points.basePoint(getHistogram());
-//      // let's make the best guess
-//      mTop=top.getY(); if (mCenter==null) mCenter=getCentroid(); if (mSigma==null) mSigma=mCenter*0.25d;
-//      try
-//      {
-//        // fit the model --> Normalization, Mean, Sigma
-//        double[] initials = new double[] {mTop, mCenter, mSigma},
-//            parameters = GaussianCurveFitter.create().withStartPoint(initials).withMaxIterations(1000).fit(obs.toList());
-//
-//        if (parameters!=null && parameters.length>2)
-//        {
-//          mTop=parameters[0]; mCenter=parameters[1]; mSigma=parameters[2];
-//        }
-//      }
-//      catch (Exception e)
-//      {
-//        // try our best guess, not worry about the spread
-//        mCenter=getCentroid(); mSigma=null;
-////        e.printStackTrace();
-//      }
-////      System.out.println("Score\tOccurances");
-////      for (Point pt : getHistogram()) System.out.println(pt.getX()+"\t"+pt.getY());
-////      System.out.println("\nTop="+mTop+", Center="+mCenter+", Sigma="+mSigma);
-//    }
-//    return this;
-//  }
   // assess the center and upper quatile of a distribution truncated at the lower end
   // assume that the histogram is already sorted from low to high
   public Histogram assessTruncated(int low_bound)
@@ -766,37 +675,6 @@ public class Histogram implements Disposable, Binary
 
     return this;
   }
-//  public Histogram trimFromUpper()
-//  {
-//    if (!Tools.isSet(getHistogram())) return this;
-//
-//    int start=0;
-//    for (int i=getHistogram().size()-2; i>0; i--)
-//    {
-//      if (getHistogram().get(i).getY()>0 &&
-//          getHistogram().get(i-1).getY()>getHistogram().get(i).getY() &&
-//          getHistogram().get(i+1).getY()>getHistogram().get(i).getY()) { start=i; break; }
-//    }
-//    if (start>0)
-//      for (int i=0; i<start; i++) getHistogram().remove(0);
-//
-//    return this;
-//  }
-//  public Histogram generateCumulative(int size)
-//  {
-//    if (!Tools.isSet(mData)) return this;
-//
-//    Collections.sort(mData, Ordering.natural().reverse());
-//
-//    int step = (int )Math.round((double )mData.size()/(double )size);
-//    mCumulative = new ArrayList<>();
-//    for (int i=0; i<mData.size(); i+=step)
-//    {
-//      mCumulative.add(new Point(mData.get(i), (i+1)));
-//    }
-//
-//    return this;
-//  }
   public void printHistogram()
   {
     double base = (double )mData.size();
@@ -804,12 +682,14 @@ public class Histogram implements Disposable, Binary
     for (Point pt : getHistogram()) if (pt.getY()!=0) System.out.println(pt.getX()+"\t"+(pt.getY()/base));
     System.out.println("\nTop="+mTop+", Center="+mCenter+", Sigma="+mSigma);
   }
-  public StringBuffer wikiHistogram(StringBuffer buf)
+  public StringBuffer wikiHistogram(StringBuffer buf, boolean normalized)
   {
-    double base = (double )mData.size();
+    if (buf==null) buf = new StringBuffer();
+
+    double base = normalized?(double )mData.size():1d;
     buf.append("Score\tOccurances-"+getTitle()+"\n");
     for (Point pt : getHistogram()) if (pt.getY()!=0) buf.append(pt.getX()+"\t"+(pt.getY()/base)+"\n");
-    buf.append("\nTop="+mTop+", Center="+mCenter+", Sigma="+mSigma+"\n");
+    buf.append("\nTop = "+mTop+", Center = "+mCenter+", Sigma = "+mSigma+", Data points = "+mData.size()+"\n");
 
     return buf;
   }

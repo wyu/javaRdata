@@ -498,6 +498,20 @@ public class IOs
     }
     return null;
   }
+  public static <T extends Binary> TreeBasedTable<Double, String, T> readDoubleStrBin(DataInput ds, T t) throws IOException
+  {
+    int n = read(ds, 1); // values.size()
+    if (n>0)
+    {
+      TreeBasedTable<Double,  String, T> out = TreeBasedTable.create();
+      for (int i=0; i<n; i++)
+      {
+        out.put(read(ds, 0d), read(ds, ""), read(ds, t));
+      }
+      return out;
+    }
+    return null;
+  }
   public static Table<Integer, String,  String> readIntStr2(DataInput ds) throws IOException
   {
     int n = read(ds, 1); // values.size()
@@ -815,6 +829,18 @@ public class IOs
     if (Tools.isSet(data))
       for (Double row : data.rowKeySet())
         for (Double col : data.row(row).keySet())
+        {
+          write(ds, row);
+          write(ds, col);
+          write(ds, data.get(row, col));
+        }
+  }
+  public static <T extends Binary> void writeDoubleStrBin(DataOutput ds, Table<Double, String, T> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.rowKeySet().size() : 0);
+    if (Tools.isSet(data))
+      for (Double row : data.rowKeySet())
+        for (String col : data.row(row).keySet())
         {
           write(ds, row);
           write(ds, col);
@@ -1194,6 +1220,20 @@ public class IOs
       }
     }
   }
+  public static <K extends Binary, T extends Binary> void
+  writeMultimap(DataOutput ds, Multimap<K, T> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.keySet().size() : 0);
+
+    if (Tools.isSet(data))
+    {
+      for (K key : data.keySet())
+      {
+        write(ds, key);
+        write(ds, data.get(key));
+      }
+    }
+  }
   public static <T extends Binary> void
   writeDoubleListMap(DataOutput ds, Map<Double, List<T>> data) throws IOException
   {
@@ -1343,6 +1383,19 @@ public class IOs
       {
         Integer     K =read(ds, 0);
         data.putAll(K, readList(ds, template));
+      }
+    }
+    return data;
+  }
+  public static <K extends Binary, T extends Binary> Multimap<K, T>
+  readMultimaps(DataInput ds, Multimap<K, T> data, K key, Class<T> val_template) throws IOException
+  {
+    int n = read(ds, 0);
+    if (n > 0)
+    {
+      for (int i = 0; i < n; i++)
+      {
+        data.putAll(read(ds, key), readList(ds, val_template));
       }
     }
     return data;

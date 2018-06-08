@@ -815,6 +815,29 @@ public class Tools
 
     return outs;
   }
+  public static Collection<Double> slice(TreeMultimap<Double, Double> s, Double lower, Double upper)
+  {
+    if (isSet(s))
+    {
+      SortedMap<Double, Collection<Double>> slice = s.asMap().subMap(lower,upper);
+      if (slice!=null)
+      {
+        Collection<Double> vals = new ArrayList<>();
+        for (Collection<Double> ss : slice.values()) vals.addAll(ss);
+        return vals;
+      }
+    }
+    return null;
+  }
+  public static Collection<Double> slice(SortedMap<Double, Double> s, Double lower, Double upper)
+  {
+    if (isSet(s))
+    {
+      SortedMap<Double, Double> slice = s.subMap(lower,upper);
+      if (slice!=null) return slice.values();
+    }
+    return null;
+  }
   public static Map<String, String> slice(Map<String, String> props, String... keys)
   {
     if (!isSet(keys) || !isSet(props)) return props;

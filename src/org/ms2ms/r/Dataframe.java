@@ -36,7 +36,7 @@ public class Dataframe implements Disposable
   private List<String>               mRowIDs, mColIDs;
   private Map<String, Var>           mNameVar;
   private Table<String, String, Object> mData;
-//  private String[]                   mNAs;
+  private Map<Long, String>          iLongRow; // index from a long col to row id
 
   public Dataframe()                                         { super(); }
   public Dataframe(String s)                                 { super(); setTitle(s); }
@@ -105,19 +105,6 @@ public class Dataframe implements Disposable
         {
           replaceValue(col, Var.VarType.BOOLEAN, TRUE,  true);
           replaceValue(col, Var.VarType.BOOLEAN, FALSE, false);
-//          for (String row : rows())
-//          {
-//            Object val = cell(row, col);
-//            if (val!=null && val.getClass().equals(TRUE.getClass()))
-//            {
-//              // remove the cell and replace it with 'true' or false
-//              if      (Tools.equals(TRUE,  val)) { mData.remove(row, col); mData.put(row, col, true); }
-//              else if (Tools.equals(FALSE, val)) { mData.remove(row, col); mData.put(row, col, false); }
-//            }
-//          }
-//          // update the Var
-//          C.setType(Var.VarType.BOOLEAN);
-//          C.renameFactor(TRUE, true).renameFactor(FALSE, false);
         }
       }
     }
@@ -350,10 +337,6 @@ public class Dataframe implements Disposable
         for (String v : cols())
         {
           Object val = cell(id, v);
-//          if (val==null)
-//          {
-//            System.out.println();
-//          }
           line = Strs.extend(line, val==null?"":Tools.o2s(val, decimal), delimiter);
         }
         buf.append(line + "\n");
@@ -413,7 +396,6 @@ public class Dataframe implements Disposable
     if (!hasVar(x, false) || hasVar(y,false)) return null;
 
     SortedMap<Double, Double> line = new TreeMap<Double, Double>();
-//    Var vx=asVar(x), vy=getVar(y);
     for (String id : rows()) {
       Tools.putNotNull(line, cell(id, x), cell(id, y));
     }
@@ -428,7 +410,6 @@ public class Dataframe implements Disposable
     {
       Double val = Stats.toDouble(cell(rows().get(i), y));
       if (val!=null) data.add(val); else if (keep_na) data.add(Double.NaN);
-//      ys[i] = val!=null?Stats.toDouble(val):Double.NaN;
     }
     double[] ys = new double[data.size()];
     for (int i=0; i<data.size(); i++) ys[i]=data.get(i);
@@ -524,12 +505,10 @@ public class Dataframe implements Disposable
     if (Tools.isSet(rows) && mData!=null)
       for (String row : rows)
       {
-//        System.out.println("removing " + row);
         mRowIDs.remove(row);
         if (mData.row(row)!=null)
         {
           mData.row(row).clear();
-//          mData.rowKeySet().remove(row);
         }
       }
     // re-init the columns since we removed some of the rows
@@ -783,6 +762,11 @@ public class Dataframe implements Disposable
     Dataframe f = new Dataframe(src, delimiter, idcols);
     return init?f.init(true):f;
   }
+  public static Dataframe create(String src, char delimiter,String... idcols)
+  {
+    Dataframe f = new Dataframe(src, delimiter, idcols);
+    return f.init(true);
+  }
   public static Dataframe readtable(String src, String[] selected_cols, char delimiter, boolean init, String... idcols)
   {
     Dataframe f = new Dataframe(src, selected_cols, delimiter, idcols);
@@ -970,14 +954,25 @@ public class Dataframe implements Disposable
   }
   public Multimap<String, String> IndexByCol(String col)
   {
-//    if (!hasVar(col,true)) return null;
-
     Multimap<String, String> indice = HashMultimap.create();
     for (String rowid : rows())
       if (cell(rowid, col)!=null)
         indice.put(cell(rowid, col).toString(), rowid);
 
     return indice;
+  }
+  public Dataframe indexByLongCol(String col)
+  {
+    iLongRow = new HashMap<>();
+    for (String rowid : rows())
+      if (cell(rowid, col)!=null)
+        iLongRow.put(Stats.toLong(cell(rowid, col)), rowid);
+
+    return this;
+  }
+  public Object getBy(Long s, String col)
+  {
+    return (iLongRow!=null && s!=null) ? row(iLongRow.get(s)).get(col) : null;
   }
   // construct a sorted index by two cols of the data frame. For example, mz vs RT
   public MultiTreeTable<Double, Double, String> index(String row, String col)

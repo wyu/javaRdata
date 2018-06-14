@@ -403,6 +403,8 @@ public class Strs
 
     return out;
   }
+  public static String toString(String s) { return s!=null?s:""; }
+  public static String toString(Long s) { return s!=null?s.toString():""; }
   public static String toString(Table t)
   {
     if (!Tools.isSet(t)) return null;

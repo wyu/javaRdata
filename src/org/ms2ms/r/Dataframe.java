@@ -1260,6 +1260,16 @@ public class Dataframe implements Disposable
     data.setColIds(cats).cols().addAll(clusters);
     return data;
   }
+  public Dataframe addRow(String row, LinkedHashMap<String, String> details, String... cols)
+  {
+    addRowId(row);
+    // transfer to the data frame
+    for (String key : cols)
+      if (details.containsKey(key))
+        put(row, key, details.get(key));
+
+    return this;
+  }
 //  public static Dataframe bundling(Dataframe data)
 //  {
 //    List<String> cats=new ArrayList<>(), conts=new ArrayList<>(), clusters=new ArrayList<>();

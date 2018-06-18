@@ -141,7 +141,7 @@ public class Tools
 
   public static String d2x(Double s, int i, double max)
   {
-    return s!=null?(s>max?">"+d2s(max,i):d2s(s,i)):"NUL";
+    return s!=null?(s>max?""+d2s(max,i):d2s(s,i)):"NUL";
   }
   public static String d2s(Double s, int i, String _def)
   {

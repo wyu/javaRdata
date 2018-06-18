@@ -733,12 +733,16 @@ public class Strs
         wiki+="|"+(v!=null && v.toString().length()>0 ?v.toString():" ");
     return wiki;
   }
-  public static String addWiki(LinkedHashMap<String,String> val)
+  public static String addWiki(LinkedHashMap<String,String> val, String... cols)
   {
+//    for (String col : cols)
+//      if (!val.containsKey(col)) System.out.println("missing: "+col);
+//
     String wiki = "";
     if (Tools.isSet(val))
       for (String v : val.keySet())
-        wiki+="|"+(val.get(v)!=null && val.get(v).length()>0 ?val.get(v):" ");
+        if (!Tools.isSet(cols) || Strs.isA(v, cols))
+          wiki+="|"+(val.get(v)!=null && val.get(v).length()>0 ?val.get(v):" ");
     return wiki;
   }
 //  public static String fromLast(List<String> s, int n)

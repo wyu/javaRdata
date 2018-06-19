@@ -735,14 +735,20 @@ public class Strs
   }
   public static String addWiki(LinkedHashMap<String,String> val, String... cols)
   {
-//    for (String col : cols)
-//      if (!val.containsKey(col)) System.out.println("missing: "+col);
-//
+    if (!Tools.isSet(val)) return "";
+
     String wiki = "";
-    if (Tools.isSet(val))
+    if (Tools.isSet(cols))
+    {
+      for (String v : cols)
+        wiki+="|"+(Strs.isSet(val.get(v))?val.get(v):" ");
+    }
+    else
+    {
       for (String v : val.keySet())
-        if (!Tools.isSet(cols) || Strs.isA(v, cols))
-          wiki+="|"+(val.get(v)!=null && val.get(v).length()>0 ?val.get(v):" ");
+        wiki+="|"+(val.get(v).length()>0 ?val.get(v):" ");
+    }
+
     return wiki;
   }
 //  public static String fromLast(List<String> s, int n)

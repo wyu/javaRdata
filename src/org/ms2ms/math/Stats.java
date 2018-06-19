@@ -31,6 +31,14 @@ public class Stats
     for (long i=0L; i<18L; i++) sLnFactorials.put(i, Math.log(factorial(i)));
     for (Double i=0d; i<18d; i++) sLnDblFactorials.put(i, Math.log(factorial(i)));
   }
+  public static Double lookup(Map<Double, Double> min_ppm, Double rt)
+  {
+    Double rt0 = (double )Math.round(rt);
+    if      (rt0>Collections.max(min_ppm.keySet())) rt0=Collections.max(min_ppm.keySet());
+    else if (rt0<Collections.min(min_ppm.keySet())) rt0=Collections.min(min_ppm.keySet());
+
+    return min_ppm.get(rt0);
+  }
   public static double geomean(Collection<Double> s)
   {
     if (!Tools.isSet(s)) return 0;

@@ -416,6 +416,25 @@ public class Tools
     }
     return results;
   }
+  public static <T extends Object> int sliceCounts(TreeBasedTable<Double, Double, T> data, Range<Double> row, Range<Double> col)
+  {
+    int counts=0;;
+
+    if (isSet(data) && Tools.isSet(row) && Tools.isSet(col))
+    {
+      SortedMap<Double,Map<Double, T>> s1 = data.rowMap().subMap(row.lowerEndpoint(), row.upperEndpoint());
+      if (isSet(s1))
+      {
+        SortedMap<Double,Map<Double, T>> s2 = s1.subMap(col.lowerEndpoint(), col.upperEndpoint());
+        if (isSet(s2))
+          for (Map<Double, T> s3 : s2.values())
+            counts+=s3.values().size();
+        s2=null;
+      }
+      s1=null;
+    }
+    return counts;
+  }
   public static <K, V> BiMap<K, V> putNew(BiMap<K, V> m, K key, V val)
   {
     if (m==null || key==null || val==null) return m;
@@ -1083,6 +1102,16 @@ public class Tools
 
     if (val<high) return high; else if (val>low) return low; else return val;
   }
+  public static Range<Double> bound(Range<Double> r, double low, double high)
+  {
+    if (!Tools.isSet(r) || high<low) return null;
+
+    if      (low <r.lowerEndpoint()) { high=r.lowerEndpoint()+high-low; low =r.lowerEndpoint(); }
+    else if (high>r.upperEndpoint()) { low =r.upperEndpoint()-high+low; high=r.upperEndpoint(); };
+
+    return Range.closed(low, high);
+  }
+
   public static boolean isLarger(Collection A, Collection B)
   {
     return (A!=null && (B==null || A.size()>B.size()));

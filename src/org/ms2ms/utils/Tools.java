@@ -406,30 +406,26 @@ public class Tools
       SortedMap<Double,Map<Double, T>> s1 = data.rowMap().subMap(r1, r2);
       if (isSet(s1))
       {
-        SortedMap<Double,Map<Double, T>> s2 = s1.subMap(c1, c2);
-        if (isSet(s2))
-          for (Map<Double, T> s3 : s2.values())
-            results.addAll(s3.values());
-        s2=null;
+        for (Map<Double, T> s3 : s1.values())
+          for (Double c : s3.keySet())
+            if (c>=c1 && c<=c2) results.add(s3.get(c));
       }
       s1=null;
     }
     return results;
   }
-  public static <T extends Object> int sliceCounts(TreeBasedTable<Double, Double, T> data, Range<Double> row, Range<Double> col)
+  public static int sliceCounts(TreeBasedTable<Double, Double, Integer> data, Range<Double> row, Range<Double> col)
   {
     int counts=0;;
 
     if (isSet(data) && Tools.isSet(row) && Tools.isSet(col))
     {
-      SortedMap<Double,Map<Double, T>> s1 = data.rowMap().subMap(row.lowerEndpoint(), row.upperEndpoint());
+      SortedMap<Double,Map<Double, Integer>> s1 = data.rowMap().subMap(row.lowerEndpoint(), row.upperEndpoint());
       if (isSet(s1))
       {
-        SortedMap<Double,Map<Double, T>> s2 = s1.subMap(col.lowerEndpoint(), col.upperEndpoint());
-        if (isSet(s2))
-          for (Map<Double, T> s3 : s2.values())
-            counts+=s3.values().size();
-        s2=null;
+        for (Map<Double, Integer> s3 : s1.values())
+          for (Double c : s3.keySet())
+            if (col.contains(c)) counts+=s3.get(c);
       }
       s1=null;
     }

@@ -93,8 +93,8 @@ public class TabFile
     init();
   }
   public TabFile(String              infile,
-                   String              delimiter,
-                   String[]            cols)
+                   String            delimiter,
+                   String...         cols)
       throws IOException
   {
     // no need to trap the exceptions since they are

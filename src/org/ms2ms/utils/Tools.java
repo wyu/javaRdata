@@ -9,6 +9,7 @@ import org.expasy.mzjava.core.ms.peaklist.Peak;
 import org.ms2ms.Disposable;
 import org.ms2ms.data.Point;
 import org.ms2ms.data.collect.MultiTreeTable;
+import org.ms2ms.math.Stats;
 import toools.set.IntHashSet;
 import toools.set.IntSet;
 
@@ -718,6 +719,11 @@ public class Tools
 
     return false;
   }
+  public static Range<Integer> extend(Range<Integer> A, Range<Integer> B)
+  {
+    if (A!=null && B!=null) return Range.closed(Math.min(A.lowerEndpoint(), B.lowerEndpoint()), Math.max(A.upperEndpoint(), B.upperEndpoint()));
+    return A;
+  }
   public static Range<Double> extendLower(Range<Double> s, Double x)
   {
     return s!=null && s.lowerEndpoint()>x ? Range.closed(x, s.upperEndpoint()) : s;
@@ -1190,7 +1196,7 @@ public class Tools
   }
   public static Double getDouble(Map<String, String> p, String key)
   {
-    return p!=null && p.containsKey(key)?Double.valueOf(p.get(key)):null;
+    return p!=null && p.containsKey(key)? Stats.toDouble(p.get(key)):null;
   }
   public static Integer getInt(Map<String, String> p, String key)
   {

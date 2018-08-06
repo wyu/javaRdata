@@ -193,7 +193,8 @@ public class Stats
     if (s==null) return null;
     try
     {
-      if      (s instanceof String)  return NumberUtils.createDouble((String )s);
+      if      (s instanceof String && "NA".equals((String )s))  return Double.NaN;
+      else if (s instanceof String)  return NumberUtils.createDouble((String )s);
       else if (s instanceof Double)  return (Double  )s;
       else if (s instanceof Float )  return ((Float  )s).doubleValue();
       else if (s instanceof Long  )  return ((Long   )s).doubleValue();
@@ -343,6 +344,14 @@ public class Stats
 
     Float sum=0f;
     for (Float y : ys) sum+=y;
+    return sum;
+  }
+  public static Integer sumInts(Collection<Integer> ys)
+  {
+    if (!Tools.isSet(ys)) return null;
+
+    Integer sum=0;
+    for (Integer y : ys) sum+=y;
     return sum;
   }
   public static Float sumFloats(Float... ys)

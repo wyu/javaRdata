@@ -1872,6 +1872,12 @@ public class IOs
 
     return w;
   }
+  public static Writer writeLine(Writer w, char t, String... fields) throws IOException
+  {
+    write(w,t,fields); w.write("\n");
+    return w;
+  }
+
   public static String[] listFilesByExt(String root, String ext, boolean full)
   {
     String[] files = new File(root).list(new FilenameExtensionFilter(ext));

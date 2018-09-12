@@ -569,6 +569,18 @@ public class Graphs
 
     return components;
   }
+  public static <V, E, G extends DirectedGraph<V, E>> Collection<Subgraph<V,E,G>>
+  decompose_directed(G graph, int min)
+  {
+    ConnectivityInspector<V, E> inspector = new ConnectivityInspector<V, E>(graph);
+    List<Set<V>>                connected = inspector.connectedSets();
+
+    Collection<Subgraph<V,E,G>> components = new ArrayList<>();
+    for (Set<V> set : connected)
+      if (set.size()>=min) components.add(new Subgraph(graph, set));
+
+    return components;
+  }
   public static void dispose(DefaultDirectedGraph g)
   {
     if (g!=null)

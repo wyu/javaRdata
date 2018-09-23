@@ -10,10 +10,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * ** Copyright 2014-2015 ms2ms.org
@@ -86,6 +83,24 @@ public class Property  implements Cloneable
     catch (Exception e) {}
 
     return null;
+  }
+  public Double  getDouble(String key) { return getProperty(key, 0d); }
+  public Float   getFloat( String key) { return getProperty(key, 0f); }
+  public Integer getInt(   String key) { return getProperty(key, 0); }
+  public String[] getProperties(String key, char t)
+  {
+    if (key==null || !Strs.isSet(getProperty(key))) return null;
+    return Strs.split(getProperty(key),t);
+  }
+  public float[] getFloats(String key, char t)
+  {
+    String[] items = getProperties(key,t);
+    if (!Tools.isSet(items)) return null;
+
+    List<Float> vals = new ArrayList<>();
+    for (String item : items) vals.add(Float.parseFloat(item));
+
+    return Tools.toFloatArray(vals);
   }
 
   public void setProperties(Map<String, String> s)

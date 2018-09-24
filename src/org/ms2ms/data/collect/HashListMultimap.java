@@ -2,12 +2,9 @@ package org.ms2ms.data.collect;
 
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
-import com.google.common.collect.Range;
-import com.google.common.collect.TreeMultiset;
 import org.ms2ms.Disposable;
 import org.ms2ms.utils.Tools;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -58,17 +55,17 @@ public class HashListMultimap<K extends Comparable, V> implements Multimap<K, V>
   }
 
   @Override
-  public boolean containsKey(@Nullable Object o) {
+  public boolean containsKey(Object o) {
     return false;
   }
 
   @Override
-  public boolean containsValue(@Nullable Object o) {
+  public boolean containsValue(Object o) {
     return false;
   }
 
   @Override
-  public boolean containsEntry(@Nullable Object o, @Nullable Object o1) {
+  public boolean containsEntry(Object o, Object o1) {
     return false;
   }
 
@@ -103,12 +100,12 @@ public class HashListMultimap<K extends Comparable, V> implements Multimap<K, V>
   }
 
   @Override
-  public boolean remove(@Nullable Object o, @Nullable Object o1) {
+  public boolean remove(Object o, Object o1) {
     return false;
   }
 
   @Override
-  public boolean putAll(@Nullable K k, Iterable<? extends V> iterable) {
+  public boolean putAll(K k, Iterable<? extends V> iterable) {
     return false;
   }
 
@@ -118,12 +115,12 @@ public class HashListMultimap<K extends Comparable, V> implements Multimap<K, V>
   }
 
   @Override
-  public Collection<V> replaceValues(@Nullable K k, Iterable<? extends V> iterable) {
+  public Collection<V> replaceValues(K k, Iterable<? extends V> iterable) {
     return null;
   }
 
   @Override
-  public Collection<V> removeAll(@Nullable Object o) {
+  public Collection<V> removeAll(Object o) {
     return null;
   }
 

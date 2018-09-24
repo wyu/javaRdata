@@ -8,7 +8,6 @@ import org.ms2ms.Disposable;
 import org.ms2ms.data.Binary;
 import org.ms2ms.data.collect.MultiTreeTable;
 import org.ms2ms.math.Stats;
-import org.ms2ms.r.Dataframe;
 import toools.set.IntHashSet;
 import toools.set.IntSet;
 

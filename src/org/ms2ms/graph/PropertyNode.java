@@ -1,6 +1,11 @@
 package org.ms2ms.graph;
 
+import org.ms2ms.utils.Strs;
 import org.ms2ms.utils.Tools;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 
 /**
  * ** Copyright 2014-2015 ms2ms.org
@@ -12,20 +17,30 @@ import org.ms2ms.utils.Tools;
  */
 public class PropertyNode extends Property
 {
+  public static final String CATEGORY = "category";
+  public static final String TYPE     = "type";
+
 //  protected Feature mProperties = new Feature();
   protected String mName;
   protected Long mID;
 
   public PropertyNode() { super(); }
   public PropertyNode(String n) { super(); setName(n); }
+  public PropertyNode(String n, String t) { super(); setName(n); setType(t); }
 
-  public String       getName()         { return mName; }
+  public String       getName()     { return mName; }
+  public String       getType()     { return getProperty(TYPE); }
+  public String       getCategory() { return getProperty(CATEGORY); }
+
   public Long getID() { return mID; }
 //  public Feature getFeature() { return mProperties; }
 
   public PropertyNode setName(String s) { mName=s; return this; }
   public PropertyNode setID(Long s) { mID=s; return this; }
+  public PropertyNode setCategory(String s) { setProperty(CATEGORY, s); return this; }
+  public PropertyNode setType(    String s) { setProperty(TYPE, s);     return this; }
 
+  public boolean isType(String s) { return Strs.equals(getType(), s); }
 //  public PropertyNode setProperty(String n, String v)
 //  {
 ////    if (mProperties==null) mProperties=new Feature();
@@ -34,6 +49,18 @@ public class PropertyNode extends Property
 //  }
 //  public String  getProperty(String s) { return getProperties()!=null ? getProperties().get(s) : null; }
 
+  public void writeCsv(FileWriter w, String... keys) throws IOException
+  {
+    w.write(getName()+",");
+    w.write(getID()+""+",");
+    w.write(getType()+""+",");
+
+    if (Tools.isSet(keys))
+      for (String key : keys)
+        if (!key.equals(TYPE)) w.write(","+getProperty(key));
+
+    w.write("\n");
+  }
   @Override
   public PropertyNode clone()
   {
@@ -55,7 +82,9 @@ public class PropertyNode extends Property
     if (s instanceof PropertyNode)
     {
       PropertyNode node = (PropertyNode)s;
-      return (mID==null || mID.equals(node.getID())) && (mName==null || mName.equals(node.getName()));
+      return (mID==null || mID.equals(node.getID())) &&
+       (getType()==null || getType().equals(node.getType())) &&
+           (mName==null || mName.equals(node.getName()));
     }
     return false;
   }

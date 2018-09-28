@@ -11,9 +11,12 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,9 +30,15 @@ public class XMLs
   public static final String CLASS_NAME = "cLaSsNaMe0000";
   public static final String SUPER_NAME = "sUpErNaMe1111";
 
-  public static XMLStreamReader newReader(String fileName) throws FileNotFoundException, XMLStreamException
+  public static XMLStreamReader newReader(String fileName) throws IOException, FileNotFoundException, XMLStreamException
   {
-    return XMLInputFactory.newInstance().createXMLStreamReader(fileName, new FileInputStream(fileName));
+    XMLInputFactory xif = XMLInputFactory.newInstance();
+
+    return fileName.indexOf(".gz")>0?
+        xif.createXMLStreamReader(new GZIPInputStream(new FileInputStream(fileName))):
+        xif.createXMLStreamReader(new FileReader(fileName));
+
+//    return XMLInputFactory.newInstance().createXMLStreamReader(fileName, new FileInputStream(fileName));
   }
   public static boolean isA(XMLStreamReader parser, int a, String name)
   {

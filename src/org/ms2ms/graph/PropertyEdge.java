@@ -2,6 +2,9 @@ package org.ms2ms.graph;
 
 import org.ms2ms.utils.Tools;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 /**
  * ** Copyright 2014-2015 ms2ms.org
  * <p/>
@@ -40,6 +43,28 @@ public class PropertyEdge extends Property
 
   public PropertyEdge setSource(Long s) { mSource=s; return this; }
   public PropertyEdge setTarget(Long s) { mTarget=s; return this; }
+
+  public void writeCsv(FileWriter w, PropertyNode src, PropertyNode tgt, String... keys) throws IOException
+  {
+    w.write(src.getName()+",");
+    w.write(tgt.getName()+""+",");
+
+    w.write(getId()+",");
+    w.write(getLabel()+""+",");
+    w.write(getDescription()+""+",");
+
+    w.write(getScore()+""+",");
+
+    w.write(getID()+",");
+    w.write(getSource()+""+",");
+    w.write(getTarget()+""+",");
+
+    if (Tools.isSet(keys))
+      for (String key : keys)
+        w.write(","+getProperty(key));
+
+    w.write("\n");
+  }
 
   @Override
   public String toString()

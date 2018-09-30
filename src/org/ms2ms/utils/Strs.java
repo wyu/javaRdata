@@ -185,6 +185,7 @@ public class Strs
 //
   public static String toString(String[] ss, String dl)
   {
+    if (!Tools.isSet(ss)) return "";
     return ss!=null&&ss.length==1?ss[0]:(toString(ss, dl, 0, ss != null ? ss.length : 0));
   }
   public static <K, T> String toString(Map<K, T> ss, String dl) {

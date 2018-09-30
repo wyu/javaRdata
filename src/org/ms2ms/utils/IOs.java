@@ -2330,5 +2330,14 @@ public class IOs
 
     return data;
   }
+  public static void close(FileWriter... ww)
+  {
+    try
+    {
+      if (Tools.isSet(ww))
+        for (FileWriter w : ww) w.close();
+    }
+    catch (IOException e) { e.printStackTrace(); }
+  }
 
 }

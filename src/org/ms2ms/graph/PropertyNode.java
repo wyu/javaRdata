@@ -93,4 +93,10 @@ public class PropertyNode extends Property
   {
     return super.hashCode() + Tools.hashCode(mID,mName);
   }
+
+  @Override
+  public String toString()
+  {
+    return mID!=null?mID.toString():(mName!=null?mName:super.toString());
+  }
 }

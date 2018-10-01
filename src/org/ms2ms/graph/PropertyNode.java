@@ -49,11 +49,22 @@ public class PropertyNode extends Property
 //  }
 //  public String  getProperty(String s) { return getProperties()!=null ? getProperties().get(s) : null; }
 
+  public static void writeCsvHeader(FileWriter w, String... keys) throws IOException
+  {
+    w.write("NAME,ID,TYPE");
+
+    if (Tools.isSet(keys))
+      for (String key : keys)
+        if (!key.equals(TYPE)) w.write(","+key);
+
+    w.write("\n");
+  }
+
   public void writeCsv(FileWriter w, String... keys) throws IOException
   {
     w.write(getName()+",");
     w.write(getID()+""+",");
-    w.write(getType()+""+",");
+    w.write(getType()+"");
 
     if (Tools.isSet(keys))
       for (String key : keys)

@@ -59,6 +59,16 @@ public class PropertyEdge extends DefaultWeightedEdge implements Cloneable
   public PropertyEdge setSource(Long s) { mSource=s; return this; }
   public PropertyEdge setTarget(Long s) { mTarget=s; return this; }
 
+  public static void writeCsvHeader(FileWriter w, String... keys) throws IOException
+  {
+    w.write("SRC_NAME,TARGET_NAME,id,LABEL,DESC,SCORE,ID,SRC_ID,TARGET_ID");
+
+    if (Tools.isSet(keys))
+      for (String key : keys) w.write(","+key);
+
+    w.write("\n");
+  }
+
   public void writeCsv(FileWriter w, PropertyNode src, PropertyNode tgt, String... keys) throws IOException
   {
     w.write(src.getName()+",");

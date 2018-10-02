@@ -16,6 +16,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Created with IntelliJ IDEA.
@@ -2339,5 +2341,20 @@ public class IOs
     }
     catch (IOException e) { e.printStackTrace(); }
   }
+  public static BufferedReader newBufferedReader(String filename, String encoding) throws IOException
+  {
+    InputStream fileStream = (filename.indexOf(".gz")>0?
+        new GZIPInputStream(new FileInputStream(filename)):
+        new FileInputStream(filename));
 
+    return new BufferedReader(new InputStreamReader(fileStream, encoding));
+  }
+  public static BufferedWriter newBufferedWriter(String filename, String encoding) throws IOException
+  {
+    OutputStream fileStream = (filename.indexOf(".gz")>0?
+        new GZIPOutputStream(new FileOutputStream(filename)):
+        new FileOutputStream(filename));
+
+    return new BufferedWriter(new OutputStreamWriter(fileStream, encoding));
+  }
 }

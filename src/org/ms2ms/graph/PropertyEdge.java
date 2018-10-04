@@ -68,21 +68,24 @@ public class PropertyEdge extends DefaultWeightedEdge implements Cloneable
 
     w.write("\n");
   }
-
+  private String wrap(Object s)
+  {
+    return s!=null?("\""+s.toString()+"\""):"";
+  }
   public void writeCsv(FileWriter w, PropertyNode src, PropertyNode tgt, String... keys) throws IOException
   {
-    w.write(src.getName()+",");
-    w.write(tgt.getName()+""+",");
+    w.write(wrap(src.getName())+",");
+    w.write(wrap(tgt.getName())+",");
 
-    w.write(getId()+",");
-    w.write(getLabel()+""+",");
-    w.write(getDescription()+""+",");
+    w.write(wrap(getId())+",");
+    w.write(wrap(getLabel())+",");
+    w.write(wrap(getDescription())+",");
 
-    w.write(getScore()+""+",");
+    w.write(wrap(getScore())+",");
 
-    w.write(getID()+",");
-    w.write(getSource()+""+",");
-    w.write(getTarget()+""+",");
+    w.write(wrap(getID())+",");
+    w.write(wrap(getSource())+",");
+    w.write(wrap(getTarget()));
 
     if (Tools.isSet(keys))
       for (String key : keys)

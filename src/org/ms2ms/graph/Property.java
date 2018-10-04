@@ -175,6 +175,11 @@ public class Property  implements Cloneable
   public boolean isValid()          { return mIsValid; }
   public void    isValid(boolean s) { mIsValid = s; }
 
+  protected String wrap(Object s)
+  {
+    return s!=null?("\""+s.toString()+"\""):"";
+  }
+
   public Property clone() throws CloneNotSupportedException
   {
     Property clone = (Property )super.clone();

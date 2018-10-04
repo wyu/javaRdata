@@ -62,13 +62,13 @@ public class PropertyNode extends Property
 
   public void writeCsv(FileWriter w, String... keys) throws IOException
   {
-    w.write(getName()+",");
-    w.write(getID()+""+",");
-    w.write(getType()+"");
+    w.write(wrap(getName())+",");
+    w.write(wrap(getID())+",");
+    w.write(wrap(getType()));
 
     if (Tools.isSet(keys))
       for (String key : keys)
-        if (!key.equals(TYPE)) w.write(","+getProperty(key));
+        if (!key.equals(TYPE)) w.write(","+wrap(getProperty(key)));
 
     w.write("\n");
   }

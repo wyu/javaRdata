@@ -263,13 +263,20 @@ public class TabFile
 
     return null;
   }
+  public String getStr(String... keys)
+  {
+    if (mCol != null && keys != null)
+      for (String key : keys)
+        if (get(key)!=null) return mCol.get(key);
+
+    return null;
+  }
+
   public String get(String key)
   {
     String value = null;
     if (mCol != null && key != null)
-    {
-      value = mCol.get(key);
-    }
+        value = mCol.get(key);
 
     return value;
   }

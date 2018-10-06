@@ -1,6 +1,7 @@
 package org.ms2ms.data.collect;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 import com.google.common.collect.TreeMultimap;
@@ -15,7 +16,7 @@ import java.util.*;
  * Time: 8:42 PM
  * To change this template use File | Settings | File Templates.
  */
-public class MultiTreeTable<K extends Comparable, L extends Comparable, T extends Comparable>
+public class MultiTreeTable<K extends Comparable, L extends Comparable, T extends Comparable> implements Cloneable
 {
   private SortedMap<K, TreeMultimap<L, T>> mData;
 
@@ -163,6 +164,19 @@ public class MultiTreeTable<K extends Comparable, L extends Comparable, T extend
 
     return values;
   }
+
+  @Override
+  public MultiTreeTable<K,L,T> clone()
+  {
+    MultiTreeTable<K,L,T> cloned = MultiTreeTable.create(); // do we need to clone the indices?
+
+    for (K key : mData.keySet())
+      for (L lab : mData.get(key).keySet())
+        cloned.putAll(key, lab, get(key,lab));
+
+    return cloned;
+  }
+
   public static <R extends Comparable, C extends Comparable, V extends Comparable> MultiTreeTable<R, C, V>
   create() { return new MultiTreeTable<R, C, V>(); }
 

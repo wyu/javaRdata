@@ -148,6 +148,12 @@ public class Strs
 
     return split(s, t, false)[0];
   }
+  public static String split2back(String s, char t)
+  {
+    if (s == null || t == 0) return "";
+
+    return Tools.back(split(s, t, false));
+  }
 
   // Perl style split which retains the delimiter
   // http://stackoverflow.com/questions/2206378/how-to-split-a-string-but-also-keep-the-delimiters

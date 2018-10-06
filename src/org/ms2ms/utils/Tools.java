@@ -45,6 +45,17 @@ public class Tools
   public static     boolean isNoneZero(Integer   s) { return s!=null && s!=0; }
   public static     boolean isNoneZero(Point     s) { return s!=null && (isSet(s.getX()) || isSet(s.getY())); }
 
+  public static SortedMap[] cloneMapArray(SortedMap[] x)
+  {
+    if (x==null) return x;
+
+    SortedMap[] cloned = new TreeMap[x.length];
+    for (int i=0; i<x.length; i++)
+      cloned[i] = new TreeMap(x[i]);
+
+    return cloned;
+  }
+
   public static double[] cloneDoubleArray(double[] x)
   {
     return (x!=null?Arrays.copyOf(x, x.length):null);

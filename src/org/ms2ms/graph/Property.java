@@ -102,6 +102,16 @@ public class Property  implements Cloneable
 
     return Tools.toFloatArray(vals);
   }
+  public Integer[] getIntegers(String key, char t)
+  {
+    String[] items = getProperties(key,t);
+    if (!Tools.isSet(items)) return null;
+
+    List<Integer> vals = new ArrayList<>();
+    for (String item : items) vals.add(Integer.parseInt(item));
+
+    return Tools.toIntegerArray(vals);
+  }
 
   public void setProperties(Map<String, String> s)
   {

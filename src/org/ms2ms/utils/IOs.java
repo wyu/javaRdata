@@ -959,18 +959,6 @@ public class IOs
           write(ds, data.get(row, col));
         }
   }
-//  public static void writeIntStrDouble(DataOutput ds, Table<Integer, String,  Double> data) throws IOException
-//  {
-//    write(ds, Tools.isSet(data) ? data.rowKeySet().size() : 0);
-//    if (Tools.isSet(data))
-//      for (Integer row : data.rowKeySet())
-//        for (String col : data.row(row).keySet())
-//        {
-//          write(ds, row);
-//          write(ds, col);
-//          write(ds, data.get(row, col));
-//        }
-//  }
   public static <T extends Binary> void
   writeIntMap(DataOutput ds, Map<Integer, T> data) throws IOException
   {
@@ -2226,8 +2214,32 @@ public class IOs
       writeStrMaps(ds, data.getData().get(row));
     }
   }
+  public static <T extends Binary & Comparable> MultiTreeTable<Float, Float, T>
+    readFloat2FloatMultiTable(DataInput ds, Class<T> template) throws IOException
+  {
+    int R = read(ds,0);
+    // create the local table
+    MultiTreeTable<Float, Float, T> D = MultiTreeTable.create();
+    // read the rows and cols
+    for (int r=0; r<R; r++)
+    {
+      D.put(read(ds, 0f), readFloatMaps(ds, TreeMultimap.create(), template));
+    }
+
+    return D;
+  }
+  public static <T extends Binary & Comparable> void
+    writeFloat2FloatMultiTable(DataOutput ds, MultiTreeTable<Float, Float, T> data) throws IOException
+  {
+    write(ds, data.keySet().size());
+    for (Float row : data.keySet())
+    {
+      write(ds, row);
+      writeFloatMaps(ds, data.getData().get(row));
+    }
+  }
   public static <T extends Binary & Comparable> MultiTreeTable<String, String, T>
-    readStr2StrMultiTable(DataInput ds, Class<T> template) throws IOException
+  readStr2StrMultiTable(DataInput ds, Class<T> template) throws IOException
   {
     int R = read(ds,0);
     // create the local table

@@ -662,6 +662,17 @@ public class Tools
     }
     return data;
   }
+  public static Integer[] toIntegerArray(Collection<Integer> s)
+  {
+    if (s==null) return null;
+    Integer[] data = new Integer[s.size()];
+    int order=0;
+    for (Integer d : s)
+    {
+      data[order++] = d;
+    }
+    return data;
+  }
   public static BitSet fromByteArray(byte[] bytes)
   {
     BitSet bits = new BitSet();

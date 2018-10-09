@@ -11,7 +11,5 @@
     <orderEntry type="library" exported="" name="javaRdata" level="project" />
     <orderEntry type="library" name="javaRdata" level="project" />
     <orderEntry type="library" name="log4j-1.2.13" level="project" />
-    <orderEntry type="library" name="biograkn" level="project" />
-    <orderEntry type="library" name="grakn-lib" level="project" />
   </component>
 </module>

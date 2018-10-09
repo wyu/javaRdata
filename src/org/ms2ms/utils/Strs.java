@@ -215,8 +215,10 @@ public class Strs
   public static <T> String toString(T[] ss, String dl) {
     // no point to go further
     if (ss == null) return null;
-    String made = new String();
-    for (int i = 0; i != ss.length; i++)
+    if (ss.length==1) return ss[0].toString();
+
+    String made = new String(ss[0].toString());
+    for (int i = 1; i != ss.length; i++)
       if (ss[i] != null) made = extend(made, ss[i].toString(), dl);
     // return the concatenated string
     return made;

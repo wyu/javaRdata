@@ -1,7 +1,6 @@
 package org.ms2ms.graph;
 
-import org.jgrapht.DirectedGraph;
-import org.jgrapht.WeightedGraph;
+import org.jgrapht.graph.DefaultDirectedGraph;
 import org.ms2ms.utils.Tools;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -26,7 +25,7 @@ public class Exporters
    * @param writer the writer to which the graph to be exported
    * @param g the graph to be exported
    */
-  public static void exportDenovoGraph(Writer writer, WeightedGraph<Double, DenovoEdge> g) throws SAXException, TransformerConfigurationException
+  public static void exportDenovoGraph(Writer writer, DefaultDirectedGraph<Double, DenovoEdge> g) throws SAXException, TransformerConfigurationException
   {
     // Prepare an XML file to receive the GraphML data
     PrintWriter out = new PrintWriter(writer);
@@ -91,7 +90,7 @@ public class Exporters
     // <graph>
     attr.clear();
     attr.addAttribute("", "", "edgedefault", "CDATA",
-        (g instanceof DirectedGraph<?, ?>) ? "directed" : "undirected");
+        (g instanceof DefaultDirectedGraph<?, ?>) ? "directed" : "undirected");
     handler.startElement("", "", "graph", attr);
 
     // Add all the vertices as <node> elements...

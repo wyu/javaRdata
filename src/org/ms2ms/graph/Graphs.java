@@ -10,21 +10,13 @@ import com.thinkaurelius.titan.core.schema.TitanManagement;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.TransactionalGraph;
 import com.tinkerpop.blueprints.Vertex;
-import org.jgrapht.DirectedGraph;
 import org.jgrapht.Graph;
-import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.graph.Subgraph;
-import org.ms2ms.data.Binary;
-import org.ms2ms.utils.IOs;
 import org.ms2ms.utils.Strs;
 import org.ms2ms.utils.Tools;
 import psidev.psi.mi.xml.model.*;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -81,7 +73,7 @@ public class Graphs
 ////    DirectedGraph<PropertyNode, PropertyEdge> graph = XgmmlReader.read(dir.getAbsolutePath(), xgmmls);
 //  }
   // adapted from stackoverflow.com/question/58306/graph-algorithm-to-find-all-connections-between-two-arbitrary-vertices
-  public static Collection<List<PropertyNode>> simplePaths(DirectedGraph<PropertyNode, PropertyEdge> graph,
+  public static Collection<List<PropertyNode>> simplePaths(DefaultDirectedGraph<PropertyNode, PropertyEdge> graph,
                                                            PropertyNode START, PropertyNode END, int max)
   {
     Collection<List<PropertyNode>> paths = new ArrayList<>();
@@ -92,7 +84,7 @@ public class Graphs
 
     return paths;
   }
-  public static int breadthFirst(DirectedGraph<PropertyNode, PropertyEdge> graph,
+  public static int breadthFirst(DefaultDirectedGraph<PropertyNode, PropertyEdge> graph,
                                  LinkedList<PropertyNode> visited, Set<PropertyNode> cache,
                                  PropertyNode END, Collection<List<PropertyNode>> paths, int max)
   {
@@ -298,7 +290,7 @@ public class Graphs
 //    // let's make sure the index is ready
 //    awaitIndex(graph, 10);
 //  }
-  public static void save(TitanGraph graph, DirectedGraph<PropertyNode, PropertyEdge> G)
+  public static void save(TitanGraph graph, DefaultDirectedGraph<PropertyNode, PropertyEdge> G)
   {
     // save the network to the graph
     Map<Long, Vertex> id_node = new HashMap<>();
@@ -479,8 +471,8 @@ public class Graphs
       controlled vocabulary. Thus the only current recommendation is to use score types consistently within one source.
       Multiple scores separated by "|".
 */
-  public static DirectedGraph<PropertyNode, PropertyEdge> readPsiMI(
-                DirectedGraph<PropertyNode, PropertyEdge> graph,
+  public static DefaultDirectedGraph<PropertyNode, PropertyEdge> readPsiMI(
+                DefaultDirectedGraph<PropertyNode, PropertyEdge> graph,
                 Map<String, PropertyNode> tag_node, EntrySet es)
   {
     for (Entry E : es.getEntries())
@@ -558,29 +550,29 @@ public class Graphs
     }
     return tag_accession;
   }
-  public static <V, E, G extends UndirectedGraph<V, E>> Collection<Subgraph<V,E,G>> decompose(G graph, int min)
-  {
-    ConnectivityInspector<V, E> inspector = new ConnectivityInspector<V, E>(graph);
-    List<Set<V>>                connected = inspector.connectedSets();
-
-    Collection<Subgraph<V,E,G>> components = new ArrayList<>();
-    for (Set<V> set : connected)
-      if (set.size()>=min) components.add(new Subgraph(graph, set));
-
-    return components;
-  }
-  public static <V, E, G extends DirectedGraph<V, E>> Collection<Subgraph<V,E,G>>
-  decompose_directed(G graph, int min)
-  {
-    ConnectivityInspector<V, E> inspector = new ConnectivityInspector<V, E>(graph);
-    List<Set<V>>                connected = inspector.connectedSets();
-
-    Collection<Subgraph<V,E,G>> components = new ArrayList<>();
-    for (Set<V> set : connected)
-      if (set.size()>=min) components.add(new Subgraph(graph, set));
-
-    return components;
-  }
+//  public static <V, E, G extends UndirectedGraph<V, E>> Collection<Subgraph<V,E,G>> decompose(G graph, int min)
+//  {
+//    ConnectivityInspector<V, E> inspector = new ConnectivityInspector<V, E>(graph);
+//    List<Set<V>>                connected = inspector.connectedSets();
+//
+//    Collection<Subgraph<V,E,G>> components = new ArrayList<>();
+//    for (Set<V> set : connected)
+//      if (set.size()>=min) components.add(new Subgraph(graph, set));
+//
+//    return components;
+//  }
+//  public static <V, E, G extends DirectedGraph<V, E>> Collection<Subgraph<V,E,G>>
+//  decompose_directed(G graph, int min)
+//  {
+//    ConnectivityInspector<V, E> inspector = new ConnectivityInspector<V, E>(graph);
+//    List<Set<V>>                connected = inspector.connectedSets();
+//
+//    Collection<Subgraph<V,E,G>> components = new ArrayList<>();
+//    for (Set<V> set : connected)
+//      if (set.size()>=min) components.add(new Subgraph(graph, set));
+//
+//    return components;
+//  }
   public static void dispose(DefaultDirectedGraph g)
   {
     if (g!=null)

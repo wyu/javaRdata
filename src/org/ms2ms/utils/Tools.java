@@ -51,7 +51,7 @@ public class Tools
 
     SortedMap[] cloned = new TreeMap[x.length];
     for (int i=0; i<x.length; i++)
-      cloned[i] = new TreeMap(x[i]);
+      if (x[i]!=null) cloned[i] = new TreeMap(x[i]);
 
     return cloned;
   }

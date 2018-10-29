@@ -3,6 +3,7 @@ package org.ms2ms.utils;
 import com.compomics.util.io.FilenameExtensionFilter;
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
+import com.google.gson.stream.JsonReader;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.ms2ms.Disposable;
 import org.ms2ms.data.Binary;
@@ -28,6 +29,12 @@ import java.util.zip.GZIPOutputStream;
  */
 public class IOs
 {
+  public static JsonReader newJsonReader(String ov) throws IOException
+  {
+    return new JsonReader(new InputStreamReader(ov.indexOf(".gz")>0?
+      new GZIPInputStream(new FileInputStream(ov)):
+      new FileInputStream(ov)));
+  }
   public static boolean exists(String s)
   {
     if (!Strs.isSet(s)) return false;

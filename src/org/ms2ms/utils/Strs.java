@@ -3,7 +3,9 @@ package org.ms2ms.utils;
 import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Range;
 import com.google.common.collect.Table;
+import org.apache.commons.lang.math.NumberUtils;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -153,6 +155,36 @@ public class Strs
     if (s == null || t == 0) return "";
 
     return Tools.back(split(s, t, false));
+  }
+  public static Integer[] split2Ints(String s, char t)
+  {
+    if (s == null || t == 0) return null;
+
+    String[] ss = split(s, t, true);
+    if (Tools.isSet(ss))
+    {
+      Integer[] out = new Integer[ss.length];
+      for (int i=0; i<ss.length; i++) out[i] = Integer.parseInt(ss[i]);
+      return out;
+    }
+    return null;
+  }
+  public static Range<Integer> split2IntRange(String s, char t)
+  {
+    if (s == null || t == 0) return null;
+
+    String[] ss = split(s, t, true);
+    if (Tools.isSet(ss))
+    {
+      Integer[] out = new Integer[ss.length];
+      try
+      {
+        for (int i=0; i<ss.length; i++) out[i] = Integer.parseInt(ss[i]);
+      }
+      catch (Exception e) { return null; }
+      return out.length>1?Range.closed(out[0],out[1]):null;
+    }
+    return null;
   }
 
   // Perl style split which retains the delimiter
@@ -759,6 +791,10 @@ public class Strs
     }
 
     return wiki;
+  }
+  public static String replaceAll(String s, String fr, String to)
+  {
+    return (isSet(s) && s.indexOf(fr)>=0)?s.replaceAll(fr,to):s;
   }
 //  public static String fromLast(List<String> s, int n)
 //  {

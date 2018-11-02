@@ -19,6 +19,7 @@ public class PropertyNode extends Property
 {
   public static final String CATEGORY = "category";
   public static final String TYPE     = "type";
+  public static final String UID      = "uid";
 
 //  protected Feature mProperties = new Feature();
   protected String mName;
@@ -31,13 +32,15 @@ public class PropertyNode extends Property
   public String       getName()     { return mName; }
   public String       getType()     { return getProperty(TYPE); }
   public String       getCategory() { return getProperty(CATEGORY); }
+  public String       getUID()      { return getProperty(UID); }
 
   public Long getID() { return mID; }
 //  public Feature getFeature() { return mProperties; }
 
-  public PropertyNode setName(String s) { mName=s; return this; }
-  public PropertyNode setID(Long s) { mID=s; return this; }
+  public PropertyNode setName(    String s) { mName=s;                  return this; }
+  public PropertyNode setID(        Long s) { mID=s;                    return this; }
   public PropertyNode setCategory(String s) { setProperty(CATEGORY, s); return this; }
+  public PropertyNode setUID(     String s) { setProperty(UID, s);      return this; }
   public PropertyNode setType(    String s) { setProperty(TYPE, s);     return this; }
 
   public boolean isType(String s) { return Strs.equals(getType(), s); }
@@ -62,13 +65,15 @@ public class PropertyNode extends Property
 
   public void writeCsv(FileWriter w, String... keys) throws IOException
   {
+    w.write(wrap(getUID())+",");
     w.write(wrap(getName())+",");
     w.write(wrap(getID())+",");
     w.write(wrap(getType()));
 
     if (Tools.isSet(keys))
       for (String key : keys)
-        if (!key.equals(TYPE)) w.write(","+wrap(getProperty(key)));
+        if (!key.equals(TYPE) && !TYPE.equals(key))
+          w.write(","+wrap(getProperty(key)));
 
     w.write("\n");
   }

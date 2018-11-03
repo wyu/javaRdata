@@ -54,7 +54,7 @@ public class PropertyNode extends Property
 
   public static void writeCsvHeader(FileWriter w, String... keys) throws IOException
   {
-    w.write("NAME,ID,TYPE");
+    w.write("UID,NAME,ID,TYPE");
 
     if (Tools.isSet(keys))
       for (String key : keys)

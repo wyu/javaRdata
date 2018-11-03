@@ -61,7 +61,7 @@ public class PropertyEdge extends DefaultWeightedEdge implements Cloneable
 
   public static void writeCsvHeader(FileWriter w, String... keys) throws IOException
   {
-    w.write("SRC_NAME,TARGET_NAME,id,LABEL,DESC,SCORE,ID,SRC_ID,TARGET_ID");
+    w.write("SRC_UID,TARGET_UID,SRC_NAME,TARGET_NAME,id,LABEL,DESC,SCORE,ID,SRC_ID,TARGET_ID");
 
     if (Tools.isSet(keys))
       for (String key : keys) w.write(","+key);
@@ -74,6 +74,8 @@ public class PropertyEdge extends DefaultWeightedEdge implements Cloneable
   }
   public void writeCsv(FileWriter w, PropertyNode src, PropertyNode tgt, String... keys) throws IOException
   {
+    w.write(wrap(src.getUID())+",");
+    w.write(wrap(tgt.getUID())+",");
     w.write(wrap(src.getName())+",");
     w.write(wrap(tgt.getName())+",");
 

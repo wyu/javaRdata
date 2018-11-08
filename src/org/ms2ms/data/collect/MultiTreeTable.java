@@ -96,6 +96,7 @@ public class MultiTreeTable<K extends Comparable, L extends Comparable, T extend
       D.putAll(lable, data);
     }
   }
+  public Collection<K> rowSet() { return mData.keySet(); }
   public Collection<K> keySet() { return mData.keySet(); }
   public Collection<T> values()
   {

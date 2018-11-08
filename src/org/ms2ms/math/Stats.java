@@ -28,8 +28,8 @@ public class Stats
 
   static
   {
-    for (long i=0L; i<18L; i++) sLnFactorials.put(i, Math.log(factorial(i)));
-    for (Double i=0d; i<18d; i++) sLnDblFactorials.put(i, Math.log(factorial(i)));
+    for (long   i=0L; i<18L; i++) sLnFactorials.put(   i, Math.log(factorial(i)));
+    for (Double i=0d; i<20d; i++) sLnDblFactorials.put(i, Math.log(factorial(i)));
   }
   public static Double lookup(Map<Double, Double> min_ppm, Double rt)
   {
@@ -113,6 +113,8 @@ public class Stats
       prod *= k;
     return prod;
   }
+  public static double ln_permutation(double n, double k) { return ln_factorial(n)-ln_factorial(n-k); }
+  public static double ln_permutation(long n, long k) { return ln_factorial(n)-ln_factorial(n-k); }
   public static double ln_combination(long n, long k) { return ln_factorial(n)-ln_factorial(k)-ln_factorial(n-k); }
   public static double ln_factorial(long n)
   {
@@ -124,7 +126,7 @@ public class Stats
   public static double ln_factorial(double n)
   {
     if (n>17) return 0.5d*Math.log(2d*n*3.14) + n*Math.log(n) - n;
-    return sLnDblFactorials.get(n);
+    return sLnDblFactorials.get((double )Math.round(n));
   }
   public static double hypergeometricPval1(long success, long trials, long success_population, long population)
   {

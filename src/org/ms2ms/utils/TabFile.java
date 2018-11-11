@@ -23,10 +23,8 @@ public class TabFile
   private String             mDelimiter  = tabb;
   private char               mTokenChar  = 0;
   private Pattern mToken      = Pattern.compile(tabb);
-  private String             mFilename   = null;
-  private String             mCurrentLine = null;
-  private String             mHeaderLine = null;
-  private String             mSkip       = null;
+  private String             mFilename   = null,mCurrentLine=null,mHeaderLine=null;
+  private String             mSkip       = null, mRowHeader=null;
 
   public static String       comma       = ",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
   public static String       tabb        = "\\t";
@@ -38,6 +36,13 @@ public class TabFile
   public static String       at          = "@";
   public static String       pipe        = "\\|";
   public static String       pminus      = "?";
+
+  public TabFile(String              infile) throws IOException
+  {
+    // no need to trap the exceptions since they are
+    // delegated to the calling party
+    mFilename   = infile;
+  }
 
   public TabFile(String              infile,
                  String              delimiter) throws IOException
@@ -105,7 +110,7 @@ public class TabFile
 
     init();
   }
-  protected void init() throws IOException
+  public TabFile init() throws IOException
   {
     InputStream is = new FileInputStream(mFilename);
     // Gracefully handle gzipped files.
@@ -113,6 +118,7 @@ public class TabFile
       is = new GZIPInputStream(is);
     }
     init(is);
+    return this;
   }
   protected void init(InputStream is) throws IOException
   {
@@ -138,16 +144,18 @@ public class TabFile
 
       if (Strs.isSet(mHeaderLine))
       {
+        if (Strs.isSet(getRowHeader())) mHeaderLine = getRowHeader()+getDelimiter()+mHeaderLine;
         mHds = split(mHeaderLine);
         Strs.trim(     mHds);
         Strs.dequotes( mHds, '"');
       }
     }
   }
-  public String              getFileName()  { return mFilename; }
-  public String              getDelimiter() { return mDelimiter; }
-  public String[]            getHeaders()   { return mHds; }
-  public String              getHeaderLine() { return mHeaderLine; }
+  public String   getFileName()  { return mFilename; }
+  public String   getDelimiter() { return mDelimiter; }
+  public String[] getHeaders()   { return mHds; }
+  public String   getHeaderLine(){ return mHeaderLine; }
+  public String   getRowHeader() { return mRowHeader; }
 
   //--------------------------------------------------------------------------
   public Map<String, String> getMappedRow()
@@ -158,12 +166,14 @@ public class TabFile
 //  public Double number( String key) { return Double.parseDouble(cells(key)); }
 //  public Long   integer(String key) { return Long.parseLong(cells(key)); }
 
+  public TabFile setRowHeader(String s) { mRowHeader=s; return this; }
   public String getCurrentLine() { return mCurrentLine; }
 
-  public void setDelimiter(String s)
+  public TabFile setDelimiter(String s)
   {
     mDelimiter =  s;
     mToken     = (s != null ? Pattern.compile(s) : null);
+    return this;
   }
   //--------------------------------------------------------------------------
   public boolean hasNext() throws IOException

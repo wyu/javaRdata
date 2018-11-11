@@ -577,6 +577,20 @@ public class IOs
     }
     return null;
   }
+  public static TreeBasedTable<String, String, String> readStrTable(DataInput ds) throws IOException
+  {
+    int n = read(ds, 1); // values.size()
+    if (n>0)
+    {
+      TreeBasedTable<String,  String, String> out = TreeBasedTable.create();
+      for (int i=0; i<n; i++)
+      {
+        out.put(read(ds, ""), read(ds, ""), read(ds, ""));
+      }
+      return out;
+    }
+    return null;
+  }
   public static <T extends Binary> TreeBasedTable<Float, Float, T>
   readFloatFloatBin(DataInput ds, TreeBasedTable<Float, Float, T> out, Class<T> t) throws IOException
   {
@@ -965,6 +979,23 @@ public class IOs
           write(ds, col);
           write(ds, data.get(row, col));
         }
+  }
+  public static void writeStrTable(
+      DataOutput ds, Table<String, String, String> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.values().size() : 0);
+    int totals=0;
+    if (Tools.isSet(data))
+      for (String row : data.rowKeySet())
+        for (String col : data.row(row).keySet())
+        {
+          write(ds, row);
+          write(ds, col);
+          write(ds, data.get(row, col));
+          totals++;
+        }
+
+    if (totals!=data.values().size()) throw new RuntimeException("#cells!=#values");
   }
   public static <T extends Binary> void
   writeIntMap(DataOutput ds, Map<Integer, T> data) throws IOException

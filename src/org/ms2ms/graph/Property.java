@@ -102,6 +102,16 @@ public class Property  implements Cloneable
 
     return Tools.toFloatArray(vals);
   }
+  public double[] getDoubles(String key, char t)
+  {
+    String[] items = getProperties(key,t);
+    if (!Tools.isSet(items)) return null;
+
+    List<Double> vals = new ArrayList<>();
+    for (String item : items) vals.add(Double.parseDouble(item));
+
+    return Tools.toDoubleArray(vals);
+  }
   public Integer[] getIntegers(String key, char t)
   {
     String[] items = getProperties(key,t);

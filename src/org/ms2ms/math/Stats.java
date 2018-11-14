@@ -532,6 +532,16 @@ public class Stats
     Collections.sort(d);
     return d.get((int )Math.round(data.size()*pct*0.01));
   }
+  public static double[] percentiles(List<Double> data, double... pct)
+  {
+    if (data==null) return null;
+
+    double[] pcts = new double[pct.length];
+    for (int i=0; i<pct.length; i++)
+      pcts[i] = data.get((int )Math.round((data.size()-1)*pct[i]*0.01));
+
+    return pcts;
+  }
   public static Collection<int[]> permutations(int n, int r)
   {
     if (sPermutationCache.contains(n, r)) return sPermutationCache.get(n,r);

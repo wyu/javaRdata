@@ -2377,7 +2377,7 @@ public class IOs
     }
     catch (IOException e)
     {
-      e.printStackTrace();
+      throw new RuntimeException(file+" not found!", e);
     }
 
     return data;

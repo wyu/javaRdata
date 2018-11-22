@@ -4,6 +4,7 @@ import com.compomics.util.io.FilenameExtensionFilter;
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
 import com.google.gson.stream.JsonReader;
+import com.hfg.util.collection.BiHashMap;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.ms2ms.Disposable;
 import org.ms2ms.data.Binary;
@@ -1462,6 +1463,18 @@ public class IOs
       }
   }
   public static void
+  writeStrFloat(DataOutput ds, Map<String, Float> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.keySet().size() : 0);
+
+    if (Tools.isSet(data))
+      for (String key : data.keySet())
+      {
+        write(ds, key);
+        write(ds, data.get(key));
+      }
+  }
+  public static void
   writeStrInt(DataOutput ds, Map<String, Integer> data) throws IOException
   {
     write(ds, Tools.isSet(data) ? data.keySet().size() : 0);
@@ -1679,6 +1692,24 @@ public class IOs
     if (n > 0)
     {
       TreeMap<String, Double> data = new TreeMap<>();
+      for (int i = 0; i < n; i++)
+      {
+        String new_k = read(ds, "");
+        Double new_t = read(ds, 0d);
+        data.put(new_k, new_t);
+      }
+      return data;
+    }
+    return null;
+  }
+  public static BiMap<String, Double>
+  readStrDoubleBi(DataInput ds)  throws IOException
+  {
+    int n = read(ds, 0);
+
+    if (n > 0)
+    {
+      BiMap<String, Double> data = HashBiMap.create();
       for (int i = 0; i < n; i++)
       {
         String new_k = read(ds, "");

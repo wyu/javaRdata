@@ -250,6 +250,19 @@ public class IOs
     }
     return null;
   }
+  public static Set<Double> readDoubleSet(DataInput ds) throws IOException
+  {
+    int n = read(ds, 0);
+
+    if (n > 0)
+    {
+      SortedSet<Double> data = new TreeSet<>();
+      for (int i = 0; i < n; i++) data.add(ds.readDouble());
+
+      return data;
+    }
+    return null;
+  }
   public static double[] read(DataInput ds, double[] data) throws IOException
   {
     int n = read(ds, 0);
@@ -487,6 +500,29 @@ public class IOs
         {
           T K = IOs.read(ds, template.newInstance());
           data.put(K, read(ds, new float[1]));
+        }
+      }
+      catch (IllegalAccessException | InstantiationException e2)
+      {
+        throw new RuntimeException(e2);
+      }
+    }
+    return data;
+  }
+  public static <T extends Binary> Map<T, double[]>
+  readBinDoublesMap(DataInput ds, Map<T, double[]> data, Class<T> template) throws IOException
+  {
+    int n = read(ds, 0);
+
+    if (n > 0)
+    {
+      try
+      {
+        if (data == null) data = new TreeMap<T, double[]>();
+        for (int i = 0; i < n; i++)
+        {
+          T K = IOs.read(ds, template.newInstance());
+          data.put(K, read(ds, new double[1]));
         }
       }
       catch (IllegalAccessException | InstantiationException e2)
@@ -1023,6 +1059,18 @@ public class IOs
       }
   }
   public static <T extends Binary> void
+  writeBinDoublesMap(DataOutput ds, Map<T, double[]> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.size() : 0);
+
+    if (Tools.isSet(data))
+      for (T key : data.keySet())
+      {
+        write(ds, key);
+        write(ds, data.get(key));
+      }
+  }
+  public static <T extends Binary> void
   writeLongMap(DataOutput ds, Map<Long, T> data) throws IOException
   {
     write(ds, Tools.isSet(data) ? data.size() : 0);
@@ -1362,6 +1410,19 @@ public class IOs
     if (Tools.isSet(data))
     {
       for (Float key : data.keySet())
+      {
+        write(ds, key);
+        write(ds, data.get(key));
+      }
+    }
+  }
+  public static <T extends Binary> void
+  writeDoubleMaps(DataOutput ds, Multimap<Double, T> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.keySet().size() : 0);
+    if (Tools.isSet(data))
+    {
+      for (Double key : data.keySet())
       {
         write(ds, key);
         write(ds, data.get(key));

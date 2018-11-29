@@ -5,8 +5,6 @@ import com.google.common.primitives.Booleans;
 import com.google.common.primitives.Doubles;
 import org.expasy.mzjava.core.ms.PpmTolerance;
 import org.expasy.mzjava.core.ms.Tolerance;
-import org.expasy.mzjava.core.ms.peaklist.Peak;
-import org.ms2ms.Disposable;
 import org.ms2ms.data.Point;
 import org.ms2ms.data.collect.MultiTreeTable;
 import org.ms2ms.math.Stats;

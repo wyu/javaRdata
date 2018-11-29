@@ -1,4 +1,4 @@
-package com.amgen.seattle.bioinfo.algorithm;
+package org.ms2ms.math;
 
 /** Adapted from the Matlab scripts by
  *

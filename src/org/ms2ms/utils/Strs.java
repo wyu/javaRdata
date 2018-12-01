@@ -444,6 +444,16 @@ public class Strs
 
     return out;
   }
+  public static String[] merge(String[]... s)
+  {
+    if (!Tools.isSet(s)) return null;
+
+    List<String> items = new ArrayList<>();
+    for (String[] item : s)
+      for (String itm : item) items.add(itm);
+
+    return items.toArray(new String[] {});
+  }
   public static String toString(String s) { return s!=null?s:""; }
   public static String toString(Long s) { return s!=null?s.toString():""; }
   public static String toString(Table t)

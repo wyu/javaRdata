@@ -899,7 +899,8 @@ public class IOs
         String new_k = read(ds, "");
         if (isnull(ds)) continue;
 
-        data.put(new_k, readObject(ds, ignoreUnknown));
+        Tools.put(data, new_k, readObject(ds, ignoreUnknown));
+//        data.put(new_k, readObject(ds, ignoreUnknown));
       }
     }
     return data;

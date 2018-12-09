@@ -5,7 +5,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 import com.google.common.collect.Table;
-import org.apache.commons.lang.math.NumberUtils;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -568,11 +567,11 @@ public class Strs
   public static boolean isSet(StringBuilder  s) { return s!=null && s.length()>0; }
 
   // return TRUE if s is a part of any item from vals
-  public static boolean hasA(String s, String... vals)
+  public static boolean hasA(String s, int start, String... vals)
   {
     if (Tools.isSet(vals))
       for (String val : vals)
-        if (indexOf(s, val)>=0) return true;
+        if (indexOf(s, val)>=start) return true;
 
     return false;
   }

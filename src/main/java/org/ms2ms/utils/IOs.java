@@ -4,6 +4,7 @@ import com.compomics.util.io.FilenameExtensionFilter;
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
 import com.google.gson.stream.JsonReader;
+import com.hfg.util.collection.BiHashMap;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.ms2ms.data.Binary;
 import org.ms2ms.data.collect.MultiTreeTable;
@@ -248,6 +249,19 @@ public class IOs
     }
     return null;
   }
+  public static Set<Double> readDoubleSet(DataInput ds) throws IOException
+  {
+    int n = read(ds, 0);
+
+    if (n > 0)
+    {
+      SortedSet<Double> data = new TreeSet<>();
+      for (int i = 0; i < n; i++) data.add(ds.readDouble());
+
+      return data;
+    }
+    return null;
+  }
   public static double[] read(DataInput ds, double[] data) throws IOException
   {
     int n = read(ds, 0);
@@ -485,6 +499,29 @@ public class IOs
         {
           T K = IOs.read(ds, template.newInstance());
           data.put(K, read(ds, new float[1]));
+        }
+      }
+      catch (IllegalAccessException | InstantiationException e2)
+      {
+        throw new RuntimeException(e2);
+      }
+    }
+    return data;
+  }
+  public static <T extends Binary> Map<T, double[]>
+  readBinDoublesMap(DataInput ds, Map<T, double[]> data, Class<T> template) throws IOException
+  {
+    int n = read(ds, 0);
+
+    if (n > 0)
+    {
+      try
+      {
+        if (data == null) data = new TreeMap<T, double[]>();
+        for (int i = 0; i < n; i++)
+        {
+          T K = IOs.read(ds, template.newInstance());
+          data.put(K, read(ds, new double[1]));
         }
       }
       catch (IllegalAccessException | InstantiationException e2)
@@ -861,7 +898,8 @@ public class IOs
         String new_k = read(ds, "");
         if (isnull(ds)) continue;
 
-        data.put(new_k, readObject(ds, ignoreUnknown));
+        Tools.put(data, new_k, readObject(ds, ignoreUnknown));
+//        data.put(new_k, readObject(ds, ignoreUnknown));
       }
     }
     return data;
@@ -1010,6 +1048,18 @@ public class IOs
   }
   public static <T extends Binary> void
   writeBinFloatsMap(DataOutput ds, Map<T, float[]> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.size() : 0);
+
+    if (Tools.isSet(data))
+      for (T key : data.keySet())
+      {
+        write(ds, key);
+        write(ds, data.get(key));
+      }
+  }
+  public static <T extends Binary> void
+  writeBinDoublesMap(DataOutput ds, Map<T, double[]> data) throws IOException
   {
     write(ds, Tools.isSet(data) ? data.size() : 0);
 
@@ -1367,6 +1417,19 @@ public class IOs
     }
   }
   public static <T extends Binary> void
+  writeDoubleMaps(DataOutput ds, Multimap<Double, T> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.keySet().size() : 0);
+    if (Tools.isSet(data))
+    {
+      for (Double key : data.keySet())
+      {
+        write(ds, key);
+        write(ds, data.get(key));
+      }
+    }
+  }
+  public static <T extends Binary> void
   writeDoubleMultimap(DataOutput ds, Multimap<Double, T> data) throws IOException
   {
     write(ds, Tools.isSet(data) ? data.keySet().size() : 0);
@@ -1450,6 +1513,18 @@ public class IOs
   }
   public static void
   writeStrDouble(DataOutput ds, Map<String, Double> data) throws IOException
+  {
+    write(ds, Tools.isSet(data) ? data.keySet().size() : 0);
+
+    if (Tools.isSet(data))
+      for (String key : data.keySet())
+      {
+        write(ds, key);
+        write(ds, data.get(key));
+      }
+  }
+  public static void
+  writeStrFloat(DataOutput ds, Map<String, Float> data) throws IOException
   {
     write(ds, Tools.isSet(data) ? data.keySet().size() : 0);
 
@@ -1678,6 +1753,24 @@ public class IOs
     if (n > 0)
     {
       TreeMap<String, Double> data = new TreeMap<>();
+      for (int i = 0; i < n; i++)
+      {
+        String new_k = read(ds, "");
+        Double new_t = read(ds, 0d);
+        data.put(new_k, new_t);
+      }
+      return data;
+    }
+    return null;
+  }
+  public static BiMap<String, Double>
+  readStrDoubleBi(DataInput ds)  throws IOException
+  {
+    int n = read(ds, 0);
+
+    if (n > 0)
+    {
+      BiMap<String, Double> data = HashBiMap.create();
       for (int i = 0; i < n; i++)
       {
         String new_k = read(ds, "");

@@ -1,4 +1,4 @@
-package org.ms2ms;
+package org.ms2ms.utils;
 
 import org.ms2ms.utils.IOs;
 

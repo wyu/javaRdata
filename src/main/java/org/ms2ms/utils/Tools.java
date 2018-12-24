@@ -5,8 +5,6 @@ import com.google.common.primitives.Booleans;
 import com.google.common.primitives.Doubles;
 import org.expasy.mzjava.core.ms.PpmTolerance;
 import org.expasy.mzjava.core.ms.Tolerance;
-import org.expasy.mzjava.core.ms.peaklist.Peak;
-import org.ms2ms.Disposable;
 import org.ms2ms.data.Point;
 import org.ms2ms.data.collect.MultiTreeTable;
 import org.ms2ms.math.Stats;
@@ -1271,12 +1269,12 @@ public class Tools
     return buf;
   }
 
-  public static Map<Float,Float> accumulate(Map<Float,Float> A, Map<Float,Float> B)
+  public static Map<Double,Double> accumulate(Map<Double,Double> A, Map<Double,Double> B)
   {
     if (A==null && B!=null) { A = new TreeMap<>(B); return A; }
 
     if (A!=null)
-      for (Float key : B.keySet())
+      for (Double key : B.keySet())
         if (A.containsKey(key)) A.put(key, A.get(key)+B.get(key)); else A.put(key, B.get(key));
 
     return A;

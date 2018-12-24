@@ -135,7 +135,6 @@
             <name>The EBI internal repository</name>
             <url>http://www.ebi.ac.uk/~maven/m2repo</url>
         </repository>
-
         <!-- EBI repository -->
         <repository>
             <id>pst-release</id>

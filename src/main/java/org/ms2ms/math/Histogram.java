@@ -5,7 +5,7 @@ import org.apache.commons.math.stat.descriptive.moment.Skewness;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.stat.descriptive.moment.Kurtosis;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
-import org.ms2ms.utils.Disposable;
+import org.ms2ms.Disposable;
 import org.ms2ms.data.Binary;
 import org.ms2ms.data.Point;
 import org.ms2ms.utils.IOs;

@@ -1,7 +1,7 @@
 package org.ms2ms.data.collect;
 
 import com.google.common.collect.Range;
-import org.ms2ms.utils.Disposable;
+import org.ms2ms.Disposable;
 import org.ms2ms.utils.Tools;
 
 import java.lang.reflect.Array;

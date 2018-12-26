@@ -4,7 +4,7 @@ import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.SimpleCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
-import org.ms2ms.utils.Disposable;
+import org.ms2ms.Disposable;
 import org.ms2ms.data.Binary;
 import org.ms2ms.utils.IOs;
 

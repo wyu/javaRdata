@@ -2,7 +2,7 @@ package org.ms2ms.data.collect;
 
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
-import org.ms2ms.utils.Disposable;
+import org.ms2ms.Disposable;
 import org.ms2ms.utils.Tools;
 
 import java.util.*;

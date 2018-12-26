@@ -4,10 +4,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
-import toools.set.IntSet;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 /**

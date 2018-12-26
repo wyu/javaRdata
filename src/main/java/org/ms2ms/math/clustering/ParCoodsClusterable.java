@@ -2,8 +2,6 @@ package org.ms2ms.math.clustering;
 
 import org.apache.commons.math3.ml.clustering.Clusterable;
 
-import java.util.List;
-
 /**
  * ** Copyright 2014-2015 ms2ms.org
  * <p/>

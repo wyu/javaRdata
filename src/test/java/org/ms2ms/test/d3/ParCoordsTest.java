@@ -1,5 +1,6 @@
 package org.ms2ms.test.d3;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.ms2ms.data.collect.TreeNode;
 import org.ms2ms.math.Stats;
@@ -19,6 +20,7 @@ import java.util.*;
  * Author: wyu
  * Date:   1/13/15
  */
+@Ignore
 public class ParCoordsTest extends TestAbstract
 {
   @Test

@@ -5,7 +5,6 @@ import org.ms2ms.utils.Tools;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 
 /**
  * ** Copyright 2014-2015 ms2ms.org

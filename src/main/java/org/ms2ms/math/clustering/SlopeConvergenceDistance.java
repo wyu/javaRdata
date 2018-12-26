@@ -1,7 +1,6 @@
 package org.ms2ms.math.clustering;
 
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
-import org.apache.commons.math3.util.FastMath;
 import org.ms2ms.math.Stats;
 
 /**

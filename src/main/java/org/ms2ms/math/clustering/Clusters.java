@@ -1,10 +1,6 @@
 package org.ms2ms.math.clustering;
 
 //import com.apporiented.algorithm.clustering.Cluster;
-import org.ms2ms.utils.Strs;
-import org.ms2ms.utils.Tools;
-
-import java.util.List;
 
 /**
  * ** Copyright 2014-2015 ms2ms.org

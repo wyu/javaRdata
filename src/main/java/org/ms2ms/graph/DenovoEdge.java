@@ -3,8 +3,6 @@ package org.ms2ms.graph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.ms2ms.utils.Tools;
 
-import java.util.Map;
-
 /**
  * Created by yuw on 9/14/16.
  */

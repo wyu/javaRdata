@@ -1,7 +1,6 @@
 package org.ms2ms.data.collect;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 import com.google.common.collect.TreeMultimap;

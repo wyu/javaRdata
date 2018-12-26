@@ -1,6 +1,6 @@
 package org.ms2ms.data.collect;
 
-import org.ms2ms.utils.Disposable;
+import org.ms2ms.Disposable;
 
 import java.util.Collection;
 import java.util.List;

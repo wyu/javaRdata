@@ -2,7 +2,7 @@ package org.ms2ms.data.collect;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import org.ms2ms.utils.Disposable;
+import org.ms2ms.Disposable;
 
 import java.util.*;
 

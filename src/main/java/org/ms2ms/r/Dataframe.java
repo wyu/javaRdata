@@ -8,7 +8,7 @@ import com.google.common.collect.*;
 import org.apache.commons.math3.ml.clustering.CentroidCluster;
 import org.apache.commons.math3.ml.clustering.Clusterable;
 import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
-import org.ms2ms.utils.Disposable;
+import org.ms2ms.Disposable;
 import org.ms2ms.data.NameValue;
 import org.ms2ms.data.collect.MapOfMultimap;
 import org.ms2ms.data.collect.MultiTreeTable;

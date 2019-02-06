@@ -108,6 +108,7 @@ public class Histogram implements Disposable, Binary
   public Double       getFWHH()      { return mFWHH; }
   public Double       getCentroid()  { return Tools.isSet(mHistogram) ? Points.centroid(mHistogram) : null; }
   public Double       getUpperModal() { return mUpperModal; }
+  public Double       getSurvivalFittedR2() { return mSurvivalFitted!=null?mSurvivalFitted.getR2():null; }
 
   public Double       getCentroid(int begin, int end)
   {
@@ -482,7 +483,7 @@ public class Histogram implements Disposable, Binary
     generate(gs, step_num);
   }
   // compute the evals and S/N ratios. Will ignore the top 'shave' most points until r2 meets the min requirement
-  public Histogram fitEval(int samples, int shave, double min_r2)
+  public Histogram fitEval(int samples, int shave, double min_r2, boolean verbose)
   {
     if (mData==null) return this;
 
@@ -494,11 +495,15 @@ public class Histogram implements Disposable, Binary
 
     // no more than 15, up to the size-2
     List<WeightedObservedPoint> Rs = new ArrayList<>();
-    double                  decoys = data.size(), survived=0, end=(int )Math.min(samples, decoys);
+    double                  decoys = data.size(), survived=0,
+            end=(int )Math.min(samples+shave+1, decoys);
+//    end=(int )Math.min(samples, decoys);
 
+    if (verbose) System.out.println("data\tsurvival");
     for (Double d : data)
     {
       Rs.add(new WeightedObservedPoint(d, d, Math.log10(++survived/decoys)));
+      if (verbose) System.out.println(d+"\t"+Math.log10(  survived/decoys));
       if (Rs.size()>end) break;
     }
 
@@ -507,14 +512,23 @@ public class Histogram implements Disposable, Binary
     try
     {
       // quadratic fit is not suitable because of the possibility of curving back up at higher score. Even though the fit is often better.
-      mSurvivalFitted = new Fitted().fit(1, Rs);
+//      mSurvivalFitted = new Fitted().fit(1, Rs);
+//      if (mSurvivalFitted.getR2()<min_r2 && shave>0)
+//        for (int i=0; i<shave; i++)
+//        {
+//          Rs.remove(0);
+//          Fitted fit = new Fitted().fit(1, Rs);
+//
+//          if (fit!=null && fit.getR2()<mSurvivalFitted.getR2()) break;
+//          if (fit!=null && fit.getR2()>mSurvivalFitted.getR2()) mSurvivalFitted=fit;
+//          if (mSurvivalFitted.getR2()>=min_r2) break;
+//        }
+      mSurvivalFitted = new Fitted().fit(1, Rs.subList(0,samples));
       if (mSurvivalFitted.getR2()<min_r2 && shave>0)
         for (int i=0; i<shave; i++)
         {
-          Rs.remove(0);
-          Fitted fit = new Fitted().fit(1, Rs);
+          Fitted fit = new Fitted().fit(1, Rs.subList(i+1,Math.min(Rs.size(), i+1+samples)));
 
-          if (fit!=null && fit.getR2()<mSurvivalFitted.getR2()) break;
           if (fit!=null && fit.getR2()>mSurvivalFitted.getR2()) mSurvivalFitted=fit;
           if (mSurvivalFitted.getR2()>=min_r2) break;
         }

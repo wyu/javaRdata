@@ -167,6 +167,15 @@ public class Tools
   {
     return String.format("%."+i+"f", s);
   }
+  // without the trailing zero
+  public static String d2m(Double s) { return s!=null?d2m(s.doubleValue()):""; }
+  public static String d2m(double s) { return String.format("%s", s); }
+  public static String d2m(Double s, int i) { return s!=null?d2m(s,i):""; }
+  public static String d2m(double s, int i)
+  {
+    String s1 = String.format("%s", s), s2 = d2s(s,i);
+    return s1.length()<s2.length()?s1:s2;
+  }
   public static String o2s(Object s, int i)
   {
     if (s==null) return "NULL";

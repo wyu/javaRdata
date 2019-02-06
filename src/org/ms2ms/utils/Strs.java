@@ -583,6 +583,17 @@ public class Strs
 
     return false;
   }
+  public static String getEqualOrEmbedded(String s, Collection<String> vals)
+  {
+    if (!Tools.isSet(vals)) return null;
+    for (String val : vals)
+      if (s.equals(val)) return val;
+
+    for (String val : vals)
+      if (indexOf(val, s)>=0) return val;
+
+    return null;
+  }
   public static boolean hasApart(String s, Collection<String> vals)
   {
     if (!Tools.isSet(vals)) return false;

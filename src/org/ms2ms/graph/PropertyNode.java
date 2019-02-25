@@ -107,7 +107,7 @@ public class PropertyNode extends Property
   @Override
   public int hashCode()
   {
-    return super.hashCode() + Tools.hashCode(mID,mName);
+    return /*super.hashCode() + */Tools.hashCode(mID,getUID(),mName);
   }
 
   @Override

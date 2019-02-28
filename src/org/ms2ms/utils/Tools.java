@@ -660,6 +660,13 @@ public class Tools
     }
     return data;
   }
+  public static List<Double> toDoubleList(double[] s)
+  {
+    if (s==null) return null;
+    List<Double> data = new ArrayList<>();
+    for (double d : s) data.add(d);
+    return data;
+  }
   public static int[] toIntArray(Collection<Integer> s)
   {
     if (s==null) return null;

@@ -98,6 +98,8 @@ public class PropertyNode extends Property
     if (s instanceof PropertyNode)
     {
       PropertyNode node = (PropertyNode)s;
+      if (Strs.isSet(getUID()) && Strs.isSet(node.getUID())) return Strs.equals(getUID(), node.getUID());
+
       return (mID==null || mID.equals(node.getID())) &&
        (getType()==null || getType().equals(node.getType())) &&
            (mName==null || mName.equals(node.getName()));
@@ -113,6 +115,6 @@ public class PropertyNode extends Property
   @Override
   public String toString()
   {
-    return mID!=null?mID.toString():(mName!=null?mName:super.toString());
+    return (Strs.toString(getType())+"::"+Strs.toString(getUID())+"#"+Strs.toString(mID)+":"+Strs.toString(mName));
   }
 }

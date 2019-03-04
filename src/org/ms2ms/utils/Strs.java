@@ -610,6 +610,14 @@ public class Strs
 
     return false;
   }
+  public static boolean isA(char s, char... vals)
+  {
+    if (Tools.isSet(vals))
+      for (char val : vals)
+        if (s==val) return true;
+
+    return false;
+  }
   public static boolean isA(Optional<String> s, String... vals)
   {
     if (Tools.isSet(vals))

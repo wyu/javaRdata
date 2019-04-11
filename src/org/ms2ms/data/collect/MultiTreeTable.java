@@ -23,6 +23,12 @@ public class MultiTreeTable<K extends Comparable, L extends Comparable, T extend
   public MultiTreeTable() { super(); mData = new TreeMap<>(); }
   public MultiTreeTable(Comparator<? super K> keyC) { super(); mData = new TreeMap<>(keyC); }
 
+  @Override
+  public int hashCode()
+  {
+    return mData!=null?mData.hashCode():-1;
+  }
+
   public long size()
   {
     long counts = 0;

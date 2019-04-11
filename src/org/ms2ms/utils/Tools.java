@@ -507,7 +507,7 @@ public class Tools
   }
   public static <T extends Comparable> boolean contains(Range<T> range, T d)
   {
-    return (range==null || range.contains(d));
+    return (range==null || (d!=null && range.contains(d)));
   }
   public static <T> boolean contains(Collection<T> vals, T s)
   {

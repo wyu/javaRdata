@@ -15,8 +15,13 @@ abstract public class Settings implements Serializable
 {
   protected Map<String, Object> properties;
 
-  public Settings() { super(); properties = new HashMap<String, Object>();  }
+  public Settings() { super(); properties = new HashMap<>();  }
+  public Settings(Settings s)
+  {
+    super(); properties = new HashMap<>(s.properties);
+  }
 
+  protected Double    getDouble( String s, Double _def) { return getDouble(s)==null?_def:getDouble(s); }
   protected Character getChar(   String s) { return properties!=null?(Character )properties.get(s):0; }
   protected Double    getDouble( String s) { return properties!=null?(Double    )properties.get(s):null; }
   protected String    getString( String s) { return properties!=null?(String    )properties.get(s):null; }

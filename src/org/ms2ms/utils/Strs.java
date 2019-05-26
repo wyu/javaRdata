@@ -272,6 +272,15 @@ public class Strs
     // return the concatenated string
     return made;
   }
+  public static String toString(Number[] ss, char dl) {
+    // no point to go further
+    if (ss == null) return null;
+    String made = new String();
+    for (int i = 0; i != ss.length; i++)
+      made = extend(made, ss[i] + "", dl);
+    // return the concatenated string
+    return made;
+  }
   public static String toString(int[] ss, String dl) {
     // no point to go further
     if (ss == null) return null;

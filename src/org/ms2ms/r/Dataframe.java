@@ -29,7 +29,7 @@ import java.util.*;
  * Time: 2:14 PM
  * To change this template use File | Settings | File Templates.
  */
-public class Dataframe implements Disposable
+public class Dataframe implements Disposable, AutoCloseable
 {
   private String                     mTitle, mCurrentRow="unTitled";
   private boolean                    mKeepData = true;
@@ -1322,16 +1322,22 @@ public class Dataframe implements Disposable
   @Override
   public void dispose()
   {
-    mTitle=null;
-    mRowIDs=(List )Tools.dispose(mRowIDs);
-    mColIDs=(List )Tools.dispose(mColIDs);
+    mTitle  =null;
+    mRowIDs =(List )Tools.dispose(mRowIDs);
+    mColIDs =(List )Tools.dispose(mColIDs);
     mNameVar=Tools.dispose(mNameVar);
-    mData=Tools.dispose(mData);
+    mData   =Tools.dispose(mData);
   }
   public void clear()
   {
     dispose();
     mKeepData = true;
+  }
+
+  @Override
+  public void close() throws Exception
+  {
+    dispose();
   }
 }
 

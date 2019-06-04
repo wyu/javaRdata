@@ -539,9 +539,15 @@ public class Tools
   {
     if (A==null || B==null) return 0;
 
-    int shared=0;;
-    for (T t1 : A)
-      if (B.contains(t1)) shared++;
+    int shared=0;
+    if (A.size()<=B.size())
+    {
+      for (T t1 : A) if (B.contains(t1)) shared++;
+    }
+    else
+    {
+      for (T t1 : B) if (A.contains(t1)) shared++;
+    }
 
     return shared;
   }
@@ -1223,6 +1229,14 @@ public class Tools
     }
     return key;
   }
+  public static Collection<String> unique_str(Collection keys)
+  {
+    Set<String> distincts = new HashSet<>();
+    if (isSet(keys))
+      for (Object s : keys) distincts.add(s.toString());
+    return distincts;
+  }
+
   public static <V> TreeMultimap<Double, V> unique_put(TreeMultimap<Double, V> map, Double key, V val)
   {
     int trial=0; // no more than 100 trials

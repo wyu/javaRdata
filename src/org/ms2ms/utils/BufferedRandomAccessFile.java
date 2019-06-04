@@ -66,7 +66,8 @@ import java.lang.Double;
  * @see DataOutput 
  * @see RandomAccessFile 
  */ 
-public class BufferedRandomAccessFile extends Object implements DataInput, DataOutput {
+public class BufferedRandomAccessFile extends Object implements DataInput, DataOutput, AutoCloseable
+{
  
    /** Read from the file. This is always implied. */ 
    public static final int READ = 1; 
@@ -200,8 +201,7 @@ public class BufferedRandomAccessFile extends Object implements DataInput, DataO
     * 
     * @exception IOException  if an I/O error occurrs. 
     */ 
-   public void close() 
-   throws IOException { 
+   public void close() throws IOException {
  
       // If we are writing and the buffer has been modified, flush the contents 
       // of the buffer. 

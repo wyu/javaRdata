@@ -388,6 +388,12 @@ public class Stats
 
     return out;
   }
+  public static int[] fillIntArray(int[] s, int val)
+  {
+    Arrays.fill(s, val);
+    return s;
+  }
+
   /** Estimates the mean and stdev of intensities after 'rounds' of outlier rejections.
    *  The outliers are defined as those outside of the 'stdevs' multiples of the calculated stdev
    *

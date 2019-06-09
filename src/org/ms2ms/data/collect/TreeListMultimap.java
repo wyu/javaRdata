@@ -29,6 +29,15 @@ public class TreeListMultimap<K extends Comparable, V> implements NavigableMulti
   }
   public Collection<V> get(K s) { return mData!=null?mData.get(s):null; }
   public Set<K> keySet() { return mData!=null?mData.keySet():null; }
+
+  public boolean containsKey(K k)
+  {
+    return mData!=null && k!=null ? mData.containsKey(k) : false;
+  }
+  public List<V> remove(K k)
+  {
+    return mData!=null ? mData.remove(k) : null;
+  }
   public boolean containsKey(K k1, K k2)
   {
     return mData!=null ? Tools.isSet(mData.subMap(k1, k2)) : false;

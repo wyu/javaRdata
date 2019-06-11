@@ -84,9 +84,10 @@ public class Property  implements Cloneable
 
     return null;
   }
-  public Double  getDouble(String key) { return getProperty(key, 0d); }
-  public Float   getFloat( String key) { return getProperty(key, 0f); }
-  public Integer getInt(   String key) { return getProperty(key, 0); }
+  public Boolean getBoolean(String key) { return Strs.isA(getProperty(key),"Y","T"); }
+  public Double  getDouble(String key)  { return getProperty(key, 0d); }
+  public Float   getFloat( String key)  { return getProperty(key, 0f); }
+  public Integer getInt(   String key)  { return getProperty(key, 0); }
   public String[] getProperties(String key, char t)
   {
     if (key==null || !Strs.isSet(getProperty(key))) return null;

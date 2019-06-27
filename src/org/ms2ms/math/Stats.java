@@ -70,6 +70,19 @@ public class Stats
     for (double v : s) avg+=v;
     return avg/(double )s.length;
   }
+  // no bound checking
+  public static double min(double[] s)
+  {
+    double m0 = Double.MAX_VALUE;
+    for (double v : s) if (v<m0) m0=v;
+    return m0;
+  }
+  public static double max(double[] s)
+  {
+    double m0 = Double.MAX_VALUE*-1d;
+    for (double v : s) if (v>m0) m0=v;
+    return m0;
+  }
   public static double mean(Collection<Double> s)
   {
     if (!Tools.isSet(s)) return 0;

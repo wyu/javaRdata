@@ -1166,7 +1166,7 @@ public class Tools
   {
     return (A!=null && (B==null || A.size()>=B.size()));
   }
-  public static boolean lessThan(     Double A, Double B) { return (isSet(A) && isSet(B) && A< B); }
+  public static boolean lessThan(     Double A, Double B) { return (!isSet(A) && isSet(B)) || (isSet(A) && isSet(B) && A< B); }
   public static boolean lessEqThan(   Double A, Double B) { return (isSet(A) && isSet(B) && A<=B); }
   public static boolean greaterThan(  Double A, Double B) { return (isSet(A) && isSet(B) && A> B); }
   public static boolean greaterEqThan(Double A, Double B)

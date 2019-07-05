@@ -30,7 +30,7 @@ public class Histogram implements Disposable, Binary
   private int           mHistogramSize = 12;
   private Double        mStep, mSumY = null, mMean, mMedian, mStdev, mKurtosisNormality, mSkewness, mCorr, mCenter, mTop, mSigma, mFWHH, mUpperModal;
   private Range<Double> mRange;
-  private List<Point>   mCumulative;
+  private List<Point>   mCumulative = new ArrayList<>();
   private List<Point>   mHistogram;
   private List<Double>  mData = null;
 
@@ -248,9 +248,16 @@ public class Histogram implements Disposable, Binary
 
     if (Tools.isSet(mData))
     {
-      mMean   = Stats.mean(mData);
+      mMean   = Stats.mean(  mData);
       mMedian = Stats.median(mData);
       mStdev  = Stats.stdev( mData);
+
+      // generate the percentiles as well
+      mCumulative.clear();
+      for (double pct : new double[] {1,5,10,33,50})
+      {
+        mCumulative.add(new Point(pct, mData.get((int )Math.floor((mData.size()-1)*0.01d*(100-pct)))));
+      }
     }
     if (Tools.isSet(mHistogram))
     {

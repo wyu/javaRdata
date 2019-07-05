@@ -278,6 +278,11 @@ public class Tools
 
     return false;
   }
+  public static boolean atLeast(int A, int... B)
+  {
+    for (int b : B) if (b>=A) return true;
+    return false;
+  }
   public static <T extends Object> boolean isA(T A, T... B)
   {
     if ((A == null && B != null) ||

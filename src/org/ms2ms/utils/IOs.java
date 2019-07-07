@@ -1868,6 +1868,12 @@ public class IOs
     writer.writeInt(1);
     writer.writeInt(value);
   }
+  public static void write(DataOutput writer,
+                           byte       value) throws IOException
+  {
+    writer.writeInt(1);
+    writer.writeByte(value);
+  }
   public static void writeAsFloat(DataOutput writer,
                                   Double value, float default_) throws IOException
   {
@@ -2000,6 +2006,14 @@ public class IOs
       return value;
     }
     return is.readInt();
+  }
+  public static byte read(DataInput is, byte value) throws IOException
+  {
+    if (is.readInt() == 0)
+    {
+      return value;
+    }
+    return is.readByte();
   }
   public static char read(DataInput is, char value) throws IOException
   {

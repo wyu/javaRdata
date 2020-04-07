@@ -229,7 +229,7 @@ public class Points
   }
   public static <T extends Point> Double centroid(Collection<T> points)
   {
-    return centroid(points, null, null);
+    return centroid(points, (Double )null, (Double )null);
   }
   public static <T extends Point> Double centroid(Collection<T> points, Double x0, Double x1)
   {
@@ -246,6 +246,51 @@ public class Points
       }
     }
     return sumY != 0 ? sumXY / sumY : null;
+  }
+  public static <T extends Point> Point centroid(Collection<T> points, Double min_ri, Range<Double> x_range)
+  {
+    if (!Tools.isSet(points)) return null;
+
+    Point top = getBasePoint(points, x_range);
+    if (top==null) return null;
+
+    double sumXY=0, sumY=0, sumX=0,N=0, base = top.getY(), min_ai = base*min_ri*0.01;
+    for (Point xy : points) {
+      if ((x_range==null || x_range.contains(xy.getX())) && xy.getY()>min_ai) {
+        sumXY += xy.getX() * xy.getY();
+        sumY += xy.getY();
+        sumX += xy.getX(); N++;
+      }
+    }
+    if (sumY!=0) return new Point(sumXY / sumY, base);
+    else
+    {
+//      System.out.println();
+      return null;
+    }
+  }
+  public static <T extends Point> T getBasePoint(Collection<T> data)
+  {
+    if (!Tools.isSet(data)) return null;
+
+    T base = null;
+    for (T datum : data)
+      if (base == null || (datum.getY() > base.getY())) base = datum;
+
+    // send the base peak back
+    return base;
+  }
+  public static <T extends Point> T getBasePoint(Collection<T> data, Range<Double> range)
+  {
+    if (!Tools.isSet(data)) return null;
+
+    T base = null;
+    for (T datum : data)
+      if ((range==null || range.contains(datum.getX())) &&
+          (base == null || (datum.getY() > base.getY()))) base = datum;
+
+    // send the base peak back
+    return base;
   }
   public static <T extends Point> Double sumY(Collection<T> data)
   {

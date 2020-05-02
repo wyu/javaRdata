@@ -1,5 +1,6 @@
 package org.ms2ms.utils;
 
+import com.google.common.collect.BiMap;
 import org.ms2ms.math.Stats;
 
 import java.io.*;
@@ -25,6 +26,7 @@ public class TabFile
   private Pattern mToken      = Pattern.compile(tabb);
   private String             mFilename   = null,mCurrentLine=null,mHeaderLine=null;
   private String             mSkip       = null, mRowHeader=null;
+  private Map<String, String> mColMapping= null;
 
   public static String       comma       = ",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))";
   public static String       tabb        = "\\t";
@@ -110,6 +112,8 @@ public class TabFile
 
     init();
   }
+
+  public TabFile setColMappings(Map<String, String> s) { mColMapping=s; return this; }
   public TabFile init() throws IOException
   {
     InputStream is = new FileInputStream(mFilename);
@@ -255,6 +259,20 @@ public class TabFile
         if (get(key)!=null) return Stats.toFloat(get(key));
     return null;
   }
+  public Float  get(String key, Float _def)
+  {
+    if (Strs.isSet(key))
+      return (get(key)!=null && Stats.toFloat(get(key))!=null ? Stats.toFloat(get(key)) : _def);
+
+    return null;
+  }
+  public Integer  get(String key, int _def)
+  {
+    if (Strs.isSet(key))
+      return (get(key)!=null ? Stats.toInt(get(key)) : _def);
+
+    return null;
+  }
   public Integer  getInt(String... keys)
   {
     if (Tools.isSet(keys))
@@ -286,7 +304,10 @@ public class TabFile
   {
     String value = null;
     if (mCol != null && key != null)
-        value = mCol.get(key);
+    {
+      value = mCol.get(key);
+      if (value==null && Tools.isSet(mColMapping)) value = mCol.get(mColMapping.get(key));
+    }
 
     return value;
   }

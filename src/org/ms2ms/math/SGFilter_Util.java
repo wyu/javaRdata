@@ -18,12 +18,12 @@ import java.util.ArrayList;
  * <p/>
  * Comments:
  */
-public class SGFilter extends Object
+public class SGFilter_Util extends Object
 {
   // key 1 = (data window + 1)/2, key 2 = order of polynomial
   private Table<Integer, Integer, Double[]> mCoeffs_0, mCoeffs_1, mCoeffs_2;
 
-  SGFilter() { super(); init(); }
+  SGFilter_Util() { super(); init(); }
 
   private void init()
   {

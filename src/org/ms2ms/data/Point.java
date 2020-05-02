@@ -15,7 +15,8 @@ import java.io.IOException;
  * Author: wyu
  * Date:   1/23/15
  */
-public class Point implements Comparable<Point>, Binary
+public class
+Point implements Comparable<Point>, Binary
 {
   private double mX, mY;
 

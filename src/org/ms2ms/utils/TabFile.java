@@ -287,7 +287,7 @@ public class TabFile
   {
     if (Tools.isSet(tags))
       for (String tag : tags)
-        if (mCol!=null && tag!=null && mCol.get(tag)!=null) return mCol.get(tag);
+        if (mCol!=null && tag!=null && get(tag)!=null) return get(tag);
 
     return null;
   }
@@ -295,7 +295,7 @@ public class TabFile
   {
     if (mCol != null && keys != null)
       for (String key : keys)
-        if (get(key)!=null) return mCol.get(key);
+        if (get(key)!=null) return get(key);
 
     return null;
   }
@@ -306,7 +306,8 @@ public class TabFile
     if (mCol != null && key != null)
     {
       value = mCol.get(key);
-      if (value==null && Tools.isSet(mColMapping)) value = mCol.get(mColMapping.get(key));
+      if (value==null && Tools.isSet(mColMapping) && mColMapping.get(key)!=null)
+        value = mCol.get(mColMapping.get(key));
     }
 
     return value;

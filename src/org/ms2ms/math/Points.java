@@ -6,6 +6,7 @@ import com.google.common.collect.Range;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
+import org.expasy.mzjava.core.ms.peaklist.Peak;
 import org.ms2ms.data.Point;
 import org.ms2ms.utils.Tools;
 
@@ -269,6 +270,33 @@ public class Points
       return null;
     }
   }
+  public static <T extends Point> List<Point> deriv1stBySG5(List<T> A) {
+    // Do nothing if the set isn't big enough to smooth.
+    if (null == A || A.size() < 6) return null;
+
+    // store the smoothed data separately
+    List<Point> smoothed = new ArrayList<>(A.size());
+    T cloned = null;
+
+    // ignore the edge points for now, WYU 20200519
+    for (int i = 2; i < A.size() - 2; i++) {
+      cloned = (T) new Point(A.get(i));
+//      cloned.setY(filter(A, i - 2, new double[]{-8.333333e-02,6.666667e-01,8.146443e-17,-6.666667e-01,8.333333e-02}));
+      cloned.setY(filter(A, i - 2, new double[]{-0.2,-0.1,0,0.1,0.2})); // https://en.wikipedia.org/wiki/Savitzky%E2%80%93Golay_filter
+      smoothed.add(cloned);
+    }
+
+    return smoothed;
+  }
+  public static <T extends Point> double filter(List<T> A, int index_begin, double[] filters) {
+    double Y = 0d;
+    for (int i = 0; i < filters.length; i++)
+      Y += A.get(i + index_begin).getY() * filters[i];
+
+    return Y;
+  }
+
+
   public static <T extends Point> T getBasePoint(Collection<T> data)
   {
     if (!Tools.isSet(data)) return null;

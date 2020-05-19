@@ -22,6 +22,7 @@ Point implements Comparable<Point>, Binary
 
   public Point() { set(0d,0d); }
   public Point(double x, double y) { set(x,y); }
+  public Point(Point s) { setX(s.getX()); setY(s.getY()); }
 
   public double getX() { return mX; }
   public double getY() { return mY; }

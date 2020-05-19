@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.math.linear.RealMatrixImpl;
-import org.ms2ms.math.contrib.DataFilter;
 
 /**
  * Savitzky-Golay filter implementation. For more information see

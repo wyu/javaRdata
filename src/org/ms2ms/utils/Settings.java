@@ -22,11 +22,24 @@ abstract public class Settings implements Serializable
   }
 
   protected Double    getDouble( String s, Double _def) { return getDouble(s)==null?_def:getDouble(s); }
+  protected Float     getFloat(  String s, Float  _def) { return getFloat( s)==null?_def:getFloat( s); }
+
   protected Character getChar(   String s) { return properties!=null?(Character )properties.get(s):0; }
   protected Double    getDouble( String s) { return properties!=null?(Double    )properties.get(s):null; }
+  protected Float     getFloat(  String s) { return properties!=null?(Float     )properties.get(s):null; }
   protected String    getString( String s) { return properties!=null?(String    )properties.get(s):null; }
   protected Long      getLong(   String s) { return properties!=null?(Long      )properties.get(s):null; }
   protected Integer   getInteger(String s) { return properties!=null?(Integer   )properties.get(s):null; }
   protected byte[]    getBytes(  String s) { return properties!=null?(byte[]    )properties.get(s):null; }
+  protected Boolean   getBoolean(String s) { return properties!=null?(Boolean   )properties.get(s):null; }
 
+  protected Settings set(String k, Object v) { properties.put(k,v); return this; }
+
+  @Override
+  protected Settings clone() throws CloneNotSupportedException
+  {
+    Settings cloned = (Settings )super.clone();
+    cloned.properties = new HashMap<>(properties);
+    return cloned;
+  }
 }

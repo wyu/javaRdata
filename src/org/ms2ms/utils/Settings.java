@@ -11,7 +11,7 @@ import java.util.Map;
  * Time: 10:36 PM
  * To change this template use File | Settings | File Templates.
  */
-abstract public class Settings implements Serializable
+abstract public class Settings implements Serializable, Cloneable
 {
   protected Map<String, Object> properties;
 

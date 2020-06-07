@@ -11,7 +11,6 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.TransactionalGraph;
 import com.tinkerpop.blueprints.Vertex;
 import org.jgrapht.Graph;
-import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.ms2ms.utils.Strs;
 import org.ms2ms.utils.Tools;

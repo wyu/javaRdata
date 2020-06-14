@@ -347,7 +347,7 @@ public class Stats
     if (ys==null) return null;
 
     Double sum=0d;
-    for (Double y : ys) sum+=y;
+    for (Double y : ys) if (y!=Double.NaN) sum+=y;
     return sum;
   }
   public static Float sumFloats(Collection<Float> ys)

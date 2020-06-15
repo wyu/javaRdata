@@ -88,6 +88,14 @@ public class Stats
     for (Double v : s) avg+=v;
     return avg/(double )s.size();
   }
+  public static float meanFloats(Collection<Float> s)
+  {
+    if (!Tools.isSet(s)) return 0;
+
+    float avg = 0f;
+    for (Float v : s) avg+=v;
+    return avg/(float )s.size();
+  }
   public static double mean(double[] s, int up_to)
   {
     if (!Tools.isSet(s)) return 0;

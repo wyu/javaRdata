@@ -6,6 +6,7 @@ import org.ms2ms.utils.Tools;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.Comparator;
 
 /**
  * ** Copyright 2014-2015 ms2ms.org
@@ -20,6 +21,12 @@ Point implements Comparable<Point>, Binary
 {
   private double mX, mY;
 
+  public static class IntensityDesendComparator implements Comparator<Point> {
+    public int compare(Point o1, Point o2) {
+      return o1 != null && o2 != null ? Double.compare(o2.getY(), o1.getY()) : 0;
+    }
+  }
+
   public Point() { set(0d,0d); }
   public Point(double x, double y) { set(x,y); }
   public Point(Point s) { setX(s.getX()); setY(s.getY()); }
@@ -29,6 +36,7 @@ Point implements Comparable<Point>, Binary
   public Point setX(double s) { mX=s; return this; }
   public Point setY(double s) { mY=s; return this; }
   public Point set(double x, double y) { mX=x; mY=y; return this; }
+  public Point set(Point s) { mX=s.getX(); mY=s.getY(); return this; }
 
   @Override
   public int compareTo(Point o)

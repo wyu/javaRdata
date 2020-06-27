@@ -46,7 +46,7 @@ Point implements Comparable<Point>, Binary
   @Override
   public String toString()
   {
-    return Tools.d2s(getX(), 2) + "\t" + Tools.d2s(getY(), 2);
+    return Tools.d2s(getX(), 2) + "," + Tools.d2s(getY(), 2);
   }
 
   @Override

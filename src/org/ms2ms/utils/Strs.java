@@ -45,6 +45,14 @@ public class Strs
   {
     return s0==null?s1:(s1!=null?s0+delimiter+s1:s0);
   }
+  public static String extending(String s0, char delimiter, String... ss)
+  {
+    String x = s0;
+    for (String s : ss)
+      x = extend(x, s, delimiter);
+
+    return x;
+  }
   public static String extend(String s0, String s1, char delimiter)
   {
     return s0==null?s1:(s1!=null?s0+delimiter+s1:s0);

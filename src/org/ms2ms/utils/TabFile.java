@@ -312,4 +312,20 @@ public class TabFile
 
     return value;
   }
+
+  public static char guessDelim(String file, char... delims) throws IOException
+  {
+    if (Strs.isSet(file) && Tools.isSet(delims))
+      for (char delim : delims)
+      {
+        TabFile tr = new TabFile(file, delim);
+        tr.hasNext();
+        if (tr.ready() && Tools.isSet(tr.mCol) && tr.mCol.size()>1)
+        {
+          tr.close(); return delim;
+        }
+        tr.close();
+      }
+    return 0;
+  }
 }

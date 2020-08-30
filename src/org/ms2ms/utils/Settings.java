@@ -34,6 +34,11 @@ abstract public class Settings implements Serializable, Cloneable
   protected Boolean   getBoolean(String s) { return properties!=null?(Boolean   )properties.get(s):null; }
 
   protected Settings set(String k, Object v) { properties.put(k,v); return this; }
+  protected Settings update(String k, Object v)
+  {
+    if (v==null) properties.remove(k); else properties.put(k,v);
+    return this;
+  }
 
   @Override
   protected Settings clone() throws CloneNotSupportedException

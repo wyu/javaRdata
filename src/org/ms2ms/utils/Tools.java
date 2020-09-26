@@ -45,6 +45,33 @@ public class Tools
   public static     boolean isNoneZero(Integer   s) { return s!=null && s!=0; }
   public static     boolean isNoneZero(Point     s) { return s!=null && (isSet(s.getX()) || isSet(s.getY())); }
 
+  public static     boolean isOK(Range<Double> bound, double... s)
+  {
+    if (isSet(s))
+      for (double v : s)
+        if (Double.isInfinite(v) || Double.isNaN(v) || (isSet(bound) && !bound.contains(v))) return false;
+
+    return true;
+  }
+  public static double nonzero(double v, double lower, double upper)
+  {
+    if (Double.isInfinite(v) || Double.isNaN(v) || v==0 || v<lower || v>upper) return Double.NaN;
+    return (v);
+  }
+  public static double nonzero(double v)
+  {
+    if (Double.isInfinite(v) || Double.isNaN(v) || v==0) return Double.NaN;
+    return (v);
+  }
+  public static     boolean isOK(double... s)
+  {
+    if (isSet(s))
+      for (double v : s)
+        if (Double.isInfinite(v) || Double.isNaN(v)) return false;
+
+    return true;
+  }
+
   public static SortedMap[] cloneMapArray(SortedMap[] x)
   {
     if (x==null) return x;

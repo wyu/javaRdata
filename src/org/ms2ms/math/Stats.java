@@ -295,6 +295,19 @@ public class Stats
     }
     return Range.closed(lower, upper);
   }
+  public static double interpolate(double x0, double x1, double y0, double y1, double x)
+  {
+    if (!Tools.isOK(x0,x1,x)) return Double.NaN;
+    if (y0==y1)         return y0;
+    if (y0==0 || !Tools.isOK(y0) || y1==0 || !Tools.isOK(y1)) return (Math.abs(x-x0)<=Math.abs(x1-x) ? y0 : y1);
+
+    return ((x-x0)*(y1-y0)/(x1-x0) + y0);
+  }
+  public static int closeTo(double x0, double x1, int y0, int y1, double x)
+  {
+    if (!Tools.isOK(x0,x1,x)) return y0;
+    return (Math.abs(x-x0) <= Math.abs(x1-x) ? y0: y1);
+  }
   /**
    *
    * @param Xs is the variable

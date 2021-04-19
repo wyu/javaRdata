@@ -20,7 +20,7 @@ public class HDataTest extends TestAbstract
   @Before
   public void setUp()
   {
-    evidences = new Dataframe(root+"evidence1k.txt", '\t');
+    evidences = new Dataframe(root+"evidence1k.txt", '\t', 0);
   }
 
   @Test

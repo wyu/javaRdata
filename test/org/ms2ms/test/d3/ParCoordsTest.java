@@ -24,8 +24,8 @@ public class ParCoordsTest extends TestAbstract
   @Test
   public void prepareTSNECSV() throws Exception
   {
-    Dataframe dat = new Dataframe("/media/data/test/data/clinical_i2b2trans_adult.txt", '\t').setNAs("NA","null").init(true),
-            abbrs = new Dataframe("/media/data/test/data/clinical.abbr", '\t');
+    Dataframe dat = new Dataframe("/media/data/test/data/clinical_i2b2trans_adult.txt", '\t', 0).setNAs("NA","null").init(true),
+            abbrs = new Dataframe("/media/data/test/data/clinical.abbr", '\t', 0);
 
     Collection<String> columns = dat.cols();
     for (String col : columns)
@@ -73,7 +73,7 @@ public class ParCoordsTest extends TestAbstract
     // {cohort_v=10, cohort_c=88, cohort_b=110, cohort_d=101, cohort_a=311}
     String cohort="\\Study Groups\\cohort", ctrl_level="D";
 
-    Dataframe dat = new Dataframe("/media/data/test/data/clinical_i2b2trans_adult.txt", '\t').setNAs("NA","null").init(true);
+    Dataframe dat = new Dataframe("/media/data/test/data/clinical_i2b2trans_adult.txt", '\t', 0).setNAs("NA","null").init(true);
 
     dat.replaceValue(cohort, Var.VarType.CATEGORICAL, "cohort_a", "A");
     dat.replaceValue(cohort, Var.VarType.CATEGORICAL, "cohort_b", "B");
@@ -135,7 +135,7 @@ public class ParCoordsTest extends TestAbstract
     // {cohort_v=10, cohort_c=88, cohort_b=110, cohort_d=101, cohort_a=311}
     String cohort="\\Study Groups\\cohort", ctrl_level="cohort_a";
 
-    Dataframe dat = new Dataframe("/media/data/test/data/clinical_i2b2trans_adult.txt", '\t').setNAs("NA","null").init(true);
+    Dataframe dat = new Dataframe("/media/data/test/data/clinical_i2b2trans_adult.txt", '\t', 0).setNAs("NA","null").init(true);
     String[] header5 = {
         "\\Study Groups\\cohort",
         "\\Clinical Data\\Lung Biopsy Immunopathology\\Broncoscopy Visit\\Submucosa\\CD4 T cells (cells/mm^2)",
@@ -210,7 +210,7 @@ public class ParCoordsTest extends TestAbstract
   @Test
   public void examineAdultCSV() throws Exception
   {
-    Dataframe dat = new Dataframe("/media/data/test/data/clinical_i2b2trans_adult.txt", '\t').setNAs("NA","null").init(true);
+    Dataframe dat = new Dataframe("/media/data/test/data/clinical_i2b2trans_adult.txt", '\t', 0).setNAs("NA","null").init(true);
 
     TreeNode top = new TreeNode("root");
     System.out.println("entries\tcat\tfactor\tcolumn header");

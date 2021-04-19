@@ -40,9 +40,9 @@ public class Dataframe implements Disposable, AutoCloseable
 
   public Dataframe()                                         { super(); }
   public Dataframe(String s)                                 { super(); setTitle(s); }
-  public Dataframe(String cvs, char delim, String... idcols) { super(); readTable(cvs, null, delim, idcols); setTitle(cvs); }
+  public Dataframe(String cvs, char delim, int skips, String... idcols) { super(); readTable(cvs, null, delim, skips, idcols); setTitle(cvs); }
   public Dataframe(String cvs, String[] selected_cols, char delim, String... idcols)
-  { super(); readTable(cvs, selected_cols, delim, idcols); setTitle(cvs); }
+  { super(); readTable(cvs, selected_cols, delim, 0, idcols); setTitle(cvs); }
 
   public Dataframe setRowIds(List<String> s) { mRowIDs=s; return this; }
   public Dataframe setColIds(List<String> s) { mColIDs=s; return this; }
@@ -517,7 +517,7 @@ public class Dataframe implements Disposable, AutoCloseable
     return this;
   }
   //** builders, no variable init here **//
-  public void readTable(String src, String[] selected_cols, char delimiter, String... idcols)
+  public void readTable(String src, String[] selected_cols, char delimiter, int skips, String... idcols)
   {
     if (!IOs.exists(src)) return;
 
@@ -525,7 +525,7 @@ public class Dataframe implements Disposable, AutoCloseable
     TabFile csv=null;
     try
     {
-      csv = new TabFile(src, delimiter);
+      csv = new TabFile(src, delimiter+"", skips);
       // convert the header to variables
       mColIDs = new ArrayList<>();
       mData    = HashBasedTable.create();
@@ -759,12 +759,12 @@ public class Dataframe implements Disposable, AutoCloseable
   }
   public static Dataframe readtable(String src, char delimiter, boolean init, String... idcols)
   {
-    Dataframe f = new Dataframe(src, delimiter, idcols);
+    Dataframe f = new Dataframe(src, delimiter, 0, idcols);
     return init?f.init(true):f;
   }
   public static Dataframe create(String src, char delimiter,String... idcols)
   {
-    Dataframe f = new Dataframe(src, delimiter, idcols);
+    Dataframe f = new Dataframe(src, delimiter, 0, idcols);
     return f.init(true);
   }
   public static Dataframe readtable(String src, String[] selected_cols, char delimiter, boolean init, String... idcols)

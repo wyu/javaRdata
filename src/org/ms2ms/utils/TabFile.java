@@ -249,14 +249,14 @@ public class TabFile
   {
     if (Tools.isSet(keys))
       for (String key : keys)
-        if (get(key)!=null) return Stats.toLong(get(key));
+        if (get(key)!=null && Stats.toLong(get(key))!=null) return Stats.toLong(get(key));
     return null;
   }
   public Float  getFloat(String... keys)
   {
     if (Tools.isSet(keys))
       for (String key : keys)
-        if (get(key)!=null) return Stats.toFloat(get(key));
+        if (get(key)!=null && Stats.toFloat(get(key))!=null) return Stats.toFloat(get(key));
     return null;
   }
   public Float  get(String key, Float _def)
@@ -269,7 +269,7 @@ public class TabFile
   public Integer  get(String key, int _def)
   {
     if (Strs.isSet(key))
-      return (get(key)!=null ? Stats.toInt(get(key)) : _def);
+      return (get(key)!=null && Stats.toInt(get(key))!=null ? Stats.toInt(get(key)) : _def);
 
     return null;
   }
@@ -277,7 +277,7 @@ public class TabFile
   {
     if (Tools.isSet(keys))
       for (String key : keys)
-        if (get(key)!=null) return Stats.toInt(get(key));
+        if (get(key)!=null && Stats.toInt(get(key))!=null) return Stats.toInt(get(key));
     return null;
   }
 //  public Float   getFloat( String key) { return Stats.toFloat( get(key)); }

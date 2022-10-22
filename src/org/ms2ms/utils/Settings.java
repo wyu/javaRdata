@@ -39,7 +39,16 @@ abstract public class Settings implements Serializable, Cloneable
     if (v==null) properties.remove(k); else properties.put(k,v);
     return this;
   }
+  public StringBuffer show()
+  {
+    StringBuffer buf = new StringBuffer();
 
+    if (Tools.isSet(properties))
+      for (String key : properties.keySet())
+        buf.append(key+"\t"+properties.get(key)+"\n");
+
+    return buf;
+  }
   @Override
   protected Settings clone() throws CloneNotSupportedException
   {
